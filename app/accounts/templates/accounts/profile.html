@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Профіль — Особистий розклад{% endblock %}
+{% block content %}
+<h1>Налаштування профілю</h1>
+<p>Користувач: {{ user.username }}</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <button type="submit">Зберегти</button>
+</form>
+{% endblock %}
