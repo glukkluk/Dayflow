@@ -37,6 +37,7 @@ label {
     margin-bottom: 0.4rem;
     font-weight: 600;
 }
+textarea,
 input,
 select {
     box-sizing: border-box;

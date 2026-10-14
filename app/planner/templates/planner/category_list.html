@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}
+    Категорії — Особистий розклад
+{% endblock %}
+{% block content %}
+    <h1>Категорії</h1>
+    <p><a href="{% url 'planner:category_create' %}">Додати категорію</a></p>
+    <ul class="item-list">
+        {% for category in category_list %}
+            <li>
+                <span
+                    class="color-swatch"
+                    style="background-color: {{ category.color }}"
+                ></span>
+                <strong>{{ category.name }}</strong> <small>{{ category.color }}</small>
+                <div class="actions">
+                    <a href="{% url 'planner:category_edit' category.pk %}"
+                        >Редагувати</a
+                    >
+                    <a href="{% url 'planner:category_delete' category.pk %}"
+                        >Видалити</a
+                    >
+                </div>
+            </li>
+        {% empty %}
+            <li>Категорій ще немає.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

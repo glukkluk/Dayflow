@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Події — Особистий розклад{% endblock %}
+{% block content %}
+<h1>Події</h1>
+<p><a href="{% url 'planner:event_create' %}">Додати подію</a></p>
+<form method="get">
+    <label for="search">Пошук за назвою або описом</label>
+    <input id="search" name="q" value="{{ query }}" type="search">
+    <button type="submit">Знайти</button>
+</form>
+<p>Часовий пояс: {{ user.profile.timezone }}</p>
+<ul class="item-list">
+{% for event in page_obj %}
+    <li>
+        <a href="{% url 'planner:event_detail' event.pk %}"><strong>{{ event.title }}</strong></a>
+        <p>{{ event.start|date:"d.m.Y H:i" }} — {{ event.end|date:"d.m.Y H:i" }}</p>
+        {% if event.all_day %}<p>Весь день</p>{% endif %}
+        <p>{{ event.category|default:"Без категорії" }}</p>
+        <div class="actions">
+            <a href="{% url 'planner:event_edit' event.pk %}">Редагувати</a>
+            <a href="{% url 'planner:event_delete' event.pk %}">Видалити</a>
+        </div>
+    </li>
+{% empty %}
+    <li>Подій не знайдено.</li>
+{% endfor %}
+</ul>
+{% if page_obj.has_other_pages %}
+<nav aria-label="Сторінки подій">
+    {% if page_obj.has_previous %}<a href="?q={{ query|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Попередня</a>{% endif %}
+    <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?q={{ query|urlencode }}&amp;page={{ page_obj.next_page_number }}">Наступна</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

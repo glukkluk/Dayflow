@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }} — Особистий розклад{% endblock %}
+{% block content %}
+<h1>{{ event.title }}</h1>
+<p>{{ event.start|date:"d.m.Y H:i" }} — {{ event.end|date:"d.m.Y H:i" }}</p>
+<p>Часовий пояс: {{ user.profile.timezone }}</p>
+{% if event.all_day %}<p>Весь день</p>{% endif %}
+<p>Категорія: {{ event.category|default:"Без категорії" }}</p>
+{{ event.description|linebreaks }}
+<div class="actions">
+    <a href="{% url 'planner:event_edit' event.pk %}">Редагувати</a>
+    <a href="{% url 'planner:event_delete' event.pk %}">Видалити</a>
+    <a href="{% url 'planner:event_list' %}">До списку</a>
+</div>
+{% endblock %}
