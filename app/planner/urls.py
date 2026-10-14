@@ -1,10 +1,21 @@
 from django.urls import path
 
-from .views import calendar_api, categories, events, tasks
+from .views import calendar, calendar_api, categories, events, tasks
 
 app_name = "planner"
 
 urlpatterns = [
+    path("calendar/", calendar.CalendarView.as_view(), name="calendar"),
+    path(
+        "api/events/<int:pk>/move/",
+        calendar_api.EventMoveView.as_view(),
+        name="event_move",
+    ),
+    path(
+        "api/events/check-conflicts/",
+        calendar_api.CheckConflictsView.as_view(),
+        name="check_conflicts",
+    ),
     path(
         "api/events/", calendar_api.CalendarEventsView.as_view(), name="calendar_events"
     ),

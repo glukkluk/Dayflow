@@ -6,7 +6,16 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_div }}
-    <button type="submit">Зберегти</button>
+    {% if conflict_check %}
+    <section class="conflict-warning" role="alert">
+        <h2>Подія перетинається з іншими</h2>
+        <p>Перевірено: {{ conflict_check.start|date:"d.m.Y H:i" }} — {{ conflict_check.end|date:"d.m.Y H:i" }}.</p>
+        <ul>{% for item in conflict_check.conflicts %}
+            <li>{{ item.event.title }}: {{ item.start|date:"d.m.Y H:i" }} — {{ item.end|date:"d.m.Y H:i" }}</li>
+        {% endfor %}</ul>
+        <button type="submit" name="force" value="true">Зберегти все одно</button>
+    </section>
+    {% else %}<button type="submit">Зберегти</button>{% endif %}
     <a href="{% url cancel_url %}">Скасувати</a>
 </form>
 {% endblock %}

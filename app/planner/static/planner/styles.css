@@ -2,6 +2,40 @@ input[type="checkbox"],
 input[type="color"] {
     width: auto;
 }
+.calendar-page {
+    max-width: 90rem;
+}
+.conflict-warning {
+    background: #fff3cd;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+dialog {
+    max-width: min(40rem, 85vw);
+    max-height: 80vh;
+    overflow: auto;
+    border: 1px solid #657389;
+    border-radius: 0.5rem;
+}
+dialog::backdrop {
+    background: rgb(0 0 0 / 40%);
+}
+#event-dialog-description {
+    white-space: pre-wrap;
+}
+@media (max-width: 600px) {
+    .fc .fc-toolbar {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .fc .fc-toolbar-title {
+        font-size: 1.25rem;
+    }
+    .fc .fc-button {
+        padding: 0.35rem;
+        font-size: 0.85rem;
+    }
+}
 input[type="color"] {
     min-width: 4rem;
     min-height: 2.75rem;
@@ -35,12 +69,26 @@ h1,
 p {
     overflow-wrap: anywhere;
 }
-.priority, .overdue {
+.priority,
+.overdue {
     display: inline-block;
     padding: 0.25rem 0.5rem;
     border-radius: 0.3rem;
 }
-.priority-1 { background: #e1f1e7; color: #185831; }
-.priority-2 { background: #fff3cd; color: #684d00; }
-.priority-3, .overdue { background: #ffe1e3; color: #a21c25; }
-button:disabled { opacity: 0.6; cursor: wait; }
+.priority-1 {
+    background: #e1f1e7;
+    color: #185831;
+}
+.priority-2 {
+    background: #fff3cd;
+    color: #684d00;
+}
+.priority-3,
+.overdue {
+    background: #ffe1e3;
+    color: #a21c25;
+}
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}

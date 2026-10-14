@@ -1,8 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
+from django.utils.dateparse import parse_datetime
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -13,6 +15,7 @@ from django.views.generic import (
 
 from ..forms import EventForm
 from ..models import Event
+from ..services.conflicts import check_event
 
 
 class EventOwnerMixin(LoginRequiredMixin):
@@ -21,10 +24,26 @@ class EventOwnerMixin(LoginRequiredMixin):
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user).select_related("category")  # ty: ignore[unresolved-attribute]
 
+
 class EventFormMixin(SuccessMessageMixin):
     form_class = EventForm
     template_name = "planner/form.html"
     success_message = "Подію збережено."
+
+    def form_valid(self, form):
+        try:
+            result = check_event(form.instance)
+        except ValidationError as error:
+            form.add_error(None, error)
+            return self.form_invalid(form)  # ty: ignore[unresolved-attribute]
+        except (ValueError, OverflowError):
+            form.add_error(None, "Неможливо перевірити повторення для цього діапазону дат.")
+            return self.form_invalid(form)  # ty: ignore[unresolved-attribute]
+        if result.conflicts and self.request.POST.get("force") != "true":  # ty: ignore[unresolved-attribute]
+            return self.render_to_response(  # ty: ignore[unresolved-attribute]
+                self.get_context_data(form=form, conflict_check=result)
+            )
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse("planner:event_detail", kwargs={"pk": self.object.pk})  # ty: ignore[unresolved-attribute]
@@ -35,8 +54,11 @@ class EventFormMixin(SuccessMessageMixin):
         context["note"] = (
             f"Дата й час у часовому поясі {self.request.user.profile.timezone}."  # ty: ignore[unresolved-attribute]
             " Редагування повторюваної події змінює всю серію."
+            " Для серії без кінцевої дати конфлікти перевіряються на 365 днів уперед"
+            " від початку або поточного моменту для старих серій."
         )
         return context
+
 
 class EventListView(EventOwnerMixin, ListView):
     template_name = "planner/event_list.html"
@@ -64,6 +86,18 @@ class EventDetailView(EventOwnerMixin, DetailView):
 
 class EventCreateView(EventOwnerMixin, EventFormMixin, CreateView):
     extra_context = {"title": "Нова подія"}
+
+    def get_initial(self):
+        initial = super().get_initial()
+        for field in ("start", "end"):
+            try:
+                value = parse_datetime(self.request.GET.get(field, ""))
+            except ValueError:
+                value = None
+            if value:
+                initial[field] = value
+        initial["all_day"] = self.request.GET.get("all_day") == "true"
+        return initial
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

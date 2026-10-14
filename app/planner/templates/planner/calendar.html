@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Календар — Особистий розклад
+{% endblock %}
+{% block main_class %}
+    calendar-page
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@7.1.2/all/global.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@7.1.2/themes/monarch/global.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@7.1.2/locales/uk/global.js" defer></script>
+    {# FullCalendar 7 handles named timezones; Luxon is used by our date helpers. #}
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.7.2/build/global/luxon.min.js" defer></script>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/fullcalendar@7.1.2/skeleton.css"
+        rel="stylesheet"
+    />
+    <link
+        href="https://cdn.jsdelivr.net/npm/fullcalendar@7.1.2/themes/monarch/theme.css"
+        rel="stylesheet"
+    />
+    <link
+        href="https://cdn.jsdelivr.net/npm/fullcalendar@7.1.2/themes/monarch/palettes/purple.css"
+        rel="stylesheet"
+    />
+
+    <script src="{% static 'planner/calendar.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+    <h1>Календар</h1>
+    <p><a href="{% url 'planner:event_create' %}">Додати подію</a></p>
+    <p>
+        Часовий пояс: {{ user.profile.timezone }}. Перетягування повторюваної події
+        змінює всю серію.
+    </p>
+    <p>
+        Серії без кінцевої дати перевіряються на конфлікти на 365 днів уперед від
+        початку або поточного моменту для старих серій.
+    </p>
+    <p id="calendar-status" role="status" aria-live="polite"></p>
+    <div id="calendar"></div>
+    <noscript
+        >Для календаря потрібен JavaScript.
+        <a href="{% url 'planner:event_list' %}">Відкрити список подій</a
+        >.</noscript
+    >
+    <div hidden id="calendar-csrf">{% csrf_token %}</div>
+    {{ calendar_config|json_script:"calendar-config" }}
+    <dialog id="event-dialog" aria-labelledby="event-dialog-title">
+        <h2 id="event-dialog-title"></h2>
+        <p id="event-dialog-time"></p>
+        <p id="event-dialog-category"></p>
+        <p id="event-dialog-description"></p>
+        <p id="event-dialog-series"></p>
+        <div class="actions">
+            <a id="event-edit">Редагувати</a>
+            <a id="event-delete">Видалити</a>
+            <button type="button" id="event-close">Закрити</button>
+        </div>
+    </dialog>
+    <dialog id="conflict-dialog" aria-labelledby="conflict-title">
+        <h2 id="conflict-title">Знайдено конфлікти</h2>
+        <p id="conflict-range"></p>
+        <ul id="conflict-list"></ul>
+        <button type="button" id="conflict-save">Зберегти все одно</button>
+        <button type="button" id="conflict-cancel">Скасувати</button>
+    </dialog>
+{% endblock %}
