@@ -35,3 +35,12 @@ h1,
 p {
     overflow-wrap: anywhere;
 }
+.priority, .overdue {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.3rem;
+}
+.priority-1 { background: #e1f1e7; color: #185831; }
+.priority-2 { background: #fff3cd; color: #684d00; }
+.priority-3, .overdue { background: #ffe1e3; color: #a21c25; }
+button:disabled { opacity: 0.6; cursor: wait; }

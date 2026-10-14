@@ -51,12 +51,12 @@ class CategoryDeleteView(CategoryOwnerMixin, DeleteView):
     extra_context = {
         "title": "Видалити категорію",
         "cancel_url": "planner:category_list",
-        "note": "Події цієї категорії залишаться у розкладі без категорії.",
+        "note": "Події та завдання залишаться без категорії.",
     }
 
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(
-            self.request, "Категорію видалено. Події збережено без категорії."
+            self.request, "Категорію видалено. Події та завдання збережено без категорії."
         )
         return response

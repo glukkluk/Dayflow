@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Завдання — Особистий розклад{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
+        integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
+        crossorigin="anonymous" defer></script>
+{% endblock %}
+{% block content %}
+<h1>Завдання</h1>
+<p><a href="{% url 'planner:task_create' %}">Додати завдання</a></p>
+<form method="get">
+    {{ filter_form.as_div }}
+    <button type="submit">Застосувати</button>
+    <a href="{% url 'planner:task_list' %}">Скинути фільтри</a>
+</form>
+<p>Часовий пояс: {{ user.profile.timezone }}</p>
+{% include "planner/partials/task_results.html" %}
+{% endblock %}
