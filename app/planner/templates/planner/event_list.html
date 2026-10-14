@@ -15,6 +15,7 @@
         <a href="{% url 'planner:event_detail' event.pk %}"><strong>{{ event.title }}</strong></a>
         <p>{{ event.start|date:"d.m.Y H:i" }} — {{ event.end|date:"d.m.Y H:i" }}</p>
         {% if event.all_day %}<p>Весь день</p>{% endif %}
+        {% if event.recurrence != "none" %}<p>{{ event.get_recurrence_display }}{% if event.recurrence_until %} до {{ event.recurrence_until|date:"d.m.Y" }} включно{% endif %}</p>{% endif %}
         <p>{{ event.category|default:"Без категорії" }}</p>
         <div class="actions">
             <a href="{% url 'planner:event_edit' event.pk %}">Редагувати</a>

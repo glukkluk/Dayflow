@@ -34,6 +34,7 @@ class EventFormMixin(SuccessMessageMixin):
         context["cancel_url"] = "planner:event_list"
         context["note"] = (
             f"Дата й час у часовому поясі {self.request.user.profile.timezone}."  # ty: ignore[unresolved-attribute]
+            " Редагування повторюваної події змінює всю серію."
         )
         return context
 
@@ -80,6 +81,7 @@ class EventDeleteView(EventOwnerMixin, DeleteView):
     extra_context = {
         "title": "Видалити подію",
         "cancel_url": "planner:event_list",
+        "note": "Для повторюваної події буде видалено всю серію.",
     }
 
     def form_valid(self, form):

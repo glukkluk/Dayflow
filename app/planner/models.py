@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
@@ -36,12 +38,30 @@ class Category(models.Model):
 
 
 class Event(models.Model):
+    class Recurrence(models.TextChoices):
+        NONE = "none", "Не повторюється"
+        DAILY = "daily", "Щодня"
+        WEEKLY = "weekly", "Щотижня"
+        MONTHLY = "monthly", "Щомісяця"
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField("Назва", max_length=200)
     description = models.TextField("Опис", blank=True)
     start = models.DateTimeField("Початок")
     end = models.DateTimeField("Кінець")
     all_day = models.BooleanField("Весь день", default=False)
+    recurrence = models.CharField(
+        "Повторення",
+        max_length=7,
+        choices=Recurrence.choices,
+        default=Recurrence.NONE,
+    )
+    recurrence_until = models.DateField(
+        "Повторювати до",
+        null=True,
+        blank=True,
+        help_text="Включно з цією датою у часовому поясі профілю. Порожнє поле — без кінцевої дати.",
+    )
     category = models.ForeignKey(
         Category,
         verbose_name="Категорія",
@@ -60,7 +80,18 @@ class Event(models.Model):
             models.CheckConstraint(
                 condition=models.Q(end__gt=models.F("start")),
                 name="event_end_after_start",
-            )
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    recurrence__in=("none", "daily", "weekly", "monthly")
+                ),
+                name="event_valid_recurrence",
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(recurrence="none")
+                | models.Q(recurrence_until__isnull=True),
+                name="event_until_requires_recurrence",
+            ),
         ]
         indexes = [
             models.Index(fields=("user", "start"), name="event_user_start_idx"),
@@ -74,6 +105,18 @@ class Event(models.Model):
             errors["end"] = "Кінець події має бути пізніше за початок."
         if self.category_id and self.category.user_id != self.user_id:  # ty: ignore[unresolved-attribute]
             errors["category"] = "Виберіть власну категорію."
+        if self.recurrence_until:
+            if self.recurrence == self.Recurrence.NONE:
+                errors["recurrence_until"] = "Спочатку виберіть тип повторення."
+            elif self.start and self.user_id:  # ty: ignore[unresolved-attribute]
+                local_start = timezone.localtime(
+                    self.start,
+                    ZoneInfo(self.user.profile.timezone),  # ty: ignore[unresolved-attribute]
+                )
+                if self.recurrence_until < local_start.date():
+                    errors["recurrence_until"] = (
+                        "Дата завершення повторень не може бути раніше початку події."
+                    )
         if errors:
             raise ValidationError(errors)
 

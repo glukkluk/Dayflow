@@ -24,7 +24,16 @@ class CategoryForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ("title", "description", "start", "end", "category", "all_day")
+        fields = (
+            "title",
+            "description",
+            "start",
+            "end",
+            "category",
+            "all_day",
+            "recurrence",
+            "recurrence_until",
+        )
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
             "start": forms.DateTimeInput(
@@ -34,6 +43,10 @@ class EventForm(forms.ModelForm):
             "end": forms.DateTimeInput(
                 format="%Y-%m-%dT%H:%M",
                 attrs={"type": "datetime-local"},
+            ),
+            "recurrence_until": forms.DateInput(
+                format="%Y-%m-%d",
+                attrs={"type": "date"},
             ),
         }
 
