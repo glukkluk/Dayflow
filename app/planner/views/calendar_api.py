@@ -71,7 +71,7 @@ def serialize_occurrence(occurrence, tz):
             "delete_url": reverse("planner:event_delete", args=[event.pk]),
             "category": event.category.name if event.category else None,
             "is_recurring": event.recurrence != Event.Recurrence.NONE,
-            "source_task": None,
+            "source_task": event.source_task_id,
         },
     }
 
@@ -119,6 +119,7 @@ def read_json(request):
         if not isinstance(data, dict):
             raise ValidationError("Очікується JSON-об'єкт.")
         return data
+
     except ValueError, UnicodeDecodeError:
         raise ValidationError("Очікується JSON-об'єкт.") from None
 
@@ -129,6 +130,7 @@ def parse_instant(value):
         if parsed is None or timezone.is_naive(parsed):
             raise ValueError
         return parsed.astimezone(UTC)
+
     except ValueError, OverflowError:
         raise ValidationError("Дата й час мають містити часовий пояс.") from None
 
@@ -173,6 +175,7 @@ class EventMoveView(LoginRequiredMixin, View):
                 )
                 apply_move(event, start, end, occurrence)
                 result = check_event(event)
+
             except (ValidationError, ValueError, OverflowError) as error:
                 errors = (
                     error.messages
@@ -180,6 +183,7 @@ class EventMoveView(LoginRequiredMixin, View):
                     else ["Некоректний діапазон дат."]
                 )
                 return JsonResponse({"errors": errors}, status=400)
+
             tz = ZoneInfo(request.user.profile.timezone)
             if result.conflicts and not data.get("force", False):
                 return JsonResponse(
@@ -191,6 +195,7 @@ class EventMoveView(LoginRequiredMixin, View):
                     status=409,
                 )
             event.save()
+
         return JsonResponse(
             {
                 "id": event.pk,

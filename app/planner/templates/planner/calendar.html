@@ -30,7 +30,7 @@
 {% endblock %}
 {% block content %}
     <h1>Календар</h1>
-    <p><a href="{% url 'planner:event_create' %}">Додати подію</a></p>
+    <p><a href="{% url 'planner:event_create' %}">Додати подію</a> · <a href="{% url 'planner:task_autoplan' %}">Розмістити завдання в розклад</a></p>
     <p>
         Часовий пояс: {{ user.profile.timezone }}. Перетягування повторюваної події
         змінює всю серію.

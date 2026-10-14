@@ -69,6 +69,15 @@ class Event(models.Model):
         null=True,
         blank=True,
     )
+    source_task = models.ForeignKey(
+        "Task",
+        verbose_name="Завдання-джерело",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="scheduled_events",
+        help_text="Заповнюється автоплануванням; видалення завдання видаляє й ці події.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -105,6 +114,8 @@ class Event(models.Model):
             errors["end"] = "Кінець події має бути пізніше за початок."
         if self.category_id and self.category.user_id != self.user_id:  # ty: ignore[unresolved-attribute]
             errors["category"] = "Виберіть власну категорію."
+        if self.source_task_id and self.source_task.user_id != self.user_id:  # ty: ignore[unresolved-attribute]
+            errors["source_task"] = "Завдання належить іншому користувачеві."
         if self.recurrence_until:
             if self.recurrence == self.Recurrence.NONE:
                 errors["recurrence_until"] = "Спочатку виберіть тип повторення."

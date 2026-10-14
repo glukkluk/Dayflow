@@ -42,7 +42,7 @@ class TaskListView(TaskOwnerMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        tasks = super().get_queryset()
+        tasks = super().get_queryset().prefetch_related("scheduled_events")
         self.filter_form = TaskFilterForm(self.request.GET, user=self.request.user)
         if not self.filter_form.is_valid():
             return tasks.none()
@@ -106,6 +106,14 @@ class TaskDeleteView(TaskOwnerMixin, DeleteView):
     success_url = reverse_lazy("planner:task_list")
     http_method_names = ["get", "post", "head", "options"]
     extra_context = {"title": "Видалити завдання", "cancel_url": "planner:task_list"}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.object.scheduled_events.exists():
+            context["note"] = (
+                "Разом із завданням буде видалено розміщені для нього події."
+            )
+        return context
 
     def form_valid(self, form):
         response = super().form_valid(form)

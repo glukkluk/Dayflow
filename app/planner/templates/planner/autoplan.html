@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Автопланування — Особистий розклад{% endblock %}
+{% block content %}
+<h1>Автопланування</h1>
+{% if planning_error %}
+    <p class="message" role="alert">{{ planning_error }}</p>
+    <p>Виправте подію та спробуйте знову.</p>
+{% else %}
+    {% if groups %}
+    <p>Завдань до розміщення: {{ groups|length }}, разом {{ total_minutes }} хв.
+       Час у поясі {{ user.profile.timezone }}. Застосування створить події в календарі.</p>
+    <ul class="item-list">
+    {% for task, blocks in groups %}
+        <li>
+            <h2>{{ task.title }}</h2>
+            <p>{{ task.get_priority_display }} · {{ task.estimated_minutes }} хв ·
+               Дедлайн: {{ task.deadline|date:"d.m.Y H:i"|default:"без дедлайну" }}</p>
+            <ul>
+            {% for block in blocks %}
+                <li>{{ block.start|date:"d.m.Y H:i" }} — {{ block.end|date:"d.m.Y H:i" }}</li>
+            {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Застосувати план</button>
+        <a href="{% url 'planner:task_list' %}">Скасувати</a>
+    </form>
+    {% else %}
+    <p>Немає завдань зі статусом «До виконання» без уже розміщених подій.</p>
+    <p><a href="{% url 'planner:task_list' %}">До списку завдань</a></p>
+    {% endif %}
+    {% if failed %}
+    <h2>Не вдалося розмістити</h2>
+    <ul class="item-list">
+    {% for task, reason in failed %}
+        <li>
+            <h2>{{ task.title }}</h2>
+            <p>Причина: {{ reason }}.</p>
+        </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+{% endif %}
+{% endblock %}

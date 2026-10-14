@@ -9,6 +9,7 @@
             <span class="priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
             <p>{{ task.get_status_display }} · {{ task.estimated_minutes }} хв</p>
             {% if task.is_overdue %}<strong class="overdue">Прострочено</strong>{% endif %}
+            {% if task.scheduled_events.all %}<p>Розміщено в розкладі</p>{% endif %}
             <p>Дедлайн: {{ task.deadline|date:"d.m.Y H:i"|default:"Без дедлайну" }}</p>
             <p>Категорія: {{ task.category|default:"Без категорії" }}</p>
             {{ task.description|linebreaks }}

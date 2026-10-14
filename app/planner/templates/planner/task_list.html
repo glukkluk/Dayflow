@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
 <h1>Завдання</h1>
-<p><a href="{% url 'planner:task_create' %}">Додати завдання</a></p>
+<p><a href="{% url 'planner:task_create' %}">Додати завдання</a> · <a href="{% url 'planner:task_autoplan' %}">Розмістити завдання в розклад</a></p>
 <form method="get">
     {{ filter_form.as_div }}
     <button type="submit">Застосувати</button>
