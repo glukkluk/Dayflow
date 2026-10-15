@@ -1,44 +1,39 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction
-from django.shortcuts import redirect, render
-from django.views import View
+from django.contrib.auth.models import User
+from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView
 
 from .forms import ProfileForm, RegistrationForm
+from .models import Profile
 
 
-class RegisterView(View):
-    def get(self, request):
+class RegisterView(SuccessMessageMixin, CreateView):
+    model = User
+    form_class = RegistrationForm
+    template_name = "accounts/register.html"
+    success_url = reverse_lazy("accounts:login")
+    success_message = "Обліковий запис створено. Увійдіть у систему."
+
+    def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect("accounts:profile")
 
-        form = RegistrationForm()
-        return render(request, "accounts/register.html", {"form": form})
-
-    def post(self, request):
-        if request.user.is_authenticated:
-            return redirect("accounts:profile")
-        form = RegistrationForm(request.POST)
-
-        if form.is_valid():
-            with transaction.atomic():
-                form.save()
-            messages.success(request, "Обліковий запис створено. Увійдіть у систему.")
-            return redirect("accounts:login")
-
-        return render(request, "accounts/register.html", {"form": form})
+        return super().dispatch(request, *args, **kwargs)
 
 
-class ProfileView(LoginRequiredMixin, View):
-    def get(self, request):
-        form = ProfileForm(instance=request.user.profile)
-        return render(request, "accounts/profile.html", {"form": form})
+class ProfileView(LoginRequiredMixin, UpdateView):
+    model = Profile
+    form_class = ProfileForm
+    template_name = "accounts/profile.html"
+    success_message = "Налаштування профілю збережено."
+    success_url = reverse_lazy("accounts:profile")
 
-    def post(self, request):
-        form = ProfileForm(request.POST, instance=request.user.profile)
+    def get_object(self, queryset=None):
+        return self.request.user.profile
 
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Налаштування профілю збережено.")
-            return redirect("accounts:profile")
-        return render(request, "accounts/profile.html", {"form": form})
+    def form_valid(self, form):
+        messages.success(self.request, self.success_message)
+        return super().form_valid(form)
