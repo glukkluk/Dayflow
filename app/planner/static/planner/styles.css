@@ -92,3 +92,18 @@ button:disabled {
     opacity: 0.6;
     cursor: wait;
 }
+.dashboard-page { max-width: 80rem; }
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.dashboard-card { min-width: 0; padding: 1rem; background: white; border-radius: 0.5rem; }
+.dashboard-card h2 { margin-top: 0; }
+.dashboard-card h3, .dashboard-table th { overflow-wrap: anywhere; }
+.dashboard-card .current-event { border-left: 0.3rem solid #234fa0; background: #eaf1ff; }
+.dashboard-stat { font-weight: 700; font-size: 1.25rem; }
+.dashboard-card progress { width: 100%; }
+.dashboard-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.dashboard-table th, .dashboard-table td { padding: 0.75rem 0.25rem; text-align: left; border-bottom: 1px solid #d9e0e8; }

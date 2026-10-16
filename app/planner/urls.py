@@ -1,10 +1,19 @@
 from django.urls import path
 
-from .views import autoplan, calendar, calendar_api, categories, events, tasks
+from .views import (
+    autoplan,
+    calendar,
+    calendar_api,
+    categories,
+    dashboard,
+    events,
+    tasks,
+)
 
 app_name = "planner"
 
 urlpatterns = [
+    path("", dashboard.DashboardView.as_view(), name="dashboard"),
     path("tasks/autoplan/", autoplan.AutoplanView.as_view(), name="task_autoplan"),
     path("calendar/", calendar.CalendarView.as_view(), name="calendar"),
     path(

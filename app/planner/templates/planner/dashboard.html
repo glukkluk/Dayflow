@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Дашборд — Особистий розклад{% endblock %}
+{% block main_class %}dashboard-page{% endblock %}
+{% block content %}
+<h1>Мій розклад</h1>
+<div class="actions">
+    <a href="{% url 'planner:event_create' %}">Додати подію</a>
+    <a href="{% url 'planner:task_create' %}">Додати завдання</a>
+    <a href="{% url 'planner:calendar' %}">Календар</a>
+</div>
+<p>Часовий пояс: {{ user.profile.timezone }}</p>
+{% if dashboard_error %}
+    <p class="conflict-warning" role="alert">{{ dashboard_error }}</p>
+    <a href="{% url 'accounts:profile' %}">Налаштування профілю</a>
+{% else %}
+    {% if overdue_count %}
+    <p class="overdue" role="status">
+        Прострочених завдань: {{ overdue_count }}.
+        <a href="{% url 'planner:task_list' %}?overdue=on">Переглянути прострочені</a>
+    </p>
+    {% endif %}
+    {% if recurrence_errors %}
+    <section class="conflict-warning" aria-label="Помилки повторень">
+        <p>Частину повторень не вдалося обчислити. Список подій і підсумки часу можуть бути неповними.</p>
+        <ul>{% for error in recurrence_errors %}
+            <li>{{ error.message }} <a href="{% url 'planner:event_edit' error.event.pk %}">Редагувати серію</a></li>
+        {% endfor %}</ul>
+    </section>
+    {% endif %}
+    <div class="dashboard-grid">
+        <section class="dashboard-card" aria-labelledby="today-heading">
+            <h2 id="today-heading">Сьогодні · {{ today|date:"d.m.Y" }}</h2>
+            <ul class="item-list">
+            {% for item in today_events %}
+                <li{% if item.is_current %} class="current-event"{% endif %}>
+                    {% if item.is_current %}<strong>Зараз триває</strong>{% endif %}
+                    <h3><a href="{% url 'planner:event_detail' item.occurrence.event.pk %}">{{ item.occurrence.event.title }}</a></h3>
+                    {% if item.occurrence.event.all_day %}<p>Весь день</p>{% endif %}
+                    <p>{{ item.occurrence.start|date:"d.m H:i" }} — {{ item.occurrence.end|date:"d.m H:i" }}</p>
+                    <p>{{ item.occurrence.event.category|default:"Без категорії" }}</p>
+                </li>
+            {% empty %}
+                <li>На сьогодні подій немає.</li>
+            {% endfor %}
+            </ul>
+        </section>
+        <section class="dashboard-card" aria-labelledby="deadlines-heading">
+            <h2 id="deadlines-heading">Найближчі дедлайни</h2>
+            <ul class="item-list">
+            {% for task in nearest_deadlines %}
+                <li>
+                    <h3><a href="{% url 'planner:task_edit' task.pk %}">{{ task.title }}</a></h3>
+                    <p>{{ task.deadline|date:"d.m.Y H:i" }} · {{ task.get_status_display }}</p>
+                    {% if task.deadline < dashboard_now %}<strong class="overdue">Прострочено</strong>{% endif %}
+                </li>
+            {% empty %}
+                <li>Незавершених завдань із дедлайном немає.</li>
+            {% endfor %}
+            </ul>
+        </section>
+        <section class="dashboard-card" aria-labelledby="week-heading">
+            <h2 id="week-heading">Цей тиждень</h2>
+            <p>{{ week_start_date|date:"d.m.Y" }} — {{ week_end_date|date:"d.m.Y" }}</p>
+            <p class="dashboard-stat">{{ weekly_done }} / {{ weekly_total }} виконано · {{ weekly_percent }}%</p>
+            <progress max="100" value="{{ weekly_percent }}" aria-label="Виконання тижневого плану">{{ weekly_percent }}%</progress>
+            <p>Завдання з дедлайном цього тижня (понеділок–неділя). Виконані раніше теж враховуються.</p>
+            {% if not weekly_total %}<p>На цей тиждень дедлайнів немає.</p>{% endif %}
+        </section>
+    </div>
+    <section class="dashboard-card" aria-labelledby="category-heading">
+        <h2 id="category-heading">Запланований час за категоріями за тиждень</h2>
+        <p>Сума тривалостей годинних подій у межах тижня, включно з повтореннями й автоплануванням.
+           Події «весь день» не враховуються; час подій, що перетинаються, додається окремо.</p>
+        {% if category_times %}
+        <table class="dashboard-table">
+            <thead><tr><th scope="col">Категорія</th><th scope="col">Час</th></tr></thead>
+            <tbody>{% for category in category_times %}
+                <tr><th scope="row"><span class="color-swatch" style="background-color: {{ category.color }}"></span> {{ category.name }}</th>
+                    <td>{{ category.hours }} год {{ category.remaining_minutes }} хв</td></tr>
+            {% endfor %}</tbody>
+        </table>
+        {% else %}<p>Годинних подій цього тижня немає.</p>{% endif %}
+    </section>
+{% endif %}
+{% endblock %}

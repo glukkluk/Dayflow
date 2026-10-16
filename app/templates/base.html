@@ -11,9 +11,9 @@
     </head>
     <body>
         <header>
-            <a href="/">Особистий розклад</a>
             <nav aria-label="Основна навігація">
                 {% if user.is_authenticated %}
+                <a href="{% url 'planner:dashboard' %}">Дашборд</a>
                 <a href="{% url 'planner:calendar' %}">Календар</a>
                 <a href="{% url 'planner:event_list' %}">Події</a>
                 <a href="{% url 'planner:task_list' %}">Завдання</a>
