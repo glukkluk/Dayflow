@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views import View
 
 from ..services.autoplan import (
@@ -34,7 +33,7 @@ class AutoplanView(LoginRequiredMixin, View):
         for block in result.placed:
             if block.task.pk not in index_by_task:
                 index_by_task[block.task.pk] = len(groups)
-                groups.append([block.task, []])
+                groups.append((block.task, []))
             groups[index_by_task[block.task.pk]][1].append(block)
         return {
             "groups": [(task, blocks) for task, blocks in groups],

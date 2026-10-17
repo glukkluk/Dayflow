@@ -3,19 +3,14 @@
     const POLL_INTERVAL_MS = 30000;
     const TOAST_DURATION_MS = 10000;
 
-    function getCookie(name) {
-        const match = document.cookie.match(
-            new RegExp(`(?:^|; )${name}=([^;]*)`),
-        );
-        return match ? decodeURIComponent(match[1]) : null;
-    }
-
-    async function api(url, options = {}) {
-        const response = await fetch(url, {
-            credentials: "same-origin",
-            ...options,
-        });
-        if (!response.ok) throw new Error("Не вдалося отримати повідомлення.");
+    async function poll(silent) {
+        const url = silent
+            ? "/api/notifications/pending/?silent=true"
+            : "/api/notifications/pending/";
+        const response = await fetch(url, { credentials: "same-origin" });
+        if (!response.ok) {
+            throw new Error("Не вдалося отримати повідомлення.");
+        }
         return response.json();
     }
 
@@ -46,23 +41,13 @@
         badge.textContent = unread > 99 ? "99+" : String(unread);
     }
 
-    async function poll() {
+    async function refresh(silent) {
         try {
-            const pending = await api("/api/notifications/pending/");
-            if (pending.length > 0) {
-                pending.forEach(showToast);
-                await api("/api/notifications/read/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCookie("csrftoken"),
-                    },
-                    body: JSON.stringify({
-                        ids: pending.map((item) => item.id),
-                    }),
-                });
-            }
-            updateBadge(0);
+            const data = await poll(silent);
+            // Show toasts for reminders that arrived while the user was here.
+            // Notifications that came due earlier only move the badge.
+            data.notifications.forEach(showToast);
+            updateBadge(data.unread);
         } catch (error) {
             console.warn("Повідомлення:", error.message);
         }
@@ -70,7 +55,9 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         if (!document.getElementById("toast-container")) return;
-        poll();
-        setInterval(poll, POLL_INTERVAL_MS);
+        // The first call of the page only syncs the badge: anything that came
+        // due before the user arrived must not replay as a toast.
+        refresh(true);
+        setInterval(() => refresh(false), POLL_INTERVAL_MS);
     });
 })();

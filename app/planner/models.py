@@ -300,6 +300,14 @@ class Notification(models.Model):
     message = models.CharField("Текст", max_length=300)
     created_at = models.DateTimeField(auto_now_add=True)
     read_at = models.DateTimeField("Прочитано", null=True, blank=True)
+    delivered_at = models.DateTimeField(
+        "Показано тостом",
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Коли повідомлення було показано спливаючим тостом. Непрочитані, "
+        "але недоставлені лише збільшують лічильник у меню.",
+    )
 
     class Meta:
         ordering = ("-created_at", "pk")
@@ -321,6 +329,10 @@ class Notification(models.Model):
             models.Index(
                 fields=("user", "read_at", "created_at"),
                 name="notification_user_unread_idx",
+            ),
+            models.Index(
+                fields=("user", "delivered_at", "created_at"),
+                name="notification_user_undeliv_idx",
             ),
         ]
 

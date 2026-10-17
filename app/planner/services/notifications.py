@@ -145,6 +145,25 @@ def unread_count(user):
     return Notification.objects.filter(user=user, read_at__isnull=True).count()  # ty: ignore[unresolved-attribute]
 
 
+def undelivered(user, now=None):
+    """Return unread notifications never shown as a toast, then mark them shown.
+
+    A row that came due while nobody was signed in still counts towards the
+    badge, but is never replayed as a toast: it is delivered here exactly
+    once so the client shows it only if the user was actually present.
+    """
+    pending = list(
+        Notification.objects.filter(  # ty: ignore[unresolved-attribute]
+            user=user, read_at__isnull=True, delivered_at__isnull=True
+        ).order_by("created_at", "pk")
+    )
+    if pending:
+        Notification.objects.filter(pk__in=[item.pk for item in pending]).update(  # ty: ignore[unresolved-attribute]
+            delivered_at=now or timezone.now()
+        )
+    return pending
+
+
 def serialize(notification):
     return {
         "id": notification.pk,
@@ -152,6 +171,9 @@ def serialize(notification):
         "kind_display": notification.get_kind_display(),
         "message": notification.message,
         "is_read": notification.is_read,
+        "delivered_at": (
+            notification.delivered_at.isoformat() if notification.delivered_at else None
+        ),
         "created_at": notification.created_at.isoformat(),
         "event_id": notification.event_id,
         "task_id": notification.task_id,
