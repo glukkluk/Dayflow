@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Повідомлення — Особистий розклад{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
+        integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
+        crossorigin="anonymous" defer></script>
+{% endblock %}
+{% block content %}
+<h1>Повідомлення</h1>
+{% if results %}
+{% if unread %}
+<form method="post" action="{% url 'planner:notifications' %}">
+    {% csrf_token %}
+    <button type="submit">Позначити всі прочитаними</button>
+</form>
+{% endif %}
+<ul class="item-list">
+{% for notification in results %}
+    <li{% if not notification.is_read %} class="unread-notification"{% endif %}>
+        <h2>{{ notification.get_kind_display }}</h2>
+        <p>{{ notification.message }}</p>
+        <p>{{ notification.created_at|date:"d.m.Y H:i" }}</p>
+        {% if not notification.is_read %}
+        <button type="button"
+                hx-post="{% url 'planner:read_notifications' %}"
+                hx-vals='{"ids": [{{ notification.id }}]}'
+                hx-swap="none"
+                hx-disabled-elt="closest button"
+                hx-on::after-request="if(event.detail.successful) location.reload()">
+            Позначити прочитаним
+        </button>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+{% else %}
+<p>Повідомлень немає. Нагадування з'являються за 5/15/30/60 хвилин або за день до події, а також за 24 години до дедлайну завдання.</p>
+{% endif %}
+<p><a href="{% url 'planner:dashboard' %}">До дашборда</a></p>
+{% endblock %}

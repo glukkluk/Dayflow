@@ -62,6 +62,19 @@ class Event(models.Model):
         blank=True,
         help_text="Включно з цією датою у часовому поясі профілю. Порожнє поле — без кінцевої дати.",
     )
+    reminder_minutes = models.PositiveIntegerField(
+        "Нагадування за",
+        null=True,
+        blank=True,
+        choices=(
+            (5, "5 хвилин"),
+            (15, "15 хвилин"),
+            (30, "30 хвилин"),
+            (60, "1 година"),
+            (1440, "1 день"),
+        ),
+        help_text="За скільки до початку події показати сповіщення. Порожнє поле — без нагадування.",
+    )
     category = models.ForeignKey(
         Category,
         verbose_name="Категорія",
@@ -101,6 +114,11 @@ class Event(models.Model):
                 | models.Q(recurrence_until__isnull=True),
                 name="event_until_requires_recurrence",
             ),
+            models.CheckConstraint(
+                condition=models.Q(reminder_minutes__isnull=True)
+                | models.Q(reminder_minutes__in=(5, 15, 30, 60, 1440)),
+                name="event_valid_reminder_minutes",
+            ),
         ]
         indexes = [
             models.Index(fields=("user", "start"), name="event_user_start_idx"),
@@ -112,9 +130,13 @@ class Event(models.Model):
         errors = {}
         if self.start and self.end and self.end <= self.start:
             errors["end"] = "Кінець події має бути пізніше за початок."
-        if self.category_id and self.category.user_id != self.user_id:  # ty: ignore[unresolved-attribute]
+        if (
+            self.category_id and self.category.user_id != self.user_id  # ty: ignore[unresolved-attribute]
+        ):
             errors["category"] = "Виберіть власну категорію."
-        if self.source_task_id and self.source_task.user_id != self.user_id:  # ty: ignore[unresolved-attribute]
+        if (
+            self.source_task_id and self.source_task.user_id != self.user_id  # ty: ignore[unresolved-attribute]
+        ):
             errors["source_task"] = "Завдання належить іншому користувачеві."
         if self.recurrence_until:
             if self.recurrence == self.Recurrence.NONE:
@@ -243,3 +265,68 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Notification(models.Model):
+    """In-app reminder for an event occurrence or a task deadline.
+
+    One row per instance: the same series occurrence or deadline never
+    produces a second reminder (unique constraints below).
+    """
+
+    class Kind(models.TextChoices):
+        EVENT = "event", "Подія"
+        DEADLINE = "deadline", "Дедлайн завдання"
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="notifications",
+    )
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="notifications",
+    )
+    occurrence_start = models.DateTimeField(
+        "Початок екземпляра", null=True, blank=True, editable=False
+    )
+    kind = models.CharField("Тип", max_length=8, choices=Kind.choices)
+    message = models.CharField("Текст", max_length=300)
+    created_at = models.DateTimeField(auto_now_add=True)
+    read_at = models.DateTimeField("Прочитано", null=True, blank=True)
+
+    class Meta:
+        ordering = ("-created_at", "pk")
+        verbose_name = "Повідомлення"
+        verbose_name_plural = "Повідомлення"
+        constraints = [
+            models.UniqueConstraint(
+                fields=("event", "occurrence_start"),
+                condition=models.Q(event__isnull=False),
+                name="notification_unique_event_occurrence",
+            ),
+            models.UniqueConstraint(
+                fields=("task", "kind"),
+                condition=models.Q(task__isnull=False),
+                name="notification_unique_task_deadline",
+            ),
+        ]
+        indexes = [
+            models.Index(
+                fields=("user", "read_at", "created_at"),
+                name="notification_user_unread_idx",
+            ),
+        ]
+
+    @property
+    def is_read(self):
+        return self.read_at is not None
+
+    def __str__(self):
+        return self.message

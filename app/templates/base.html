@@ -7,9 +7,11 @@
         <title>{% block title %}Особистий розклад{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'accounts/styles.css' %}" />
         <link rel="stylesheet" href="{% static 'planner/styles.css' %}" />
+        {% if user.is_authenticated %}<script src="{% static 'planner/toasts.js' %}" defer></script>{% endif %}
         {% block scripts %}{% endblock %}
     </head>
     <body>
+        <div id="toast-container" aria-live="polite"></div>
         <header>
             <nav aria-label="Основна навігація">
                 {% if user.is_authenticated %}
@@ -18,6 +20,10 @@
                 <a href="{% url 'planner:event_list' %}">Події</a>
                 <a href="{% url 'planner:task_list' %}">Завдання</a>
                 <a href="{% url 'planner:category_list' %}">Категорії</a>
+                <a href="{% url 'planner:notifications' %}">
+                    Повідомлення
+                    <span id="notification-badge" class="notification-badge" hidden></span>
+                </a>
                 <a href="{% url 'accounts:profile' %}">Профіль</a>
                 <form method="post" action="{% url 'accounts:logout' %}">
                     {% csrf_token %}

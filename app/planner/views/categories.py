@@ -57,6 +57,7 @@ class CategoryDeleteView(CategoryOwnerMixin, DeleteView):
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(
-            self.request, "Категорію видалено. Події та завдання збережено без категорії."
+            self.request,
+            "Категорію видалено. Події та завдання збережено без категорії.",
         )
         return response

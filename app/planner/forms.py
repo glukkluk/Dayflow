@@ -33,6 +33,7 @@ class EventForm(forms.ModelForm):
             "all_day",
             "recurrence",
             "recurrence_until",
+            "reminder_minutes",
         )
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),

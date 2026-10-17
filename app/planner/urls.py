@@ -7,6 +7,7 @@ from .views import (
     categories,
     dashboard,
     events,
+    notifications,
     tasks,
 )
 
@@ -14,6 +15,21 @@ app_name = "planner"
 
 urlpatterns = [
     path("", dashboard.DashboardView.as_view(), name="dashboard"),
+    path(
+        "notifications/",
+        notifications.NotificationsPageView.as_view(),
+        name="notifications",
+    ),
+    path(
+        "api/notifications/pending/",
+        notifications.PendingNotificationsView.as_view(),
+        name="pending_notifications",
+    ),
+    path(
+        "api/notifications/read/",
+        notifications.ReadNotificationsView.as_view(),
+        name="read_notifications",
+    ),
     path("tasks/autoplan/", autoplan.AutoplanView.as_view(), name="task_autoplan"),
     path("calendar/", calendar.CalendarView.as_view(), name="calendar"),
     path(
