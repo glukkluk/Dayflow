@@ -29,16 +29,17 @@
     <script src="{% static 'planner/calendar.js' %}" defer></script>
 {% endblock %}
 {% block content %}
-    <h1>Календар</h1>
-    <p><a href="{% url 'planner:event_create' %}">Додати подію</a> · <a href="{% url 'planner:task_autoplan' %}">Розмістити завдання в розклад</a></p>
+    <div class="page-heading"><div><p class="dashboard-eyebrow">Ваш час, ваш ритм</p><h1>Календар</h1><p>Побачте свій день цілісно та залиште місце для себе.</p></div><div class="page-actions"><a class="button secondary" href="{% url 'planner:task_autoplan' %}">✦ Автопланування</a><a class="button" href="{% url 'planner:event_create' %}">+ Додати подію</a></div></div>
+    <details class="calendar-help"><summary>Як працює календар</summary>
     <p>
-        Часовий пояс: {{ user.profile.timezone }}. Перетягування повторюваної події
-        змінює всю серію.
-    </p>
-    <p>
+        Перетягування повторюваної події змінює всю серію.
         Серії без кінцевої дати перевіряються на конфлікти на 365 днів уперед від
         початку або поточного моменту для старих серій.
     </p>
+    <p>
+        Часовий пояс: {{ user.profile.timezone }}.
+    </p>
+    </details>
     <p id="calendar-status" role="status" aria-live="polite"></p>
     <div id="calendar"></div>
     <noscript

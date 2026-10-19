@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Події — Особистий розклад{% endblock %}
 {% block content %}
-<h1>Події</h1>
-<p><a href="{% url 'planner:event_create' %}">Додати подію</a></p>
-<form method="get">
+<div class="page-heading"><div><p class="dashboard-eyebrow">Час для важливого</p><h1>Події</h1><p>Зустрічі, плани та особливі моменти в одному місці.</p></div><a class="button" href="{% url 'planner:event_create' %}">+ Додати подію</a></div>
+<form method="get" class="search-panel">
     <label for="search">Пошук за назвою або описом</label>
     <input id="search" name="q" value="{{ query }}" type="search">
     <button type="submit">Знайти</button>
 </form>
-<p>Часовий пояс: {{ user.profile.timezone }}</p>
+<p class="timezone-note">Часовий пояс: {{ user.profile.timezone }}</p>
 <ul class="item-list">
 {% for event in page_obj %}
     <li>
@@ -23,7 +22,7 @@
         </div>
     </li>
 {% empty %}
-    <li>Подій не знайдено.</li>
+    <li class="empty-state"><strong>Подій не знайдено</strong>Спробуйте інший пошук або додайте нову подію.<br><a class="button" href="{% url 'planner:event_create' %}">+ Створити подію</a></li>
 {% endfor %}
 </ul>
 {% if page_obj.has_other_pages %}

@@ -1,10 +1,11 @@
 <section id="task-results" aria-live="polite"
          hx-get="{% url 'planner:task_list' %}?{{ query_string }}"
          hx-trigger="tasksChanged from:body" hx-swap="outerHTML">
-    <p>Знайдено завдань: {{ page_obj.paginator.count }}</p>
-    <ul class="item-list">
+    {% if filter_form.errors %}<div class="conflict-warning" role="alert"><strong>Перевірте фільтри</strong>{{ filter_form.errors }}<a href="{% url 'planner:task_list' %}">Скинути фільтри</a></div>{% endif %}
+    <p tabindex="-1" id="task-result-count">Знайдено завдань: {{ page_obj.paginator.count }}</p>
+    <ul class="item-list task-grid">
     {% for task in page_obj %}
-        <li>
+        <li{% if task.status == 'done' %} class="task-done"{% endif %}>
             <h2>{{ task.title }}</h2>
             <span class="priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
             <p>{{ task.get_status_display }} · {{ task.estimated_minutes }} хв</p>
@@ -18,7 +19,7 @@
                   hx-post="{% url 'planner:task_toggle' task.pk %}?{{ query_string }}"
                   hx-swap="none" hx-disabled-elt="find button">
                 {% csrf_token %}
-                <button type="submit">
+                <button type="submit" data-task-toggle="{{ task.pk }}" aria-label="{% if task.status == 'done' %}Повернути до виконання{% else %}Позначити виконаним{% endif %}: {{ task.title }}">
                     {% if task.status == "done" %}Повернути до виконання{% else %}Виконано{% endif %}
                 </button>
             </form>
@@ -28,7 +29,7 @@
             </div>
         </li>
     {% empty %}
-        <li>Завдань не знайдено.</li>
+        <li class="empty-state"><strong>Завдань не знайдено</strong>{% if query_string %}Спробуйте інший пошук або скиньте фільтри.<br><a class="button secondary" href="{% url 'planner:task_list' %}">Скинути фільтри</a>{% else %}Почніть із невеликої справи — додайте своє перше завдання.{% endif %}<br><a class="button" href="{% url 'planner:task_create' %}">+ Додати завдання</a></li>
     {% endfor %}
     </ul>
     {% if page_obj.has_other_pages %}

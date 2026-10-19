@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} — Особистий розклад{% endblock %}
 {% block content %}
+<section class="form-panel danger-zone">
+<p class="dashboard-eyebrow">Підтвердження дії</p>
 <h1>{{ title }}</h1>
 <p>Ви впевнені, що хочете видалити «{{ object }}»?</p>
 {% if note %}<p>{{ note }}</p>{% endif %}
 <form method="post">
     {% csrf_token %}
-    <button type="submit">Підтвердити видалення</button>
+    <button type="submit" class="danger">Підтвердити видалення</button>
     <a href="{% url cancel_url %}">Скасувати</a>
 </form>
+</section>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Автопланування — Особистий розклад{% endblock %}
 {% block content %}
-<h1>Автопланування</h1>
+<div class="page-heading"><div><p class="dashboard-eyebrow">Розумний розподіл часу</p><h1>Автопланування</h1><p>Знайдемо вільний час для завдань з урахуванням ваших робочих годин і дедлайнів.</p></div></div>
 {% if planning_error %}
     <p class="message" role="alert">{{ planning_error }}</p>
     <p>Виправте подію та спробуйте знову.</p>
@@ -29,7 +29,7 @@
         <a href="{% url 'planner:task_list' %}">Скасувати</a>
     </form>
     {% else %}
-    <p>Немає завдань зі статусом «До виконання» без уже розміщених подій.</p>
+    <div class="empty-state"><strong>Усе на своїх місцях</strong><p>Немає завдань зі статусом «До виконання» без уже розміщених подій.</p><a class="button" href="{% url 'planner:task_create' %}">+ Додати завдання</a></div>
     <p><a href="{% url 'planner:task_list' %}">До списку завдань</a></p>
     {% endif %}
     {% if failed %}

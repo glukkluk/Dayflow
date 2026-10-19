@@ -6,13 +6,23 @@
         crossorigin="anonymous" defer></script>
 {% endblock %}
 {% block content %}
-<h1>Завдання</h1>
-<p><a href="{% url 'planner:task_create' %}">Додати завдання</a> · <a href="{% url 'planner:task_autoplan' %}">Розмістити завдання в розклад</a></p>
-<form method="get">
+<div class="page-heading"><div><p class="dashboard-eyebrow">Крок за кроком до мети</p><h1>Завдання</h1><p>Зосередьтеся на важливому. Решта — за розкладом.</p></div><div class="page-actions"><a class="button secondary" href="{% url 'planner:task_autoplan' %}">✦ Автопланування</a><a class="button" href="{% url 'planner:task_create' %}">+ Додати завдання</a></div></div>
+<nav class="quick-filters" aria-label="Швидкі фільтри завдань">
+    <a href="{% url 'planner:task_list' %}">Усі завдання</a>
+    <a href="{% querystring status='todo' overdue='' page=None %}">До виконання</a>
+    <a href="{% querystring status='in_progress' overdue='' page=None %}">У роботі</a>
+    <a href="{% querystring status='' overdue='on' page=None %}">Прострочені</a>
+    <a href="{% querystring status='done' overdue='' page=None %}">Виконані</a>
+</nav>
+<form method="get" class="filter-panel" id="task-filters"
+      hx-get="{% url 'planner:task_list' %}" hx-target="#task-results" hx-swap="outerHTML"
+      hx-trigger="submit, input changed delay:400ms from:input[name='q'], change from:select, change from:input[type='checkbox']"
+      hx-sync="this:replace" hx-push-url="true" hx-indicator="#filter-loading">
     {{ filter_form.as_div }}
     <button type="submit">Застосувати</button>
     <a href="{% url 'planner:task_list' %}">Скинути фільтри</a>
 </form>
-<p>Часовий пояс: {{ user.profile.timezone }}</p>
+<p id="filter-loading" class="htmx-indicator" role="status">Оновлюємо завдання…</p>
+<p class="timezone-note">Часовий пояс: {{ user.profile.timezone }}</p>
 {% include "planner/partials/task_results.html" %}
 {% endblock %}

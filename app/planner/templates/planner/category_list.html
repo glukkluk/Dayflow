@@ -3,9 +3,8 @@
     Категорії — Особистий розклад
 {% endblock %}
 {% block content %}
-    <h1>Категорії</h1>
-    <p><a href="{% url 'planner:category_create' %}">Додати категорію</a></p>
-    <ul class="item-list">
+    <div class="page-heading"><div><p class="dashboard-eyebrow">Кожному плану — свій колір</p><h1>Категорії</h1><p>Організуйте роботу, відпочинок і особисті справи.</p></div><a class="button" href="{% url 'planner:category_create' %}">+ Додати категорію</a></div>
+    <ul class="item-list category-grid">
         {% for category in category_list %}
             <li>
                 <span
@@ -23,7 +22,7 @@
                 </div>
             </li>
         {% empty %}
-            <li>Категорій ще немає.</li>
+            <li class="empty-state"><strong>Додайте трохи кольору</strong>Створіть першу категорію для своїх подій і завдань.</li>
         {% endfor %}
     </ul>
 {% endblock %}

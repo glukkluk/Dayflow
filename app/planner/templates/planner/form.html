@@ -2,11 +2,29 @@
 {% block title %}{{ title }} — Особистий розклад{% endblock %}
 {% block scripts %}{{ form.media }}{% endblock %}
 {% block content %}
+<p class="dashboard-eyebrow">Ваші плани починаються тут</p>
 <h1>{{ title }}</h1>
+<a class="back-link" href="{% url cancel_url %}">← Назад до списку</a>
 {% if note %}<p>{{ note }}</p>{% endif %}
-<form method="post">
+<form method="post" class="form-panel" data-edit-form>
     {% csrf_token %}
-    {{ form.as_div }}
+    <p class="form-guidance">Поля з позначкою <span aria-hidden="true">*</span> обов'язкові. Решту можна заповнити пізніше.</p>
+    {% if form.errors %}
+    <div class="error-summary" role="alert" tabindex="-1">
+        <strong>Не вдалося зберегти. Перевірте ці поля:</strong>
+        {{ form.non_field_errors }}
+        <ul>{% for field in form %}{% if field.errors %}<li><a href="#{{ field.auto_id }}{% if field.name == 'start' or field.name == 'end' %}_0{% endif %}">{{ field.label }}: {{ field.errors|striptags }}</a></li>{% endif %}{% endfor %}</ul>
+    </div>
+    {% endif %}
+    {% for field in form %}
+        {% if field.is_hidden %}{{ field }}{% else %}
+        <div class="editor-field{% if field.field.widget.input_type == 'checkbox' %} editor-checkbox{% endif %}">
+            <span class="field-requirement">{% if field.field.required %}<span aria-label="обов'язкове поле">*</span>{% else %}Необов'язково{% endif %}</span>
+            {{ field.as_field_group }}
+        </div>
+        {% endif %}
+    {% endfor %}
+    <div class="form-actions">
     {% if conflict_check %}
     <section class="conflict-warning" role="alert">
         <h2>Подія перетинається з іншими</h2>
@@ -18,5 +36,7 @@
     </section>
     {% else %}<button type="submit">Зберегти</button>{% endif %}
     <a href="{% url cancel_url %}">Скасувати</a>
+    <span class="save-state" aria-live="polite"></span>
+    </div>
 </form>
 {% endblock %}

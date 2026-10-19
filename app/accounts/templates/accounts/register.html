@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Реєстрація — Особистий розклад{% endblock %}
 {% block content %}
-<h1>Реєстрація</h1>
+<p class="dashboard-eyebrow">Більше часу на важливе</p>
+<h1>Створіть свій простір</h1>
+<p class="auth-intro">Ваші події, завдання та цілі — в одному розкладі.</p>
 <form method="post">
     {% csrf_token %}
     {{ form.as_div }}
     <button type="submit">Зареєструватися</button>
 </form>
+<p class="auth-footer">Уже маєте акаунт? <a href="{% url 'accounts:login' %}">Увійти</a></p>
 {% endblock %}

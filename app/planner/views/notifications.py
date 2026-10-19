@@ -2,7 +2,7 @@ import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
@@ -33,8 +33,16 @@ class NotificationsPageView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request):
-        """Plain POST: mark everything read and return to the list."""
-        Notification.objects.filter(user=request.user, read_at__isnull=True).update(  # ty: ignore[unresolved-attribute]
+        """Mark one owned reminder or all reminders read, then return to the list."""
+        notifications = Notification.objects.filter(user=request.user)
+        if "notification_id" in request.POST:
+            raw_id = request.POST["notification_id"]
+            # Invalid identifiers must never fall through to marking everything read.
+            notification = get_object_or_404(
+                notifications, pk=int(raw_id) if raw_id.isdecimal() and len(raw_id) < 19 else 0
+            )
+            notifications = notifications.filter(pk=notification.pk)
+        notifications.filter(read_at__isnull=True).update(
             read_at=timezone.now()
         )
         return redirect(reverse_lazy("planner:notifications"))

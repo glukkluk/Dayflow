@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ event.title }} — Особистий розклад{% endblock %}
 {% block content %}
+<a href="{% url 'planner:event_list' %}">← До всіх подій</a>
+<article class="detail-panel">
 {% if event.recurrence != "none" %}
 <p>{{ event.get_recurrence_display }}{% if event.recurrence_until %} до {{ event.recurrence_until|date:date_fmt }} включно{% endif %}. Редагування змінює всю серію.</p>
 {% endif %}
@@ -15,4 +17,5 @@
     <a href="{% url 'planner:event_delete' event.pk %}">Видалити</a>
     <a href="{% url 'planner:event_list' %}">До списку</a>
 </div>
+</article>
 {% endblock %}

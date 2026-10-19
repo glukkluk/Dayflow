@@ -6,7 +6,7 @@
         crossorigin="anonymous" defer></script>
 {% endblock %}
 {% block content %}
-<h1>Повідомлення</h1>
+<div class="page-heading"><div><p class="dashboard-eyebrow">Усе важливе — поруч</p><h1>Повідомлення</h1><p>Нагадування про події та дедлайни, щоб нічого не пропустити.</p></div></div>
 {% if results %}
 {% if unread %}
 <form method="post" action="{% url 'planner:notifications' %}">
@@ -21,20 +21,17 @@
         <p>{{ notification.message }}</p>
         <p>{{ notification.created_at|date:datetime_fmt }}</p>
         {% if not notification.is_read %}
-        <button type="button"
-                hx-post="{% url 'planner:read_notifications' %}"
-                hx-vals='{"ids": [{{ notification.id }}]}'
-                hx-swap="none"
-                hx-disabled-elt="closest button"
-                hx-on::after-request="if(event.detail.successful) location.reload()">
-            Позначити прочитаним
-        </button>
+        <form method="post" action="{% url 'planner:notifications' %}">
+            {% csrf_token %}
+            <input type="hidden" name="notification_id" value="{{ notification.pk }}">
+            <button type="submit" class="secondary">Позначити прочитаним</button>
+        </form>
         {% endif %}
     </li>
 {% endfor %}
 </ul>
 {% else %}
-<p>Повідомлень немає. Нагадування з'являються за 5/15/30/60 хвилин або за день до події, а також за 24 години до дедлайну завдання.</p>
+<div class="empty-state"><strong>Ви в курсі всього</strong><p>Повідомлень немає. Нагадування з'являються за 5/15/30/60 хвилин або за день до події, а також за 24 години до дедлайну завдання.</p></div>
 {% endif %}
 <p><a href="{% url 'planner:dashboard' %}">До дашборда</a></p>
 {% endblock %}

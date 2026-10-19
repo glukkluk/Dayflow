@@ -72,13 +72,16 @@ class TaskListView(TaskOwnerMixin, ListView):
         return paginator, page, page.object_list, page.has_other_pages()
 
     def get_template_names(self):
-        if self.request.headers.get("HX-Request") == "true":
+        if (
+            self.request.headers.get("HX-Request") == "true"
+            and self.request.headers.get("HX-History-Restore-Request") != "true"
+        ):
             return ["planner/partials/task_results.html"]
         return super().get_template_names()
 
     def render_to_response(self, context, **response_kwargs):
         response = super().render_to_response(context, **response_kwargs)
-        patch_vary_headers(response, ["HX-Request"])
+        patch_vary_headers(response, ["HX-Request", "HX-History-Restore-Request"])
         return response
 
     def get_context_data(self, **kwargs):
