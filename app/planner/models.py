@@ -72,6 +72,8 @@ class Event(models.Model):
             (30, "30 хвилин"),
             (60, "1 година"),
             (1440, "1 день"),
+            (4320, "3 дні"),
+            (10080, "1 тиждень"),
         ),
         help_text="За скільки до початку події показати сповіщення. Порожнє поле — без нагадування.",
     )
@@ -116,7 +118,7 @@ class Event(models.Model):
             ),
             models.CheckConstraint(
                 condition=models.Q(reminder_minutes__isnull=True)
-                | models.Q(reminder_minutes__in=(5, 15, 30, 60, 1440)),
+                | models.Q(reminder_minutes__in=(5, 15, 30, 60, 1440, 4320, 10080)),
                 name="event_valid_reminder_minutes",
             ),
         ]

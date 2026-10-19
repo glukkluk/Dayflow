@@ -24,7 +24,7 @@
                     Повідомлення
                     <span id="notification-badge" class="notification-badge" hidden></span>
                 </a>
-                <a href="{% url 'accounts:profile' %}">Профіль</a>
+                <a href="{% url 'accounts:profile' %}" class="nav-avatar">{% include "accounts/partials/avatar.html" with size="small" %}Профіль</a>
                 <form method="post" action="{% url 'accounts:logout' %}">
                     {% csrf_token %}
                     <button type="submit">Вийти</button>

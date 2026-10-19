@@ -1,3 +1,4 @@
+import uuid
 from datetime import time
 
 from django.conf import settings
@@ -8,7 +9,21 @@ from django.db import models
 from .validators import validate_timezone
 
 
+def avatar_path(instance, filename):
+    return f"avatars/{instance.user_id}/{uuid.uuid4().hex}.webp"
+
+
 class Profile(models.Model):
+    class DateFormat(models.TextChoices):
+        DMY_DOT = "dmy_dot", "ДД.ММ.РРРР"
+        DMY_SLASH = "dmy_slash", "ДД/ММ/РРРР"
+        MDY_SLASH = "mdy_slash", "ММ/ДД/РРРР"
+        YMD_DASH = "ymd_dash", "РРРР-ММ-ДД"
+
+    class TimeFormat(models.TextChoices):
+        H24 = "24h", "24-годинний (14:30)"
+        H12 = "12h", "12-годинний (2:30 PM)"
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
     )
@@ -17,6 +32,19 @@ class Profile(models.Model):
         max_length=63,
         default="Europe/Kyiv",
         validators=[validate_timezone],
+    )
+    avatar = models.ImageField("Аватар", upload_to=avatar_path, blank=True)
+    date_format = models.CharField(
+        "Формат дати",
+        max_length=9,
+        choices=DateFormat.choices,
+        default=DateFormat.DMY_DOT,
+    )
+    time_format = models.CharField(
+        "Формат часу",
+        max_length=3,
+        choices=TimeFormat.choices,
+        default=TimeFormat.H24,
     )
     work_start = models.TimeField("Початок робочого дня", default=time(9))
     work_end = models.TimeField("Кінець робочого дня", default=time(18))
@@ -46,4 +74,4 @@ class Profile(models.Model):
             )
 
     def __str__(self):
-        return f"Профіль {self.user.get_username()}"
+        return f"Профіль {self.user.get_username()}"  # ty: ignore[unresolved-attribute]

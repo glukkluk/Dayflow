@@ -72,3 +72,165 @@ button {
     background: #e1f1e7;
     border-left: 0.25rem solid #287644;
 }
+
+/* Profile page */
+.profile-page {
+    max-width: 46rem;
+}
+.profile-head,
+.avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.profile-head h1 {
+    margin: 0;
+}
+.avatar-row form {
+    flex: 1;
+}
+.avatar {
+    flex: none;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #234fa0;
+    color: white;
+}
+.avatar-small {
+    width: 1.75rem;
+    height: 1.75rem;
+    vertical-align: middle;
+}
+.avatar-large {
+    width: 5rem;
+    height: 5rem;
+}
+.avatar-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+.avatar-small.avatar-placeholder {
+    font-size: 0.85rem;
+}
+.avatar-large.avatar-placeholder {
+    font-size: 2rem;
+}
+.card {
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+    background: white;
+    border: 1px solid #d8dee8;
+    border-radius: 0.5rem;
+}
+.card h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+.field {
+    margin-bottom: 1.25rem;
+}
+.field-head {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+}
+.field-head label {
+    margin: 0;
+}
+button.secondary {
+    background: #eef1f6;
+    color: #172033;
+    border: 1px solid #657389;
+}
+.inline-form {
+    margin-top: 1rem;
+}
+
+/* "?" hint with tooltip (hover or keyboard focus) */
+.hint {
+    position: relative;
+    display: inline-flex;
+    color: #657389;
+    cursor: help;
+    border-radius: 50%;
+}
+.hint:hover,
+.hint:focus-visible {
+    color: #234fa0;
+}
+.hint:focus-visible {
+    outline: 2px solid #234fa0;
+    outline-offset: 2px;
+}
+.hint-bubble {
+    position: absolute;
+    z-index: 20;
+    left: 50%;
+    bottom: calc(100% + 0.5rem);
+    width: max-content;
+    max-width: min(20rem, 80vw);
+    padding: 0.75rem 1rem;
+    transform: translateX(-20%);
+    border-radius: 0.6rem;
+    background: #2b2d33;
+    color: #f1f2f4;
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.4;
+    box-shadow: 0 6px 18px rgb(0 0 0 / 30%);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.12s;
+    pointer-events: none;
+}
+.hint:hover .hint-bubble,
+.hint:focus .hint-bubble,
+.hint:focus-within .hint-bubble {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Danger zone */
+.danger-zone {
+    border-color: #a21c25;
+    background: #fff5f5;
+}
+.danger-zone h2 {
+    color: #a21c25;
+}
+.danger-zone summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: #a21c25;
+    margin-bottom: 1rem;
+}
+button.danger {
+    background: #a21c25;
+}
+.nav-avatar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.field-checkbox {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+.field-checkbox .field-head {
+    order: 2;
+    flex: 1;
+    margin: 0;
+}
+.field-checkbox input {
+    order: 1;
+    margin-top: 0.2rem;
+}
+.field-checkbox .errorlist {
+    order: 3;
+    flex-basis: 100%;
+}

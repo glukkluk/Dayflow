@@ -18,7 +18,7 @@ function main() {
     function displayTime(value) {
         return DateTime.fromISO(value, { zone: config.timezone })
             .setLocale("uk")
-            .toFormat("dd.MM.yyyy HH:mm");
+            .toFormat(config.dateTimeFormat);
     }
 
     async function jsonRequest(url, options = {}) {
@@ -131,6 +131,16 @@ function main() {
         {
             locale: "uk",
             timeZone: config.timezone,
+            eventTimeFormat: {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: config.hour12,
+            },
+            slotLabelFormat: {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: config.hour12,
+            },
             initialView: "timeGridWeek",
             headerToolbar: {
                 left: "prev,next today",

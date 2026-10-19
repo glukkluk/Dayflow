@@ -1,0 +1,19 @@
+{# Label + optional "?" hint (tooltip) + widget + errors. Params: field, tooltip #}
+<div class="field{% if field.errors %} has-error{% endif %}{% if field.widget_type == 'checkbox' %} field-checkbox{% endif %}">
+    <div class="field-head">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% if tooltip and field.help_text %}
+        <span class="hint" tabindex="0" role="button" aria-label="Підказка: {{ field.label }}" aria-describedby="hint-{{ field.html_name }}">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M9.4 9.4a2.7 2.7 0 1 1 3.9 2.4c-.9.5-1.3 1-1.3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <circle cx="12" cy="17" r="1" fill="currentColor"/>
+            </svg>
+            <span class="hint-bubble" role="tooltip" id="hint-{{ field.html_name }}"><strong>{{ field.label }}:</strong> {{ field.help_text }}</span>
+        </span>
+        {% endif %}
+    </div>
+    {% if field.widget_type == 'checkbox' %}{{ field }}{% else %}{{ field }}{% endif %}
+    {% if not tooltip and field.help_text %}<div class="helptext">{{ field.help_text|safe }}</div>{% endif %}
+    {{ field.errors }}
+</div>

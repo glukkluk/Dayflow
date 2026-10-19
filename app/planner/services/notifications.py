@@ -12,26 +12,30 @@ poll cadence; reminders are never silently skipped inside the window.
 from datetime import timedelta
 from zoneinfo import ZoneInfo
 
+from accounts.formats import get_formats
 from django.db import IntegrityError, transaction
-from django.utils import timezone
+from django.utils import dateformat, timezone
 
 from ..models import Event, Notification, Task
 from .recurrence import OccurrenceTimeError, expand
 
-# Longest supported reminder lead time (1 day).
-MAX_REMINDER = timedelta(minutes=1440)
+MAX_REMINDER = timedelta(minutes=10080)
 DEADLINE_REMINDER = timedelta(hours=24)
 COLLECTION_WINDOW = timedelta(minutes=1)
 
 
-def _format_time(value, tz):
-    return timezone.localtime(value, tz).strftime("%d.%m.%Y %H:%M")
+def _format_time(value, tz, formats):
+    return dateformat.format(timezone.localtime(value, tz), formats.datetime)
 
 
-def _event_message(event, occurrence_start, tz, now):
+def _event_message(event, occurrence_start, tz, now, formats):
     start = timezone.localtime(occurrence_start, tz)
     delta = occurrence_start - now
-    if delta >= timedelta(hours=23):
+    if delta >= timedelta(days=6, hours=23):
+        lead = "через тиждень"
+    elif delta >= timedelta(days=2, hours=23):
+        lead = "через 3 дні"
+    elif delta >= timedelta(hours=23):
         lead = "завтра"
     elif delta >= timedelta(minutes=90):
         lead = f"за {delta.seconds // 3600} год"
@@ -39,13 +43,16 @@ def _event_message(event, occurrence_start, tz, now):
         lead = f"за {delta.seconds // 60} хв"
     else:
         lead = "незабаром"
-    return f"Подія «{event.title}» почнеться {lead} (о {start.strftime('%H:%M')})."
+    when = (
+        "весь день" if event.all_day else f"о {dateformat.format(start, formats.time)}"
+    )
+    return f"Подія «{event.title}» почнеться {lead} ({when})."
 
 
-def _deadline_message(task, tz):
+def _deadline_message(task, tz, formats):
     return (
         f"Дедлайн завдання «{task.title}» — за 24 год "
-        f"({_format_time(task.deadline, tz)})."
+        f"({_format_time(task.deadline, tz, formats)})."
     )
 
 
@@ -63,6 +70,7 @@ def collect_event_reminders(user, now=None):
     """Notify about series instances starting within reminder_minutes."""
     now = now or timezone.now()
     tz = ZoneInfo(user.profile.timezone)
+    formats = get_formats(user.profile)
     window_start, window_end = now - COLLECTION_WINDOW, now + COLLECTION_WINDOW
     horizon = now + MAX_REMINDER + COLLECTION_WINDOW
     notifications = []
@@ -72,16 +80,13 @@ def collect_event_reminders(user, now=None):
         .select_related("category")
     )
     for event in events:
-        # Reminders exist for the future: a series already running (or a
-        # one-off in the past) gets none, even if a later instance is due.
         if event.recurrence == Event.Recurrence.NONE and event.start <= window_start:
             continue
         try:
             occurrences = expand(event, window_start, horizon, tz=tz)
         except OccurrenceTimeError:
-            # An invalid occurrence (e.g. inside a DST gap) simply yields
-            # no reminder; the series remains fixable from the dashboard.
             continue
+
         for occurrence in occurrences:
             remind_at = occurrence.start - timedelta(minutes=event.reminder_minutes)
             if not window_start <= remind_at <= window_end:
@@ -96,7 +101,7 @@ def collect_event_reminders(user, now=None):
                 event=event,
                 occurrence_start=occurrence.start,
                 kind=Notification.Kind.EVENT,
-                message=_event_message(event, occurrence.start, tz, now),
+                message=_event_message(event, occurrence.start, tz, now, formats),
             )
             created = _create(notification)
             if created is not None:
@@ -108,6 +113,7 @@ def collect_deadline_reminders(user, now=None):
     """Notify once about unfinished tasks 24 hours before the deadline."""
     now = now or timezone.now()
     tz = ZoneInfo(user.profile.timezone)
+    formats = get_formats(user.profile)
     remind_at = now + DEADLINE_REMINDER
     window_start = remind_at - COLLECTION_WINDOW
     window_end = remind_at + COLLECTION_WINDOW
@@ -128,7 +134,7 @@ def collect_deadline_reminders(user, now=None):
             user=user,
             task=task,
             kind=Notification.Kind.DEADLINE,
-            message=_deadline_message(task, tz),
+            message=_deadline_message(task, tz, formats),
         )
         created = _create(notification)
         if created is not None:

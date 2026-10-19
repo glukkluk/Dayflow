@@ -29,14 +29,14 @@
     {% endif %}
     <div class="dashboard-grid">
         <section class="dashboard-card" aria-labelledby="today-heading">
-            <h2 id="today-heading">Сьогодні · {{ today|date:"d.m.Y" }}</h2>
+            <h2 id="today-heading">Сьогодні · {{ today|date:date_fmt }}</h2>
             <ul class="item-list">
             {% for item in today_events %}
                 <li{% if item.is_current %} class="current-event"{% endif %}>
                     {% if item.is_current %}<strong>Зараз триває</strong>{% endif %}
                     <h3><a href="{% url 'planner:event_detail' item.occurrence.event.pk %}">{{ item.occurrence.event.title }}</a></h3>
                     {% if item.occurrence.event.all_day %}<p>Весь день</p>{% endif %}
-                    <p>{{ item.occurrence.start|date:"d.m H:i" }} — {{ item.occurrence.end|date:"d.m H:i" }}</p>
+                    <p>{{ item.occurrence.start|date:short_datetime_fmt }} — {{ item.occurrence.end|date:short_datetime_fmt }}</p>
                     <p>{{ item.occurrence.event.category|default:"Без категорії" }}</p>
                 </li>
             {% empty %}
@@ -50,7 +50,7 @@
             {% for task in nearest_deadlines %}
                 <li>
                     <h3><a href="{% url 'planner:task_edit' task.pk %}">{{ task.title }}</a></h3>
-                    <p>{{ task.deadline|date:"d.m.Y H:i" }} · {{ task.get_status_display }}</p>
+                    <p>{{ task.deadline|date:datetime_fmt }} · {{ task.get_status_display }}</p>
                     {% if task.deadline < dashboard_now %}<strong class="overdue">Прострочено</strong>{% endif %}
                 </li>
             {% empty %}
@@ -60,7 +60,7 @@
         </section>
         <section class="dashboard-card" aria-labelledby="week-heading">
             <h2 id="week-heading">Цей тиждень</h2>
-            <p>{{ week_start_date|date:"d.m.Y" }} — {{ week_end_date|date:"d.m.Y" }}</p>
+            <p>{{ week_start_date|date:date_fmt }} — {{ week_end_date|date:date_fmt }}</p>
             <p class="dashboard-stat">{{ weekly_done }} / {{ weekly_total }} виконано · {{ weekly_percent }}%</p>
             <progress max="100" value="{{ weekly_percent }}" aria-label="Виконання тижневого плану">{{ weekly_percent }}%</progress>
             <p>Завдання з дедлайном цього тижня (понеділок–неділя). Виконані раніше теж враховуються.</p>

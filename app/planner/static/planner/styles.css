@@ -151,3 +151,30 @@ button:disabled {
 .dashboard-card progress { width: 100%; }
 .dashboard-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .dashboard-table th, .dashboard-table td { padding: 0.75rem 0.25rem; text-align: left; border-bottom: 1px solid #d9e0e8; }
+
+[hidden] {
+    display: none !important;
+}
+
+.time-list {
+    position: absolute;
+    z-index: 1000;
+    max-height: 14rem;
+    margin: 0;
+    padding: 0.25rem 0;
+    overflow-y: auto;
+    list-style: none;
+    background: white;
+    color: #1f2937;
+    border: 1px solid #657389;
+    border-radius: 0.3rem;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+}
+.time-list li {
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+}
+.time-list li:hover,
+.time-list li.is-active {
+    background: #e5edff;
+}

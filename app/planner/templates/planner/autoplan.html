@@ -14,10 +14,10 @@
         <li>
             <h2>{{ task.title }}</h2>
             <p>{{ task.get_priority_display }} · {{ task.estimated_minutes }} хв ·
-               Дедлайн: {{ task.deadline|date:"d.m.Y H:i"|default:"без дедлайну" }}</p>
+               Дедлайн: {{ task.deadline|date:datetime_fmt|default:"без дедлайну" }}</p>
             <ul>
             {% for block in blocks %}
-                <li>{{ block.start|date:"d.m.Y H:i" }} — {{ block.end|date:"d.m.Y H:i" }}</li>
+                <li>{{ block.start|date:datetime_fmt }} — {{ block.end|date:datetime_fmt }}</li>
             {% endfor %}
             </ul>
         </li>

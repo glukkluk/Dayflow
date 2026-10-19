@@ -19,7 +19,7 @@
     <li{% if not notification.is_read %} class="unread-notification"{% endif %}>
         <h2>{{ notification.get_kind_display }}</h2>
         <p>{{ notification.message }}</p>
-        <p>{{ notification.created_at|date:"d.m.Y H:i" }}</p>
+        <p>{{ notification.created_at|date:datetime_fmt }}</p>
         {% if not notification.is_read %}
         <button type="button"
                 hx-post="{% url 'planner:read_notifications' %}"

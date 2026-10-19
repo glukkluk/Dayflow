@@ -2,10 +2,10 @@
 {% block title %}{{ event.title }} — Особистий розклад{% endblock %}
 {% block content %}
 {% if event.recurrence != "none" %}
-<p>{{ event.get_recurrence_display }}{% if event.recurrence_until %} до {{ event.recurrence_until|date:"d.m.Y" }} включно{% endif %}. Редагування змінює всю серію.</p>
+<p>{{ event.get_recurrence_display }}{% if event.recurrence_until %} до {{ event.recurrence_until|date:date_fmt }} включно{% endif %}. Редагування змінює всю серію.</p>
 {% endif %}
 <h1>{{ event.title }}</h1>
-<p>{{ event.start|date:"d.m.Y H:i" }} — {{ event.end|date:"d.m.Y H:i" }}</p>
+<p>{{ event.start|date:datetime_fmt }} — {{ event.end|date:datetime_fmt }}</p>
 <p>Часовий пояс: {{ user.profile.timezone }}</p>
 {% if event.all_day %}<p>Весь день</p>{% endif %}
 <p>Категорія: {{ event.category|default:"Без категорії" }}</p>
