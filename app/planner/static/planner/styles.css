@@ -313,7 +313,7 @@ button:disabled {
     padding: 1.15rem 1.25rem;
 }
 .dashboard-card h3 {
-    margin: 0 0 0.8rem;
+    margin: 0 0 1rem;
     font-size: 1.05rem;
 }
 .dashboard-two-columns {
@@ -501,41 +501,6 @@ button:disabled {
         height 0.3s ease;
 }
 
-/* Hover effects via legend */
-.dashboard-task-chart-layout:has(.dashboard-chart-legend li:hover)
-    .dashboard-donut {
-    box-shadow: 0 0 20px rgb(0 0 0 / 8%);
-}
-.dashboard-task-chart-layout:has(.dashboard-chart-legend li:hover)
-    .dashboard-donut-center {
-    width: 64%;
-    height: 64%;
-}
-
-.dashboard-task-chart-layout:has(.dashboard-chart-legend li:nth-child(1):hover)
-    .dashboard-donut {
-    background: conic-gradient(
-        #ffb35c 0 var(--todo),
-        #4a7cac var(--todo) calc(var(--todo) + var(--progress)),
-        #4a9a8a calc(var(--todo) + var(--progress)) 100%
-    );
-}
-.dashboard-task-chart-layout:has(.dashboard-chart-legend li:nth-child(2):hover)
-    .dashboard-donut {
-    background: conic-gradient(
-        #c48a3a 0 var(--todo),
-        #5da1ff var(--todo) calc(var(--todo) + var(--progress)),
-        #4a9a8a calc(var(--todo) + var(--progress)) 100%
-    );
-}
-.dashboard-task-chart-layout:has(.dashboard-chart-legend li:nth-child(3):hover)
-    .dashboard-donut {
-    background: conic-gradient(
-        #c48a3a 0 var(--todo),
-        #4a7cac var(--todo) calc(var(--todo) + var(--progress)),
-        #4adea3 calc(var(--todo) + var(--progress)) 100%
-    );
-}
 .dashboard-donut-center strong {
     font-size: 2.5rem;
     line-height: 1.1;
@@ -547,7 +512,7 @@ button:disabled {
 .dashboard-chart-legend {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 1.5rem 0 0;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem 1rem;

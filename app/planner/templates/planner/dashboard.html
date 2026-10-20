@@ -72,29 +72,39 @@
     <section class="dashboard-section" aria-labelledby="tasks-heading">
         <div class="dashboard-section-heading">
             <div><p class="dashboard-eyebrow">02 / Виконання</p><h2 id="tasks-heading">Завдання</h2><p>Прогрес роботи та дедлайни, які потребують уваги.</p></div>
-            <div class="dashboard-task-actions"><a class="dashboard-autoplan-button" href="{% url 'planner:task_autoplan' %}">⚡ Автопланування</a><a href="{% url 'planner:task_list' %}">Усі завдання →</a></div>
+            <div class="dashboard-task-actions">
+                <a class="dashboard-autoplan-button" href="{% url 'planner:task_autoplan' %}">⚡ Автопланування</a>
+                <a href="{% url 'planner:task_list' %}">Усі завдання →</a>
+            </div>
         </div>
         <div class="dashboard-tasks-grid">
             <div class="dashboard-card dashboard-task-chart-card">
-                <h3>Статуси завдань</h3>
+                <div class="chart-heading"><div><h3>Баланс завдань</h3><p class="dashboard-muted">Від першого кроку до результату</p></div><span class="dashboard-pill">{% widthratio task_status.done task_status.total 100 %}% виконано</span></div>
                 <div class="dashboard-task-chart-layout">
                     <div class="dashboard-donut{% if not task_status.total %} dashboard-donut-empty{% endif %}" role="img" aria-label="Не завершено: {{ task_status.todo }}; у роботі: {{ task_status.in_progress }}; виконано: {{ task_status.done }}"
                          style="--todo: {% widthratio task_status.todo task_status.total 100 %}%; --progress: {% widthratio task_status.in_progress task_status.total 100 %}%;">
-                        <div class="dashboard-donut-center"><strong>{{ task_status.total }}</strong><span>усього</span></div>
+                        <div class="dashboard-donut-center"><strong>{{ task_status.total }}</strong><span>усього завдань</span></div>
                     </div>
                     <ul class="dashboard-chart-legend">
                         <li>
-                            <span class="dashboard-legend-dot dashboard-legend-todo"></span><span>Не завершено</span><strong>{{ task_status.todo }}</strong>
+                            <a href="{% url 'planner:task_list' %}?status=todo">
+                                <span class="dashboard-legend-dot dashboard-legend-todo"></span>
+                                <span>До виконання</span><strong>{{ task_status.todo }}</strong>
+                                <span aria-hidden="true">↗</span>
+                            </a>
                         </li>
                         <li>
-                            <span class="dashboard-legend-dot dashboard-legend-progress"></span><span>У роботі</span><strong>{{ task_status.in_progress }}</strong>
+                            <a href="{% url 'planner:task_list' %}?status=in_progress">
+                                <span class="dashboard-legend-dot dashboard-legend-progress"></span>
+                                <span>У роботі</span><strong>{{ task_status.in_progress }}</strong>
+                                <span aria-hidden="true">↗</span>
+                            </a>
                         </li>
                         <li>
-                            <span class="dashboard-legend-dot dashboard-legend-done"></span><span>Виконано</span><strong>{{ task_status.done }}</strong>
-                        </li>
-                        <li>
-                            <a class="dashboard-overdue-legend" href="{% url 'planner:task_list' %}?overdue=on">
-                                <span class="dashboard-legend-dot dashboard-legend-overdue"></span><span>Прострочено</span><strong>{{ overdue_count }}</strong>
+                            <a href="{% url 'planner:task_list' %}?status=done">
+                                <span class="dashboard-legend-dot dashboard-legend-done"></span>
+                                <span>Виконано</span><strong>{{ task_status.done }}</strong>
+                                <span aria-hidden="true">↗</span>
                             </a>
                         </li>
                     </ul>
@@ -103,21 +113,26 @@
             </div>
             <div class="dashboard-tasks-right">
             <div class="dashboard-card">
-                <h3>Результат цього тижня</h3>
+                <h3>Результат цього тижня <span class="hint" tabindex="0" role="button" aria-label="Підказка: Результат цього тижня" aria-describedby="weekly-result-hint"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9.4 9.4a2.7 2.7 0 1 1 3.9 2.4c-.9.5-1.3 1-1.3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg><span class="hint-bubble" role="tooltip" id="weekly-result-hint">Враховано завдання з дедлайном {{ week_start_date|date:date_fmt }} — {{ week_end_date|date:date_fmt }}, навіть якщо їх завершили раніше.</span></span></h3>
                 <p class="dashboard-stat">{{ weekly_done }} із {{ weekly_total }} <span>завдань виконано</span></p>
                 <progress max="100" value="{{ weekly_percent }}" aria-label="Виконання завдань із дедлайном цього тижня">{{ weekly_percent }}%</progress>
-                <p class="dashboard-muted">{{ weekly_percent }}% виконано · Враховано завдання з дедлайном {{ week_start_date|date:date_fmt }} — {{ week_end_date|date:date_fmt }}, навіть якщо їх завершили раніше.</p>
+                <p class="dashboard-muted">{{ weekly_percent }}% виконано.</p>
                 {% if not weekly_total %}<p>На цей тиждень завдань із дедлайном немає.</p>{% endif %}
             </div>
             <div class="dashboard-card">
-                <h3>Найближчі дедлайни</h3>
+                <div class="dashboard-deadlines-heading">
+                    <h3>Найближчі дедлайни</h3>
+                    <a class="dashboard-overdue-legend dashboard-deadlines-overdue" href="{% url 'planner:task_list' %}?overdue=on">
+                        <span>Прострочено</span><strong>{{ overdue_count }}</strong>
+                        <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
                 <ul class="dashboard-records">
                     {% for task in nearest_deadlines %}
                     <li class="dashboard-record">
                         <div class="dashboard-record-body"><a class="dashboard-record-title" href="{% url 'planner:task_edit' task.pk %}">{{ task.title }}</a><span>{{ task.deadline|date:datetime_fmt }} · {{ task.get_status_display }}</span></div>
-                        {% if task.deadline < dashboard_now %}<span class="dashboard-pill dashboard-pill-danger">Прострочено</span>{% endif %}
                     </li>
-                    {% empty %}<li class="dashboard-empty">Незавершених завдань із дедлайном немає.</li>{% endfor %}
+                    {% empty %}<li class="dashboard-empty">Майбутніх дедлайнів немає.</li>{% endfor %}
                 </ul>
             </div>
             </div>

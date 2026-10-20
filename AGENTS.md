@@ -13,21 +13,23 @@
 - `uv run python app/manage.py migrate`
 - `uv run python app/manage.py runserver`
 - `uv run python app/manage.py check`
-- `uv run python app/manage.py test accounts planner` — the only test entrypoint; currently 0 tests (prints `NO TESTS RAN`, exits 0). Add tests next to the app under test.
+- `uv run python app/manage.py test accounts planner` — the only test entrypoint (plain Django `TestCase`; tests live in `app/<app>/tests.py` or an `app/<app>/tests/` package — `planner` has some, `accounts` has none). Focus with a label: `... test planner.tests.WorkspaceFlowTests.test_read_requires_csrf_and_get_does_not_change_state` (`.Class` / `.Class.method` suffixes work). A label matching nothing prints `NO TESTS RAN` yet exits 0 — exit 0 alone does not prove tests ran.
 - `uv run python app/manage.py createsuperuser` for `/admin/` access
 
 ## Gotchas that bite
 
 - Post-login landing is `/` = dashboard (`LOGIN_REDIRECT_URL = 'planner:dashboard'`), not the profile page.
 - Change task status via `Task.save()`; `QuerySet.update()` bypasses the model logic maintaining `completed_at`, and DB checks enforce status/`completed_at` consistency.
-- Notifications are generated lazily: `collect_due()` runs inside `GET /api/notifications/pending/`, polled every 30 s by `toasts.js`. There is no cron/management command (a stale `generate_notifications` `.pyc` may exist locally with no source — ignore it).
+- Notifications are generated lazily: `collect_due()` runs inside `GET /api/notifications/pending/`, polled every 30 s by `toasts.js`. There is no cron/management command (a stale `generate_notifications` `.pyc` may exist locally with no source — ignore it). Preserve the delivery contract: the page's first poll sends `?silent=true`, marking reminders that came due while signed out as `delivered_at` (badge only, no toast), and showing a toast must never mark a notification read.
 - Email is not configured: `MAILERS = {...}` in `settings.py` is a nonstandard key Django ignores (it reads `EMAIL_BACKEND`). Reminders are in-app only — don't add email unasked.
-- Third-party JS is CDN-pinned with SRI in templates: HTMX 2.0.8, FullCalendar 7.1.2, Luxon 3.7.2 (`app/planner/templates/planner/`). Own JS/CSS lives in `app/planner/static/planner/`.
+- Third-party JS/CSS is CDN-pinned in `app/planner/templates/planner/`: HTMX 2.0.8 (only it carries SRI `integrity=`), FullCalendar 7.1.2, Luxon 3.7.2. Own JS/CSS: `app/planner/static/planner/` and `app/accounts/static/accounts/`; UI icons are inline SVG branches in `app/templates/partials/icon.html` (`{% include 'partials/icon.html' with name='...' %}`) — extend that partial instead of adding an icon library.
+- Avatars need Pillow (declared in `pyproject.toml` — `uv sync` after pulling). Uploads land in git-ignored `app/media/` and are served only when `DEBUG=True` (urls.py wires `static(MEDIA_URL, ...)`); production must serve `MEDIA_ROOT` itself.
 
 ## Conventions that differ from defaults
 
 - UI language is Ukrainian (`LANGUAGE_CODE = 'uk'`); keep user-facing strings in Ukrainian.
 - Time handling: `USE_TZ=True`, `TIME_ZONE='UTC'`. Datetimes are entered/displayed in the user's profile timezone (`accounts.middleware.ProfileTimezoneMiddleware`) and stored in UTC. Ambiguous/nonexistent local (DST) times must be rejected, not silently shifted — recurrence expansion answers 400 with `code=invalid_occurrence_time`.
+- Date/time rendering is a per-user profile setting: templates must use the `display_formats` context-processor variables (`date_fmt`, `short_date_fmt`, `time_fmt`, `datetime_fmt`, `short_datetime_fmt`) with `|date:`, never hardcoded patterns. Time input fields stay 24-hour regardless.
 - Validation is duplicated at form and DB level — preserve both when touching constraints: profile work hours, category `#RRGGBB` + per-user name uniqueness, event `end > start`, task status/`completed_at`/duration/priority.
 - Ownership: other users' records return 404 (never 403); choice fields must be queryset-scoped to `request.user`; destructive actions only via POST + CSRF.
 - No lint/typecheck/CI configured; `manage.py check` + `manage.py test` are the only verification entrypoints.

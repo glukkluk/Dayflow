@@ -268,7 +268,10 @@ class TaskForm(forms.ModelForm):
 
 
 class TaskFilterForm(forms.Form):
-    q = forms.CharField(label="Пошук за назвою або описом", required=False)
+    q = forms.CharField(
+        label="Пошук за назвою або описом", required=False,
+        widget=forms.TextInput(attrs={"type": "search", "placeholder": "Назва або опис завдання…"}),
+    )
     status = forms.ChoiceField(
         label="Статус",
         choices=[("", "Усі статуси"), *Task.Status.choices],

@@ -2,6 +2,7 @@
 {% block title %}Профіль — Особистий розклад{% endblock %}
 {% block main_class %}profile-page{% endblock %}
 {% block content %}
+<div class="profile-content">
 <div class="profile-head">
     {% include "accounts/partials/avatar.html" with size="large" %}
     <div>
@@ -78,4 +79,5 @@
         </form>
     </details>
 </section>
+</div>
 {% endblock %}

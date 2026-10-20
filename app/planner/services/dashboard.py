@@ -70,7 +70,7 @@ def summarize(user, *, now=None):
     )
     unfinished = tasks.exclude(status=Task.Status.DONE)
     deadlines = list(
-        unfinished.filter(deadline__isnull=False).order_by("deadline", "pk")[:3]
+        unfinished.filter(deadline__gte=now).order_by("deadline", "pk")[:3]
     )
     overdue_count = unfinished.filter(deadline__lt=now).count()
 

@@ -6,20 +6,15 @@
     <div class="page-heading"><div><p class="dashboard-eyebrow">Кожному плану — свій колір</p><h1>Категорії</h1><p>Організуйте роботу, відпочинок і особисті справи.</p></div><a class="button" href="{% url 'planner:category_create' %}">+ Додати категорію</a></div>
     <ul class="item-list category-grid">
         {% for category in category_list %}
-            <li>
+            <li class="record-card category-card">
+                <div class="category-identity">
                 <span
                     class="color-swatch"
                     style="background-color: {{ category.color }}"
                 ></span>
-                <strong>{{ category.name }}</strong> <small>{{ category.color }}</small>
-                <div class="actions">
-                    <a href="{% url 'planner:category_edit' category.pk %}"
-                        >Редагувати</a
-                    >
-                    <a href="{% url 'planner:category_delete' category.pk %}"
-                        >Видалити</a
-                    >
-                </div>
+                <div><strong>{{ category.name }}</strong><small>{{ category.color }}</small></div></div>
+                {% url 'planner:category_edit' category.pk as edit_url %}{% url 'planner:category_delete' category.pk as delete_url %}
+                {% include 'planner/partials/item_actions.html' with label=category.name %}
             </li>
         {% empty %}
             <li class="empty-state"><strong>Додайте трохи кольору</strong>Створіть першу категорію для своїх подій і завдань.</li>

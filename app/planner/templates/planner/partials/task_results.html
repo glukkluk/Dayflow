@@ -5,8 +5,11 @@
     <p tabindex="-1" id="task-result-count">Знайдено завдань: {{ page_obj.paginator.count }}</p>
     <ul class="item-list task-grid">
     {% for task in page_obj %}
-        <li{% if task.status == 'done' %} class="task-done"{% endif %}>
-            <h2>{{ task.title }}</h2>
+        <li class="record-card{% if task.status == 'done' %} task-done{% endif %}">
+            <div class="record-heading"><h2>{{ task.title }}</h2>
+                {% url 'planner:task_edit' task.pk as edit_url %}{% url 'planner:task_delete' task.pk as delete_url %}
+                {% include 'planner/partials/item_actions.html' with label=task.title %}
+            </div>
             <span class="priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
             <p>{{ task.get_status_display }} · {{ task.estimated_minutes }} хв</p>
             {% if task.is_overdue %}<strong class="overdue">Прострочено</strong>{% endif %}
@@ -23,10 +26,6 @@
                     {% if task.status == "done" %}Повернути до виконання{% else %}Виконано{% endif %}
                 </button>
             </form>
-            <div class="actions">
-                <a href="{% url 'planner:task_edit' task.pk %}">Редагувати</a>
-                <a href="{% url 'planner:task_delete' task.pk %}">Видалити</a>
-            </div>
         </li>
     {% empty %}
         <li class="empty-state"><strong>Завдань не знайдено</strong>{% if query_string %}Спробуйте інший пошук або скиньте фільтри.<br><a class="button secondary" href="{% url 'planner:task_list' %}">Скинути фільтри</a>{% else %}Почніть із невеликої справи — додайте своє перше завдання.{% endif %}<br><a class="button" href="{% url 'planner:task_create' %}">+ Додати завдання</a></li>

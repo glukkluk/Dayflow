@@ -18,9 +18,14 @@
       hx-get="{% url 'planner:task_list' %}" hx-target="#task-results" hx-swap="outerHTML"
       hx-trigger="submit, input changed delay:400ms from:input[name='q'], change from:select, change from:input[type='checkbox']"
       hx-sync="this:replace" hx-push-url="true" hx-indicator="#filter-loading">
-    {{ filter_form.as_div }}
-    <button type="submit">Застосувати</button>
-    <a href="{% url 'planner:task_list' %}">Скинути фільтри</a>
+    <div class="task-search-row">
+        <div class="task-search-field"><label for="{{ filter_form.q.id_for_label }}">Знайти завдання</label><div class="search-input-wrap">{% include 'partials/icon.html' with name='search' %}{{ filter_form.q }}</div>{{ filter_form.q.errors }}</div>
+        <button type="submit">Знайти</button>
+    </div>
+    <div class="task-filter-options">
+        {% for field in filter_form %}{% if field.name != 'q' and field.name != 'overdue' %}<div>{{ field.as_field_group }}</div>{% endif %}{% endfor %}
+    </div>
+    <div class="task-filter-footer"><label class="checkbox-label" for="{{ filter_form.overdue.id_for_label }}">{{ filter_form.overdue }} {{ filter_form.overdue.label }}</label><a href="{% url 'planner:task_list' %}">Скинути фільтри</a></div>
 </form>
 <p id="filter-loading" class="htmx-indicator" role="status">Оновлюємо завдання…</p>
 <p class="timezone-note">Часовий пояс: {{ user.profile.timezone }}</p>

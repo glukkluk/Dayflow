@@ -6,7 +6,14 @@
 <p class="auth-intro">Ваші події, завдання та цілі — в одному розкладі.</p>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_div }}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+        {% if field.name == 'password1' or field.name == 'password2' %}
+            {% include 'accounts/partials/field.html' with tooltip=True %}
+        {% else %}
+            {% include 'accounts/partials/field.html' %}
+        {% endif %}
+    {% endfor %}
     <button type="submit">Зареєструватися</button>
 </form>
 <p class="auth-footer">Уже маєте акаунт? <a href="{% url 'accounts:login' %}">Увійти</a></p>

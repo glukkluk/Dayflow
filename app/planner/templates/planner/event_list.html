@@ -8,18 +8,17 @@
     <button type="submit">Знайти</button>
 </form>
 <p class="timezone-note">Часовий пояс: {{ user.profile.timezone }}</p>
-<ul class="item-list">
+<ul class="item-list event-grid">
 {% for event in page_obj %}
-    <li>
-        <a href="{% url 'planner:event_detail' event.pk %}"><strong>{{ event.title }}</strong></a>
+    <li class="record-card">
+        <div class="record-heading"><h2><a href="{% url 'planner:event_detail' event.pk %}">{{ event.title }}</a></h2>
+            {% url 'planner:event_edit' event.pk as edit_url %}{% url 'planner:event_delete' event.pk as delete_url %}
+            {% include 'planner/partials/item_actions.html' with label=event.title %}
+        </div>
         <p>{{ event.start|date:datetime_fmt }} — {{ event.end|date:datetime_fmt }}</p>
         {% if event.all_day %}<p>Весь день</p>{% endif %}
         {% if event.recurrence != "none" %}<p>{{ event.get_recurrence_display }}{% if event.recurrence_until %} до {{ event.recurrence_until|date:date_fmt }} включно{% endif %}</p>{% endif %}
         <p>{{ event.category|default:"Без категорії" }}</p>
-        <div class="actions">
-            <a href="{% url 'planner:event_edit' event.pk %}">Редагувати</a>
-            <a href="{% url 'planner:event_delete' event.pk %}">Видалити</a>
-        </div>
     </li>
 {% empty %}
     <li class="empty-state"><strong>Подій не знайдено</strong>Спробуйте інший пошук або додайте нову подію.<br><a class="button" href="{% url 'planner:event_create' %}">+ Створити подію</a></li>

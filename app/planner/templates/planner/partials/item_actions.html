@@ -1,0 +1,4 @@
+<div class="item-actions" aria-label="Дії: {{ label }}">
+    <a class="icon-action" href="{{ edit_url }}" aria-label="Редагувати: {{ label }}" title="Редагувати">{% include 'partials/icon.html' with name='edit' %}</a>
+    <a class="icon-action icon-action-danger" href="{{ delete_url }}" aria-label="Видалити: {{ label }}" title="Видалити">{% include 'partials/icon.html' with name='delete' %}</a>
+</div>
