@@ -32,18 +32,24 @@
         wrapper.className = "password-control";
         input.before(wrapper);
         wrapper.append(input);
+        const EYE = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+        const EYE_OFF = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6A17 17 0 0 0 2 12s3.6 7 10 7a9.7 9.700 0 0 0 4.2-.9"/><path d="M9.9 9.900a3 3 0 0 0 4.2 4.2M3 3l18 18"/></svg>';
+        const label = input.labels?.[0]?.textContent?.replace(/[:*]/g, "").trim() || "пароль";
         const toggle = document.createElement("button");
         toggle.type = "button";
-        toggle.className = "secondary password-toggle";
-        toggle.textContent = "Показати";
+        toggle.className = "password-toggle";
+        toggle.innerHTML = EYE;
         toggle.setAttribute("aria-controls", input.id);
         toggle.setAttribute("aria-pressed", "false");
-        toggle.setAttribute("aria-label", `Показати пароль: ${input.labels?.[0]?.textContent || "пароль"}`);
+        toggle.setAttribute("aria-label", `Показати пароль: ${label}`);
+        toggle.title = "Показати пароль";
         toggle.addEventListener("click", () => {
             const show = input.type === "password";
             input.type = show ? "text" : "password";
-            toggle.textContent = show ? "Приховати" : "Показати";
+            toggle.innerHTML = show ? EYE_OFF : EYE;
             toggle.setAttribute("aria-pressed", String(show));
+            toggle.setAttribute("aria-label", `${show ? "Приховати" : "Показати"} пароль: ${label}`);
+            toggle.title = show ? "Приховати пароль" : "Показати пароль";
         });
         wrapper.append(toggle);
     });

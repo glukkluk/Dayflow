@@ -17,7 +17,6 @@
             button.hidden = false;
             button.setAttribute("aria-pressed", String(dark));
             button.querySelector(".theme-label").textContent = dark ? "Світла тема" : "Темна тема";
-            button.querySelector(".theme-icon").textContent = dark ? "☀" : "◐";
             button.title = dark ? "Увімкнути світлу тему" : "Увімкнути темну тему";
         });
     };

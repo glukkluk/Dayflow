@@ -141,7 +141,7 @@ function main() {
                 minute: "2-digit",
                 hour12: config.hour12,
             },
-            initialView: "timeGridWeek",
+            initialView: window.matchMedia("(max-width: 700px)").matches ? "timeGridDay" : "timeGridWeek",
             headerToolbar: {
                 left: "prev,next today",
                 center: "title",
@@ -222,5 +222,21 @@ function main() {
     );
     document.getElementById("event-close").onclick = () => detail.close();
     calendar.render();
+
+    // FullCalendar's sticky day header has hashed class names and a transparent
+    // background; tag it so our CSS can pin it under the app header and make it opaque.
+    const root = document.getElementById("calendar");
+    let tagTimer = 0;
+    const tagSticky = () => {
+        root.querySelectorAll(".wd-sticky").forEach((el) => el.classList.remove("wd-sticky"));
+        root.querySelectorAll("*").forEach((el) => {
+            if (getComputedStyle(el).position === "sticky") el.classList.add("wd-sticky");
+        });
+    };
+    new MutationObserver(() => {
+        clearTimeout(tagTimer);
+        tagTimer = setTimeout(tagSticky, 80);
+    }).observe(root, { childList: true, subtree: true });
+    tagSticky();
 }
 document.addEventListener("DOMContentLoaded", main);

@@ -1262,6 +1262,7 @@ dialog::backdrop {
     font-size: 0.8rem;
     color: var(--muted);
     margin: 1rem 0;
+    padding: 0.3rem 0.8rem;
 }
 .calendar-help summary {
     cursor: pointer;

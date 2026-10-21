@@ -11,29 +11,6 @@
     </div>
 </div>
 
-<nav class="quick-filters profile-sections" aria-label="Розділи налаштувань"><a href="#settings">Розклад</a><a href="#username">Ім'я</a><a href="#avatar">Аватар</a><a href="#password">Пароль</a><a href="#delete">Видалення акаунту</a></nav>
-<section class="card" id="settings">
-    <h2>Загальні налаштування</h2>
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="settings">
-        {{ settings_form.non_field_errors }}
-        {% for field in settings_form %}{% include "accounts/partials/field.html" with tooltip=True %}{% endfor %}
-        <button type="submit">Зберегти налаштування</button>
-    </form>
-</section>
-
-<section class="card" id="username">
-    <h2>Ім'я користувача</h2>
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="username">
-        {{ username_form.non_field_errors }}
-        {% for field in username_form %}{% include "accounts/partials/field.html" with tooltip=True %}{% endfor %}
-        <button type="submit">Змінити ім'я</button>
-    </form>
-</section>
-
 <section class="card" id="avatar">
     <h2>Аватар</h2>
     <div class="avatar-row">
@@ -52,6 +29,28 @@
         <button type="submit" name="action" value="avatar_remove" class="secondary">Видалити аватар</button>
     </form>
     {% endif %}
+</section>
+
+<section class="card" id="username">
+    <h2>Ім'я користувача</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="username">
+        {{ username_form.non_field_errors }}
+        {% for field in username_form %}{% include "accounts/partials/field.html" with tooltip=True %}{% endfor %}
+        <button type="submit">Змінити ім'я</button>
+    </form>
+</section>
+
+<section class="card" id="settings">
+    <h2>Загальні налаштування</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="settings">
+        {{ settings_form.non_field_errors }}
+        {% for field in settings_form %}{% include "accounts/partials/field.html" with tooltip=True %}{% endfor %}
+        <button type="submit">Зберегти налаштування</button>
+    </form>
 </section>
 
 <section class="card" id="password">

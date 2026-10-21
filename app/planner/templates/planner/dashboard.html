@@ -2,16 +2,27 @@
 {% block title %}Дашборд — Особистий розклад{% endblock %}
 {% block main_class %}dashboard-page{% endblock %}
 {% block content %}
-<header class="dashboard-hero">
-    <div>
-        <p class="dashboard-eyebrow">Огляд особистого розкладу</p>
-        <h1>Ваш день під контролем</h1>
-        <p>Сьогодні {{ today|date:date_fmt }} · Часовий пояс: {{ user.profile.timezone }}</p>
+{% widthratio task_status.done task_status.total 100 as done_p %}
+{% widthratio task_status.in_progress task_status.total 100 as prog_p %}
+{% widthratio task_status.todo task_status.total 100 as todo_p %}
+<header class="wd-hero" data-reveal>
+    <div class="wd-hero-text">
+        <p class="wd-eyebrow">{% include 'partials/icon.html' with name='sparkle' %}{{ today|date:date_fmt }} · {{ user.profile.timezone }}</p>
+        <h1><span data-greeting>Вітаємо</span>, {{ user.username }}!</h1>
+        <p class="wd-lead">{% if upcoming_event_count or current_event_count %}Сьогодні ще {{ upcoming_event_count|add:current_event_count }} {% if upcoming_event_count|add:current_event_count == 1 %}подія{% else %}подій{% endif %} у розкладі. Рухаймося крок за кроком.{% else %}На сьогодні вільно — гарний час, щоб запланувати щось нове.{% endif %}</p>
+        <div class="wd-actions">
+            <a class="wd-btn wd-btn-primary" href="{% url 'planner:event_create' %}">{% include 'partials/icon.html' with name='plus' %}Подія</a>
+            <a class="wd-btn" href="{% url 'planner:task_create' %}">{% include 'partials/icon.html' with name='plus' %}Завдання</a>
+            <a class="wd-btn" href="{% url 'planner:task_autoplan' %}">{% include 'partials/icon.html' with name='bolt' %}Автопланування</a>
+        </div>
     </div>
-    <div class="dashboard-hero-actions">
-        <a href="{% url 'planner:event_create' %}">+ Подія</a>
-        <a href="{% url 'planner:task_create' %}">+ Завдання</a>
-        <a href="{% url 'planner:calendar' %}">Календар →</a>
+    <div class="wd-hero-ring" role="img" aria-label="Тиждень: виконано {{ weekly_percent }}% завдань">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+            <defs><linearGradient id="wd-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--c-accent)"/><stop offset="1" stop-color="var(--c-mint)"/></linearGradient></defs>
+            <circle class="wd-ring-track" cx="60" cy="60" r="50" pathLength="100"/>
+            <circle class="wd-ring-value" cx="60" cy="60" r="50" pathLength="100" stroke="url(#wd-grad)" style="--value: {{ weekly_percent }}"/>
+        </svg>
+        <div class="wd-ring-label"><strong><span data-count="{{ weekly_percent }}">{{ weekly_percent }}</span>%</strong><span>тижня виконано</span></div>
     </div>
 </header>
 {% if dashboard_error %}
@@ -30,139 +41,114 @@
     </div>
     {% endif %}
 
-    <section class="dashboard-section" aria-labelledby="events-heading">
-        <div class="dashboard-section-heading">
-            <div><p class="dashboard-eyebrow">01 / Планування</p><h2 id="events-heading">Події</h2><p>Що заплановано сьогодні та скільки зустрічей чекає протягом тижня.</p></div>
-            <a href="{% url 'planner:event_list' %}">Усі події →</a>
-        </div>
-        <div class="dashboard-events-grid">
-            <div class="dashboard-card">
-                <h3>Події в розкладі</h3>
-                <div class="dashboard-event-counts">
-                    <div><span>Сьогодні</span><strong>{{ today_event_count }}</strong></div>
-                    <div><span>Цього тижня</span><strong>{{ weekly_event_count }}</strong></div>
-                </div>
-                <p class="dashboard-muted">{{ week_start_date|date:date_fmt }} — {{ week_end_date|date:date_fmt }} · Ураховано повторювані події.</p>
-            </div>
-            <div class="dashboard-card">
-                <h3>Стан сьогодні</h3>
-                <div class="dashboard-event-counts">
-                    <div><span>Тривають зараз</span><strong>{{ current_event_count }}</strong></div>
-                    <div><span>Ще попереду</span><strong>{{ upcoming_event_count }}</strong></div>
-                </div>
-                <p class="dashboard-muted">{% if upcoming_event_count %}Попереду ще є заплановані події.{% else %}Нових подій до кінця дня немає.{% endif %}</p>
-            </div>
-            <div class="dashboard-card dashboard-events-schedule">
-            <h3>Розклад на сьогодні</h3>
-            <ul class="dashboard-records">
-                {% for item in today_events %}
-                <li class="dashboard-record{% if item.is_current %} current-event{% endif %}">
-                    <div class="dashboard-record-body">
-                        <a class="dashboard-record-title" href="{% url 'planner:event_detail' item.occurrence.event.pk %}">{{ item.occurrence.event.title }}</a>
-                        <span>{% if item.occurrence.event.all_day %}Увесь день · {% endif %}{{ item.occurrence.start|date:short_datetime_fmt }} — {{ item.occurrence.end|date:short_datetime_fmt }}</span>
-                    </div>
-                    <span class="dashboard-pill">{% if item.is_current %}Триває{% else %}{{ item.occurrence.event.category|default:"Без категорії" }}{% endif %}</span>
-                </li>
-                {% empty %}<li class="dashboard-empty">Сьогодні подій немає. Можна запланувати щось нове.</li>{% endfor %}
-            </ul>
-        </div>
-        </div>
+    <section class="wd-stats" aria-label="Ключові показники">
+        <a class="wd-stat tone-violet" href="{% url 'planner:event_list' %}" data-reveal>
+            <span class="wd-stat-icon">{% include 'partials/icon.html' with name='event' %}</span>
+            <span class="wd-stat-label">Подій сьогодні</span>
+            <strong data-count="{{ today_event_count }}">{{ today_event_count }}</strong>
+            <small>{% if current_event_count %}Зараз триває: {{ current_event_count }}{% else %}Зараз без подій{% endif %}</small>
+        </a>
+        <a class="wd-stat tone-mint" href="{% url 'planner:calendar' %}" data-reveal>
+            <span class="wd-stat-icon">{% include 'partials/icon.html' with name='calendar' %}</span>
+            <span class="wd-stat-label">Подій на тижні</span>
+            <strong data-count="{{ weekly_event_count }}">{{ weekly_event_count }}</strong>
+            <small>{{ week_start_date|date:short_date_fmt }} — {{ week_end_date|date:short_date_fmt }}</small>
+        </a>
+        <a class="wd-stat tone-amber" href="{% url 'planner:task_list' %}?status=todo" data-reveal>
+            <span class="wd-stat-icon">{% include 'partials/icon.html' with name='target' %}</span>
+            <span class="wd-stat-label">Завдань у роботі</span>
+            <strong data-count="{{ task_status.todo|add:task_status.in_progress }}">{{ task_status.todo|add:task_status.in_progress }}</strong>
+            <small>З {{ task_status.total }} усього</small>
+        </a>
+        <a class="wd-stat tone-rose{% if overdue_count %} is-alert{% endif %}" href="{% url 'planner:task_list' %}?overdue=on" data-reveal>
+            <span class="wd-stat-icon">{% include 'partials/icon.html' with name='alert' %}</span>
+            <span class="wd-stat-label">Прострочено</span>
+            <strong data-count="{{ overdue_count }}">{{ overdue_count }}</strong>
+            <small>{% if overdue_count %}Варто глянути вже зараз{% else %}Усе вчасно — так тримати{% endif %}</small>
+        </a>
     </section>
 
-    <section class="dashboard-section" aria-labelledby="tasks-heading">
-        <div class="dashboard-section-heading">
-            <div><p class="dashboard-eyebrow">02 / Виконання</p><h2 id="tasks-heading">Завдання</h2><p>Прогрес роботи та дедлайни, які потребують уваги.</p></div>
-            <div class="dashboard-task-actions">
-                <a class="dashboard-autoplan-button" href="{% url 'planner:task_autoplan' %}">⚡ Автопланування</a>
-                <a href="{% url 'planner:task_list' %}">Усі завдання →</a>
+    <div class="wd-grid">
+        <section class="wd-card wd-today" aria-labelledby="events-heading" data-reveal>
+            <div class="wd-card-head">
+                <h2 id="events-heading">Розклад на сьогодні</h2>
+                <a class="wd-link" href="{% url 'planner:event_list' %}">Усі події {% include 'partials/icon.html' with name='arrow' %}</a>
             </div>
-        </div>
-        <div class="dashboard-tasks-grid">
-            <div class="dashboard-card dashboard-task-chart-card">
-                <div class="chart-heading"><div><h3>Баланс завдань</h3><p class="dashboard-muted">Від першого кроку до результату</p></div><span class="dashboard-pill">{% widthratio task_status.done task_status.total 100 %}% виконано</span></div>
-                <div class="dashboard-task-chart-layout">
-                    <div class="dashboard-donut{% if not task_status.total %} dashboard-donut-empty{% endif %}" role="img" aria-label="Не завершено: {{ task_status.todo }}; у роботі: {{ task_status.in_progress }}; виконано: {{ task_status.done }}"
-                         style="--todo: {% widthratio task_status.todo task_status.total 100 %}%; --progress: {% widthratio task_status.in_progress task_status.total 100 %}%;">
-                        <div class="dashboard-donut-center"><strong>{{ task_status.total }}</strong><span>усього завдань</span></div>
+            <ol class="wd-timeline">
+                {% for item in today_events %}
+                <li class="{% if item.is_current %}is-current{% endif %}" style="--dot: {{ item.occurrence.event.category.color|default:'var(--c-accent)' }}">
+                    <time>{% if item.occurrence.event.all_day %}Весь день{% else %}{{ item.occurrence.start|date:time_fmt }}<small>{{ item.occurrence.end|date:time_fmt }}</small>{% endif %}</time>
+                    <div class="wd-timeline-body">
+                        <a href="{% url 'planner:event_detail' item.occurrence.event.pk %}">{{ item.occurrence.event.title }}</a>
+                        <span class="wd-chip">{% if item.is_current %}<i class="wd-live"></i>Триває{% else %}{{ item.occurrence.event.category|default:"Без категорії" }}{% endif %}</span>
                     </div>
-                    <ul class="dashboard-chart-legend">
-                        <li>
-                            <a href="{% url 'planner:task_list' %}?status=todo">
-                                <span class="dashboard-legend-dot dashboard-legend-todo"></span>
-                                <span>До виконання</span><strong>{{ task_status.todo }}</strong>
-                                <span aria-hidden="true">↗</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'planner:task_list' %}?status=in_progress">
-                                <span class="dashboard-legend-dot dashboard-legend-progress"></span>
-                                <span>У роботі</span><strong>{{ task_status.in_progress }}</strong>
-                                <span aria-hidden="true">↗</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'planner:task_list' %}?status=done">
-                                <span class="dashboard-legend-dot dashboard-legend-done"></span>
-                                <span>Виконано</span><strong>{{ task_status.done }}</strong>
-                                <span aria-hidden="true">↗</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                {% if not task_status.total %}<p class="dashboard-muted">Завдань поки немає.</p>{% endif %}
+                </li>
+                {% empty %}
+                <li class="wd-empty">{% include 'partials/icon.html' with name='sparkle' %}<span>Сьогодні подій немає. Можна запланувати щось нове.</span></li>
+                {% endfor %}
+            </ol>
+        </section>
+
+        <section class="wd-card wd-tasks" aria-labelledby="tasks-heading" data-reveal>
+            <div class="wd-card-head">
+                <h2 id="tasks-heading">Баланс завдань</h2>
+                <a class="wd-link" href="{% url 'planner:task_list' %}">Усі {% include 'partials/icon.html' with name='arrow' %}</a>
             </div>
-            <div class="dashboard-tasks-right">
-            <div class="dashboard-card">
-                <h3>Результат цього тижня <span class="hint" tabindex="0" role="button" aria-label="Підказка: Результат цього тижня" aria-describedby="weekly-result-hint"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9.4 9.4a2.7 2.7 0 1 1 3.9 2.4c-.9.5-1.3 1-1.3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg><span class="hint-bubble" role="tooltip" id="weekly-result-hint">Враховано завдання з дедлайном {{ week_start_date|date:date_fmt }} — {{ week_end_date|date:date_fmt }}, навіть якщо їх завершили раніше.</span></span></h3>
-                <p class="dashboard-stat">{{ weekly_done }} із {{ weekly_total }} <span>завдань виконано</span></p>
-                <progress max="100" value="{{ weekly_percent }}" aria-label="Виконання завдань із дедлайном цього тижня">{{ weekly_percent }}%</progress>
-                <p class="dashboard-muted">{{ weekly_percent }}% виконано.</p>
-                {% if not weekly_total %}<p>На цей тиждень завдань із дедлайном немає.</p>{% endif %}
-            </div>
-            <div class="dashboard-card">
-                <div class="dashboard-deadlines-heading">
-                    <h3>Найближчі дедлайни</h3>
-                    <a class="dashboard-overdue-legend dashboard-deadlines-overdue" href="{% url 'planner:task_list' %}?overdue=on">
-                        <span>Прострочено</span><strong>{{ overdue_count }}</strong>
-                        <span aria-hidden="true">↗</span>
-                    </a>
+            <div class="wd-donut-wrap">
+                <div class="wd-donut" role="img" aria-label="До виконання: {{ task_status.todo }}; у роботі: {{ task_status.in_progress }}; виконано: {{ task_status.done }}">
+                    <div class="wd-donut-ring{% if not task_status.total %} is-empty{% endif %}" style="--a: {{ done_p }}%; --b: {{ done_p|add:prog_p }}%"></div>
+                    <div class="wd-ring-label"><strong data-count="{{ task_status.total }}">{{ task_status.total }}</strong><span>завдань</span></div>
                 </div>
-                <ul class="dashboard-records">
-                    {% for task in nearest_deadlines %}
-                    <li class="dashboard-record">
-                        <div class="dashboard-record-body"><a class="dashboard-record-title" href="{% url 'planner:task_edit' task.pk %}">{{ task.title }}</a><span>{{ task.deadline|date:datetime_fmt }} · {{ task.get_status_display }}</span></div>
-                    </li>
-                    {% empty %}<li class="dashboard-empty">Майбутніх дедлайнів немає.</li>{% endfor %}
+                <ul class="wd-legend">
+                    <li><a href="{% url 'planner:task_list' %}?status=done"><i class="dot seg-done"></i>Виконано<strong>{{ task_status.done }}</strong></a></li>
+                    <li><a href="{% url 'planner:task_list' %}?status=in_progress"><i class="dot seg-progress"></i>У роботі<strong>{{ task_status.in_progress }}</strong></a></li>
+                    <li><a href="{% url 'planner:task_list' %}?status=todo"><i class="dot seg-todo"></i>До виконання<strong>{{ task_status.todo }}</strong></a></li>
                 </ul>
             </div>
-            </div>
-        </div>
-    </section>
+            {% if not task_status.total %}<p class="wd-muted">Завдань поки немає.</p>{% endif %}
+        </section>
 
-    <section class="dashboard-section" aria-labelledby="categories-heading">
-        <div class="dashboard-section-heading">
-            <div><p class="dashboard-eyebrow">03 / Розподіл часу</p><h2 id="categories-heading">Категорії</h2><p>На що відведено час цього тижня і як організовані ваші плани.</p></div>
-            <a href="{% url 'planner:category_list' %}">Керувати категоріями →</a>
-        </div>
-        <div class="dashboard-metrics">
-            <div class="dashboard-metric"><span>Створено категорій</span><strong>{{ category_total }}</strong><small>У вашому розкладі</small></div>
-            <div class="dashboard-metric"><span>Активних цього тижня</span><strong>{{ category_used_count }}</strong><small>Із подіями, що мають тривалість</small></div>
-            <div class="dashboard-metric"><span>Запланований час</span><strong>{{ categorized_hours }} <small>год {{ categorized_remaining_minutes }} хв</small></strong><small>Сумарний час погодинних подій, включно з подіями без категорії</small></div>
-        </div>
-        <div class="dashboard-card">
-            <h3>Час за категоріями</h3>
+        <section class="wd-card wd-week" data-reveal>
+            <div class="wd-card-head">
+                <h2>Результат тижня <span class="hint" tabindex="0" role="button" aria-label="Підказка: Результат цього тижня" aria-describedby="weekly-result-hint"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9.4 9.4a2.7 2.7 0 1 1 3.9 2.4c-.9.5-1.3 1-1.3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg><span class="hint-bubble" role="tooltip" id="weekly-result-hint">Враховано завдання з дедлайном {{ week_start_date|date:date_fmt }} — {{ week_end_date|date:date_fmt }}, навіть якщо їх завершили раніше.</span></span></h2>
+            </div>
+            <p class="wd-big"><span data-count="{{ weekly_done }}">{{ weekly_done }}</span> <small>із {{ weekly_total }} завдань виконано</small></p>
+            <div class="wd-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ weekly_percent }}" aria-label="Виконання завдань із дедлайном цього тижня"><span style="--value: {{ weekly_percent }}%"></span></div>
+            <p class="wd-muted">{% if weekly_total %}{{ weekly_percent }}% виконано.{% else %}На цей тиждень завдань із дедлайном немає.{% endif %}</p>
+        </section>
+
+        <section class="wd-card wd-deadlines" data-reveal>
+            <div class="wd-card-head">
+                <h2>Найближчі дедлайни</h2>
+                <a class="wd-link" href="{% url 'planner:task_list' %}">Усі {% include 'partials/icon.html' with name='arrow' %}</a>
+            </div>
+            <ul class="wd-list">
+                {% for task in nearest_deadlines %}
+                <li>
+                    <span class="wd-check" aria-hidden="true">{% include 'partials/icon.html' with name='task' %}</span>
+                    <div><a href="{% url 'planner:task_edit' task.pk %}">{{ task.title }}</a><span>{{ task.deadline|date:datetime_fmt }} · {{ task.get_status_display }}</span></div>
+                </li>
+                {% empty %}<li class="wd-empty">{% include 'partials/icon.html' with name='check' %}<span>Майбутніх дедлайнів немає.</span></li>{% endfor %}
+            </ul>
+        </section>
+
+        <section class="wd-card wd-categories" aria-labelledby="categories-heading" data-reveal>
+            <div class="wd-card-head">
+                <div><h2 id="categories-heading">Час за категоріями</h2><p class="wd-muted">Цього тижня: {{ categorized_hours }} год {{ categorized_remaining_minutes }} хв · активних категорій {{ category_used_count }} із {{ category_total }}</p></div>
+                <a class="wd-link" href="{% url 'planner:category_list' %}">Категорії {% include 'partials/icon.html' with name='arrow' %}</a>
+            </div>
             {% if category_times %}
-            <ul class="dashboard-category-list">
+            <ul class="wd-cats">
                 {% for category in category_times %}
                 <li>
-                    <div class="dashboard-category-label"><span><i class="color-swatch" style="background-color: {{ category.color }}"></i> {{ category.name }}</span><strong>{{ category.hours }} год {{ category.remaining_minutes }} хв</strong></div>
-                    <div class="dashboard-category-track"><span style="width: {% widthratio category.minutes categorized_minutes 100 %}%; background-color: {{ category.color }}"></span></div>
+                    <div><span><i class="color-swatch" style="background-color: {{ category.color }}"></i>{{ category.name }}</span><strong>{{ category.hours }} год {{ category.remaining_minutes }} хв</strong></div>
+                    <div class="wd-bar"><span style="--value: {% widthratio category.minutes categorized_minutes 100 %}%; --bar: {{ category.color }}"></span></div>
                 </li>
                 {% endfor %}
             </ul>
-            {% else %}<p class="dashboard-empty">Цього тижня немає погодинних подій для аналізу.</p>{% endif %}
-            <p class="dashboard-muted">Ураховано повторення та події, створені автоплануванням. Події на весь день не входять до розрахунку; час паралельних подій додається.</p>
-        </div>
-    </section>
+            {% else %}<p class="wd-empty">{% include 'partials/icon.html' with name='sparkle' %}<span>Цього тижня немає погодинних подій для аналізу.</span></p>{% endif %}
+            <p class="wd-muted wd-note">Ураховано повторення та автопланування. Події на весь день не входять до розрахунку.</p>
+        </section>
+    </div>
 {% endif %}
 {% endblock %}

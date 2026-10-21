@@ -5,6 +5,10 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{% block title %}Особистий розклад{% endblock %}</title>
+        <meta name="theme-color" content="#7c6cf0" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
         <script src="{% static 'planner/theme.js' %}"></script>
         <link rel="stylesheet" href="{% static 'accounts/styles.css' %}" />
         <link rel="stylesheet" href="{% static 'planner/styles.css' %}" />
@@ -12,39 +16,50 @@
         {% block scripts %}{% endblock %}
         <link rel="stylesheet" href="{% static 'planner/interface.css' %}" />
         <link rel="stylesheet" href="{% static 'planner/theme.css' %}" />
+        <link rel="stylesheet" href="{% static 'planner/wellness.css' %}" />
         <script src="{% static 'planner/experience.js' %}" defer></script>
+        <script src="{% static 'planner/wellness.js' %}" defer></script>
     </head>
     <body class="{% if user.is_authenticated %}app-layout{% else %}auth-layout{% endif %}">
         <a class="skip-link" href="#main-content">Перейти до вмісту</a>
         <div id="toast-container" aria-live="polite"></div>
         <header class="app-sidebar">
             <a class="brand" href="{% url 'planner:dashboard' %}"><span class="brand-mark" aria-hidden="true">{% include 'partials/icon.html' with name='calendar' %}</span><span>Мій розклад<small>Простір для ваших планів</small></span></a>
-            {% if user.is_authenticated %}<button type="button" class="menu-toggle secondary" aria-expanded="false" aria-controls="main-navigation" hidden>Меню <span aria-hidden="true">☰</span></button>{% endif %}
+            {% if user.is_authenticated %}
             <nav id="main-navigation" class="app-nav" aria-label="Основна навігація">
-                {% if user.is_authenticated %}
                 <span class="nav-label">Особистий простір</span>
-                <a href="{% url 'planner:dashboard' %}" {% if request.path == '/' %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='dashboard' %}Дашборд</a>
-                <a href="{% url 'planner:calendar' %}" {% if '/calendar/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='calendar' %}Календар</a>
-                <a href="{% url 'planner:event_list' %}" {% if '/events/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='event' %}Події</a>
-                <a href="{% url 'planner:task_list' %}" {% if '/tasks/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='task' %}Завдання</a>
-                <a href="{% url 'planner:category_list' %}" {% if '/categories/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='category' %}Категорії</a>
+                <a href="{% url 'planner:dashboard' %}" {% if request.path == '/' %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='dashboard' %}<span class="nav-text">Дашборд</span></a>
+                <a href="{% url 'planner:calendar' %}" {% if '/calendar/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='calendar' %}<span class="nav-text">Календар</span></a>
+                <a href="{% url 'planner:event_list' %}" {% if '/events/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='event' %}<span class="nav-text">Події</span></a>
+                <a href="{% url 'planner:task_list' %}" {% if '/tasks/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='task' %}<span class="nav-text">Завдання</span></a>
+                <a href="{% url 'planner:category_list' %}" {% if '/categories/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='category' %}<span class="nav-text">Категорії</span></a>
                 <a href="{% url 'planner:notifications' %}" {% if '/notifications/' in request.path %}aria-current="page"{% endif %}>
                     {% include 'partials/icon.html' with name='bell' %}
-                    Повідомлення
+                    <span class="nav-text">Повідомлення</span>
                     <span id="notification-badge" class="notification-badge" hidden></span>
                 </a>
-                {% else %}
-                <a href="{% url 'accounts:login' %}">Увійти</a>
-                <a href="{% url 'accounts:register' %}">Зареєструватися</a>
-                {% endif %}
-                <div class="nav-utilities">
-                    <button type="button" class="theme-toggle" aria-label="Темна тема" aria-pressed="false" hidden><span class="theme-icon" aria-hidden="true">◐</span><span class="theme-label">Темна тема</span></button>
-                    {% if user.is_authenticated %}<form class="logout-form" method="post" action="{% url 'accounts:logout' %}">
-                        {% csrf_token %}
-                        <button type="submit">{% include 'partials/icon.html' with name='logout' %}Вийти</button>
-                    </form>{% endif %}
-                </div>
             </nav>
+            {% endif %}
+            <div class="nav-utilities">
+                <button type="button" class="theme-toggle" aria-label="Темна тема" aria-pressed="false" hidden><span class="theme-icon" aria-hidden="true">{% include 'partials/icon.html' with name='moon' %}{% include 'partials/icon.html' with name='sun' %}</span><span class="theme-label">Темна тема</span></button>
+                {% if user.is_authenticated %}<form class="logout-form" method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" title="Вийти">{% include 'partials/icon.html' with name='logout' %}<span>Вийти</span></button>
+                </form>{% endif %}
+            </div>
+            {% if user.is_authenticated %}
+            <div class="user-menu">
+                <button type="button" class="user-menu-toggle" aria-haspopup="menu" aria-expanded="false" aria-controls="user-menu-panel" aria-label="Меню користувача: {{ user.username }}">{% include 'accounts/partials/avatar.html' with size='small' %}{% include 'partials/icon.html' with name='chevron' %}</button>
+                <div id="user-menu-panel" class="user-menu-panel" role="menu" aria-hidden="true">
+                    <a role="menuitem" href="{% url 'accounts:profile' %}">{% include 'partials/icon.html' with name='user' %}<span>Профіль</span></a>
+                    <button type="button" role="menuitem" class="theme-toggle" aria-label="Темна тема" aria-pressed="false" hidden><span class="theme-icon" aria-hidden="true">{% include 'partials/icon.html' with name='moon' %}{% include 'partials/icon.html' with name='sun' %}</span><span class="theme-label">Темна тема</span></button>
+                    <form class="logout-form" method="post" action="{% url 'accounts:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" role="menuitem">{% include 'partials/icon.html' with name='logout' %}<span>Вийти</span></button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
         </header>
         <main id="main-content" class="{% block main_class %}{% endblock %}">
             <div id="interaction-status" class="interaction-status" role="status" aria-live="polite" hidden></div>
