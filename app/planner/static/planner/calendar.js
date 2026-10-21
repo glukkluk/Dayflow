@@ -126,6 +126,7 @@ function main() {
         }
     }
 
+    const phone = window.matchMedia("(max-width: 700px)");
     const calendar = new FullCalendar.Calendar(
         document.getElementById("calendar"),
         {
@@ -155,6 +156,19 @@ function main() {
                 listWeek: { text: "Список" },
             },
             height: "auto",
+            // Phones: month cells are tiny, so a day with events shows one
+            // "view events (N)" link that opens the day view instead of the events.
+            dayMaxEvents: phone.matches ? 0 : true,
+            moreLinkContent: (arg) =>
+                phone.matches
+                    ? {
+                          html: `<span class="wd-more-label">Подивитися події</span><span class="wd-more-count" aria-hidden="true">${arg.num}</span><span class="wd-more-sr">(${arg.num})</span>`,
+                      }
+                    : `+ ще ${arg.num}`,
+            moreLinkClick: (arg) => {
+                if (!phone.matches) return "popover";
+                calendar.changeView("timeGridDay", arg.date);
+            },
             firstDay: 1,
             nowIndicator: true,
             editable: true,
@@ -201,8 +215,9 @@ function main() {
                     event.allDay
                         ? `${event.startStr} — ${event.endStr} (кінець не включено, весь день)`
                         : `${displayTime(event.startStr)} — ${displayTime(event.endStr)}`;
-                document.getElementById("event-dialog-category").textContent =
-                    event.extendedProps.category || "Без категорії";
+                const chip = document.getElementById("event-dialog-category");
+                chip.textContent = event.extendedProps.category || "Без категорії";
+                chip.style.setProperty("--dot", event.backgroundColor || event.borderColor || "var(--c-accent)");
                 document.getElementById(
                     "event-dialog-description",
                 ).textContent = event.extendedProps.description;
@@ -221,6 +236,13 @@ function main() {
         },
     );
     document.getElementById("event-close").onclick = () => detail.close();
+    document.getElementById("event-close-x").onclick = () => detail.close();
+    // Click on the dimmed backdrop closes the dialog.
+    detail.addEventListener("click", (e) => {
+        const r = detail.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) detail.close();
+    });
+    phone.addEventListener("change", () => calendar.setOption("dayMaxEvents", phone.matches ? 0 : true));
     calendar.render();
 
     // FullCalendar's sticky day header has hashed class names and a transparent

@@ -793,7 +793,6 @@ button,
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    min-height: 42px;
     padding: 0.65rem 1.05rem;
     border: 1px solid transparent;
     border-radius: 9px;

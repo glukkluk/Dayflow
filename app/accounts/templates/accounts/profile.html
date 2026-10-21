@@ -4,11 +4,7 @@
 {% block content %}
 <div class="profile-content">
 <div class="profile-head">
-    {% include "accounts/partials/avatar.html" with size="large" %}
-    <div>
-        <h1>Налаштування профілю</h1>
-        <p>Користувач: <strong>{{ user.username }}</strong></p>
-    </div>
+    <h1>Налаштування профілю</h1>
 </div>
 
 <section class="card" id="avatar">
@@ -59,7 +55,7 @@
         {% csrf_token %}
         <input type="hidden" name="action" value="password">
         {{ password_form.non_field_errors }}
-        {% for field in password_form %}{% include "accounts/partials/field.html" %}{% endfor %}
+        {% for field in password_form %}{% if field.name == "new_password1" %}{% include "accounts/partials/field.html" with tooltip=True %}{% else %}{% include "accounts/partials/field.html" %}{% endif %}{% endfor %}
         <button type="submit">Змінити пароль</button>
     </form>
 </section>

@@ -2497,3 +2497,438 @@ input[type="color"]:focus {
     color: var(--ink);
     border-color: var(--line);
 }
+
+/* ==========================================================================
+   Round 4
+   ========================================================================== */
+/* Month view on phones: one "view events (N)" link per busy day */
+#calendar .wd-more-label {
+    display: none;
+}
+#calendar .wd-more-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+#calendar .wd-more-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--c-accent), var(--c-accent-2));
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    box-shadow: 0 6px 12px -6px rgba(124, 108, 240, 0.9);
+}
+#calendar :has(> .wd-more-count) {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 0;
+    cursor: pointer;
+}
+
+/* ----- Sidebar brand button: calendar icon swaps to panel icon on hover ----- */
+.brand {
+    gap: 0.8rem;
+}
+.brand-name {
+    color: inherit;
+    min-width: 0;
+}
+.brand-name:hover {
+    text-decoration: none;
+}
+button.brand-mark {
+    position: relative;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    width: 43px;
+    height: 43px;
+    flex: none;
+    color: #fff;
+}
+.brand-mark > svg {
+    grid-area: 1 / 1;
+    transition:
+        opacity 0.25s var(--ease),
+        transform 0.4s var(--ease);
+}
+button.brand-mark > svg:nth-child(2),
+button.brand-mark > svg:nth-child(3) {
+    opacity: 0;
+    transform: scale(0.4) rotate(-40deg);
+}
+button.brand-mark:hover > svg:nth-child(1),
+button.brand-mark:focus-visible > svg:nth-child(1) {
+    opacity: 0;
+    transform: scale(0.4) rotate(40deg);
+}
+button.brand-mark:hover > svg:nth-child(2),
+button.brand-mark:focus-visible > svg:nth-child(2) {
+    opacity: 1;
+    transform: none;
+}
+:root[data-sidebar="collapsed"] button.brand-mark:hover > svg:nth-child(2),
+:root[data-sidebar="collapsed"]
+    button.brand-mark:focus-visible
+    > svg:nth-child(2) {
+    opacity: 0;
+}
+:root[data-sidebar="collapsed"] button.brand-mark:hover > svg:nth-child(3),
+:root[data-sidebar="collapsed"]
+    button.brand-mark:focus-visible
+    > svg:nth-child(3) {
+    opacity: 1;
+    transform: none;
+}
+.app-layout .brand:hover .brand-mark {
+    transform: none;
+}
+button.brand-mark:hover {
+    transform: scale(1.06);
+    filter: none;
+    box-shadow: 0 12px 24px -6px rgba(124, 108, 240, 0.75);
+}
+
+/* ----- Collapsible sidebar (desktop) ----- */
+@media (min-width: 851px) {
+    .app-layout .app-sidebar {
+        transition:
+            width 0.4s var(--ease),
+            padding 0.4s var(--ease);
+    }
+    .app-layout main {
+        transition: margin-left 0.4s var(--ease);
+    }
+    :root[data-sidebar="collapsed"] {
+        --sidebar: 84px;
+    }
+    :root[data-sidebar="collapsed"] .app-sidebar {
+        padding-inline: 0.7rem;
+        overflow-x: hidden;
+    }
+    :root[data-sidebar="collapsed"] .brand {
+        justify-content: center;
+    }
+    :root[data-sidebar="collapsed"] .brand-name,
+    :root[data-sidebar="collapsed"] .nav-label,
+    :root[data-sidebar="collapsed"] .app-nav .nav-text {
+        display: none;
+    }
+    :root[data-sidebar="collapsed"] .app-nav > a {
+        justify-content: center;
+        padding: 0.8rem 0;
+    }
+    :root[data-sidebar="collapsed"] .app-nav > a:hover {
+        transform: none;
+    }
+    :root[data-sidebar="collapsed"] .app-nav .notification-badge {
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        margin: 0;
+        min-width: 1rem;
+        font-size: 0.6rem;
+        padding: 0 0.3rem;
+    }
+    :root[data-sidebar="collapsed"] .nav-utilities {
+        flex-direction: column;
+    }
+    :root[data-sidebar="collapsed"] .nav-utilities .theme-label,
+    :root[data-sidebar="collapsed"] .nav-utilities .logout-form button > span {
+        display: none;
+    }
+    :root[data-sidebar="collapsed"] .nav-utilities .theme-toggle,
+    :root[data-sidebar="collapsed"] .nav-utilities .logout-form button {
+        gap: 0;
+        width: 100%;
+    }
+}
+@media (max-width: 850px) {
+    button.brand-mark > svg:nth-child(n + 2) {
+        display: none;
+    }
+}
+
+/* ----- Workspace profile button a bit larger (desktop) ----- */
+.workspace-bar > a {
+    padding: 0.4rem 1.2rem 0.4rem 0.4rem;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+}
+.workspace-bar .avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 1.05rem;
+}
+
+/* ----- Form actions bar: rounded, padded, badge aligned right (desktop) ----- */
+.form-actions {
+    position: sticky;
+    bottom: 1rem;
+    margin-top: 1.5rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--page) 80%, transparent);
+    box-shadow: var(--shadow);
+}
+.form-actions .save-state {
+    margin-left: auto;
+}
+@media (max-width: 850px) {
+    .form-actions {
+        bottom: 88px;
+        flex-wrap: wrap;
+    }
+    .form-actions .save-state {
+        order: -2;
+        flex: 0 0 auto;
+        margin-left: 0;
+    }
+    .form-actions::before {
+        content: "";
+        order: -1;
+        flex: 0 0 100%;
+        height: 0;
+    }
+    .form-actions .conflict-warning {
+        order: -2;
+    }
+}
+
+/* ----- Dashboard: today card actions + dialogs ----- */
+.wd-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.wd-icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    flex: none;
+    background: var(--soft);
+    color: var(--accent);
+    border-radius: 12px;
+    box-shadow: none;
+}
+.wd-icon-btn:hover {
+    background: color-mix(in srgb, var(--c-accent) 24%, transparent);
+    box-shadow: none;
+    transform: translateY(-1px);
+    filter: none;
+}
+.wd-icon-btn .icon {
+    width: 18px;
+    height: 18px;
+}
+:root[data-color-scheme="dark"] .wd-icon-btn {
+    background: var(--soft);
+    color: var(--accent);
+}
+.wd-more {
+    margin-top: 0.8rem;
+    text-align: center;
+}
+
+dialog,
+.wd-dialog {
+    width: min(34rem, calc(100vw - 2rem));
+    max-height: min(85vh, 40rem);
+    padding: 1.4rem;
+    color: var(--ink);
+    background: var(--raised);
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(24px) saturate(1.4);
+    box-shadow: 0 40px 90px -20px rgba(40, 20, 120, 0.5);
+    overflow: auto;
+    margin: auto;
+}
+dialog[open] {
+    animation: dialog-in 0.35s var(--ease) both;
+}
+dialog[open]::backdrop {
+    animation: fade-in 0.3s ease both;
+}
+@keyframes dialog-in {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.96);
+    }
+}
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+dialog::backdrop {
+    background: rgba(30, 20, 80, 0.38);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+:root[data-color-scheme="dark"] dialog::backdrop {
+    background: rgba(5, 3, 20, 0.6);
+}
+.wd-dialog-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
+}
+.wd-dialog-head h2 {
+    margin: 0.4rem 0 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+#today-dialog .wd-dialog-head h2 {
+    margin-top: 0;
+}
+.wd-dialog .wd-timeline {
+    margin: 0;
+}
+.wd-dialog .wd-chip {
+    --dot: var(--c-accent);
+}
+#event-dialog-category::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--dot);
+}
+#event-dialog-category:empty {
+    display: none;
+}
+.wd-dialog-meta {
+    display: grid;
+    gap: 0.8rem;
+}
+.wd-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0;
+    padding: 0.8rem 1rem;
+    border-radius: 16px;
+    background: var(--soft);
+    color: var(--accent);
+    font-weight: 700;
+}
+.wd-meta-row .icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+}
+.wd-meta-row span {
+    color: var(--ink);
+    font-size: 0.95rem;
+}
+.wd-meta-text {
+    margin: 0;
+    color: var(--ink);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.wd-meta-text:empty,
+.wd-meta-note:empty {
+    display: none;
+}
+.wd-meta-note {
+    margin: 0;
+    padding: 0.6rem 0.9rem;
+    border-radius: 14px;
+    background: rgba(255, 176, 74, 0.16);
+    font-size: 0.85rem;
+    color: var(--ink);
+}
+.wd-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.4rem;
+}
+.wd-dialog-actions .button,
+.wd-dialog-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.65rem 1.1rem;
+}
+.wd-dialog-actions .icon {
+    width: 18px;
+    height: 18px;
+}
+.wd-dialog-actions .secondary {
+    margin-left: auto;
+}
+.button.danger-soft {
+    background: rgba(255, 122, 147, 0.16);
+    color: #d6395c;
+    box-shadow: none;
+}
+.button.danger-soft:hover {
+    background: rgba(255, 122, 147, 0.26);
+    box-shadow: none;
+}
+:root[data-color-scheme="dark"] .button.danger-soft {
+    background: rgba(255, 122, 147, 0.18);
+    color: #ff9db0;
+}
+.wd-conflicts {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+}
+.wd-conflicts li {
+    padding: 0.7rem 1rem;
+    border-radius: 14px;
+    background: rgba(255, 176, 74, 0.14);
+    font-size: 0.9rem;
+}
+@media (max-width: 560px) {
+    dialog,
+    .wd-dialog {
+        padding: 1.1rem;
+        border-radius: 24px;
+    }
+    .wd-dialog-actions .secondary {
+        margin-left: 0;
+        flex: 1 1 100%;
+    }
+    .wd-dialog-actions .button {
+        flex: 1 1 auto;
+    }
+}
+
+/* ----- Profile head: just the title ----- */
+.profile-head {
+    display: block;
+    margin-bottom: 1.2rem;
+}
+.profile-head h1 {
+    margin: 0;
+}

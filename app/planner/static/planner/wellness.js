@@ -100,4 +100,42 @@
         field.append(input, value);
         input.addEventListener("input", () => { value.textContent = input.value.toUpperCase(); });
     });
+
+    // Collapsible sidebar (desktop): click the logo mark.
+    const sidebarToggle = document.querySelector(".sidebar-toggle");
+    if (sidebarToggle) {
+        const narrow = window.matchMedia("(max-width: 850px)");
+        const apply = (collapsed) => {
+            if (collapsed) root.dataset.sidebar = "collapsed";
+            else delete root.dataset.sidebar;
+            const label = collapsed ? "Розгорнути бічну панель" : "Згорнути бічну панель";
+            sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
+            sidebarToggle.setAttribute("aria-label", label);
+            sidebarToggle.title = label;
+        };
+        apply(root.dataset.sidebar === "collapsed");
+        sidebarToggle.addEventListener("click", () => {
+            if (narrow.matches) {
+                window.location.href = sidebarToggle.dataset.home;
+                return;
+            }
+            const collapsed = root.dataset.sidebar !== "collapsed";
+            apply(collapsed);
+            try { localStorage.setItem("planner-sidebar", collapsed ? "collapsed" : "expanded"); } catch { /* not persisted */ }
+        });
+    }
+
+    // Dialog openers / closers (dashboard "all events today").
+    document.addEventListener("click", (event) => {
+        const opener = event.target.closest("[data-open-dialog]");
+        if (opener) document.getElementById(opener.dataset.openDialog)?.showModal();
+        const closer = event.target.closest("[data-close-dialog]");
+        if (closer) closer.closest("dialog")?.close();
+        if (event.target instanceof HTMLDialogElement && event.target.id !== "conflict-dialog") {
+            // Only the dimmed backdrop (outside the box) closes it, not the dialog's own padding.
+            const r = event.target.getBoundingClientRect();
+            const outside = event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom;
+            if (outside) event.target.close();
+        }
+    });
 })();

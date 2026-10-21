@@ -72,10 +72,13 @@
         <section class="wd-card wd-today" aria-labelledby="events-heading" data-reveal>
             <div class="wd-card-head">
                 <h2 id="events-heading">Розклад на сьогодні</h2>
-                <a class="wd-link" href="{% url 'planner:event_list' %}">Усі події {% include 'partials/icon.html' with name='arrow' %}</a>
+                <div class="wd-head-actions">
+                    <a class="wd-link" href="{% url 'planner:event_list' %}">Усі події {% include 'partials/icon.html' with name='arrow' %}</a>
+                    {% if today_events %}<button type="button" class="wd-icon-btn" data-open-dialog="today-dialog" aria-haspopup="dialog" aria-label="Розгорнути: усі події на сьогодні" title="Розгорнути">{% include 'partials/icon.html' with name='expand' %}</button>{% endif %}
+                </div>
             </div>
             <ol class="wd-timeline">
-                {% for item in today_events %}
+                {% for item in today_events|slice:":5" %}
                 <li class="{% if item.is_current %}is-current{% endif %}" style="--dot: {{ item.occurrence.event.category.color|default:'var(--c-accent)' }}">
                     <time>{% if item.occurrence.event.all_day %}Весь день{% else %}{{ item.occurrence.start|date:time_fmt }}<small>{{ item.occurrence.end|date:time_fmt }}</small>{% endif %}</time>
                     <div class="wd-timeline-body">
@@ -87,6 +90,7 @@
                 <li class="wd-empty">{% include 'partials/icon.html' with name='sparkle' %}<span>Сьогодні подій немає. Можна запланувати щось нове.</span></li>
                 {% endfor %}
             </ol>
+            {% if today_events|length > 5 %}<p class="wd-muted wd-more">Показано 5 із {{ today_events|length }} подій.</p>{% endif %}
         </section>
 
         <section class="wd-card wd-tasks" aria-labelledby="tasks-heading" data-reveal>
@@ -150,5 +154,24 @@
             <p class="wd-muted wd-note">Ураховано повторення та автопланування. Події на весь день не входять до розрахунку.</p>
         </section>
     </div>
+    {% if today_events %}
+    <dialog id="today-dialog" class="wd-dialog" aria-labelledby="today-dialog-title">
+        <div class="wd-dialog-head">
+            <div><h2 id="today-dialog-title">Події на сьогодні</h2><p class="wd-muted">{{ today|date:date_fmt }} · усього {{ today_events|length }}</p></div>
+            <button type="button" class="wd-icon-btn" data-close-dialog aria-label="Закрити" title="Закрити">{% include 'partials/icon.html' with name='close' %}</button>
+        </div>
+        <ol class="wd-timeline">
+            {% for item in today_events %}
+                <li class="{% if item.is_current %}is-current{% endif %}" style="--dot: {{ item.occurrence.event.category.color|default:'var(--c-accent)' }}">
+                    <time>{% if item.occurrence.event.all_day %}Весь день{% else %}{{ item.occurrence.start|date:time_fmt }}<small>{{ item.occurrence.end|date:time_fmt }}</small>{% endif %}</time>
+                    <div class="wd-timeline-body">
+                        <a href="{% url 'planner:event_detail' item.occurrence.event.pk %}">{{ item.occurrence.event.title }}</a>
+                        <span class="wd-chip">{% if item.is_current %}<i class="wd-live"></i>Триває{% else %}{{ item.occurrence.event.category|default:"Без категорії" }}{% endif %}</span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ol>
+    </dialog>
+    {% endif %}
 {% endif %}
 {% endblock %}

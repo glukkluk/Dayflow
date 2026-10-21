@@ -49,23 +49,33 @@
     >
     <div hidden id="calendar-csrf">{% csrf_token %}</div>
     {{ calendar_config|json_script:"calendar-config" }}
-    <dialog id="event-dialog" aria-labelledby="event-dialog-title">
-        <h2 id="event-dialog-title"></h2>
-        <p id="event-dialog-time"></p>
-        <p id="event-dialog-category"></p>
-        <p id="event-dialog-description"></p>
-        <p id="event-dialog-series"></p>
-        <div class="actions">
-            <a id="event-edit">Редагувати</a>
-            <a id="event-delete">Видалити</a>
-            <button type="button" id="event-close">Закрити</button>
+    <dialog id="event-dialog" class="wd-dialog" aria-labelledby="event-dialog-title">
+        <div class="wd-dialog-head">
+            <div>
+                <span id="event-dialog-category" class="wd-chip"></span>
+                <h2 id="event-dialog-title"></h2>
+            </div>
+            <button type="button" class="wd-icon-btn" id="event-close-x" aria-label="Закрити" title="Закрити">{% include 'partials/icon.html' with name='close' %}</button>
+        </div>
+        <div class="wd-dialog-meta">
+            <p class="wd-meta-row">{% include 'partials/icon.html' with name='event' %}<span id="event-dialog-time"></span></p>
+            <p id="event-dialog-description" class="wd-meta-text"></p>
+            <p id="event-dialog-series" class="wd-meta-note"></p>
+        </div>
+        <div class="wd-dialog-actions">
+            <a id="event-edit" class="button">{% include 'partials/icon.html' with name='edit' %}Редагувати</a>
+            <a id="event-delete" class="button danger-soft">{% include 'partials/icon.html' with name='delete' %}Видалити</a>
+            <button type="button" id="event-close" class="secondary">Закрити</button>
         </div>
     </dialog>
-    <dialog id="conflict-dialog" aria-labelledby="conflict-title">
-        <h2 id="conflict-title">Знайдено конфлікти</h2>
-        <p id="conflict-range"></p>
-        <ul id="conflict-list"></ul>
-        <button type="button" id="conflict-save">Зберегти все одно</button>
-        <button type="button" id="conflict-cancel">Скасувати</button>
+    <dialog id="conflict-dialog" class="wd-dialog" aria-labelledby="conflict-title">
+        <div class="wd-dialog-head">
+            <div><h2 id="conflict-title">Знайдено конфлікти</h2><p id="conflict-range" class="wd-muted"></p></div>
+        </div>
+        <ul id="conflict-list" class="wd-conflicts"></ul>
+        <div class="wd-dialog-actions">
+            <button type="button" id="conflict-save">Зберегти все одно</button>
+            <button type="button" id="conflict-cancel" class="secondary">Скасувати</button>
+        </div>
     </dialog>
 {% endblock %}

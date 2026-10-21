@@ -1,5 +1,8 @@
 (() => {
     "use strict";
+    try {
+        if (localStorage.getItem("planner-sidebar") === "collapsed") document.documentElement.dataset.sidebar = "collapsed";
+    } catch { /* default: expanded */ }
     const key = "planner-theme";
     const system = window.matchMedia("(prefers-color-scheme: dark)");
     let preference = null;
