@@ -1,34 +1,56 @@
 {% extends "base.html" %}
-{% block title %}Події — Особистий розклад{% endblock %}
+{% block title %}Події — Dayflow{% endblock %}
 {% block content %}
-<div class="page-heading"><div><p class="dashboard-eyebrow">Час для важливого</p><h1>Події</h1><p>Зустрічі, плани та особливі моменти в одному місці.</p></div><a class="button" href="{% url 'planner:event_create' %}">+ Додати подію</a></div>
-<form method="get" class="search-panel">
+<div class="page-heading"><div><p class="dashboard-eyebrow">Час для важливого</p><h1>Події</h1><p>Зустрічі, плани та особливі моменти в одному місці.</p></div><a class="button" href="{% url 'planner:event_create' %}?from=events">+ Додати подію</a></div>
+<form method="get" class="search-panel event-search">
     <label for="search">Пошук за назвою або описом</label>
-    <input id="search" name="q" value="{{ query }}" type="search">
-    <button type="submit">Знайти</button>
+    <div class="event-search-controls"><input id="search" name="q" value="{{ query }}" type="search" placeholder="Наприклад, зустріч"><button type="submit">Знайти</button></div>
+    {% if period != 'all' %}<input type="hidden" name="period" value="{{ period }}">{% endif %}
 </form>
-<p class="timezone-note">Часовий пояс: {{ user.profile.timezone }}</p>
-<ul class="item-list event-grid">
-{% for event in page_obj %}
-    <li class="record-card">
-        <div class="record-heading"><h2><a href="{% url 'planner:event_detail' event.pk %}">{{ event.title }}</a></h2>
-            {% url 'planner:event_edit' event.pk as edit_url %}{% url 'planner:event_delete' event.pk as delete_url %}
-            {% include 'planner/partials/item_actions.html' with label=event.title %}
-        </div>
-        <p>{{ event.start|date:datetime_fmt }} — {{ event.end|date:datetime_fmt }}</p>
-        {% if event.all_day %}<p>Весь день</p>{% endif %}
-        {% if event.recurrence != "none" %}<p>{{ event.get_recurrence_display }}{% if event.recurrence_until %} до {{ event.recurrence_until|date:date_fmt }} включно{% endif %}</p>{% endif %}
-        <p>{{ event.category|default:"Без категорії" }}</p>
-    </li>
+<nav class="event-period-nav" aria-label="Швидка навігація за часом">
+    <a href="{% url 'planner:event_list' %}?q={{ query|urlencode }}"{% if period == 'all' %} aria-current="page"{% endif %}>Усі <span>{{ total_count }}</span></a>
+    {% for tab in period_tabs %}
+    <a href="{% url 'planner:event_list' %}?q={{ query|urlencode }}&amp;period={{ tab.key }}"{% if period == tab.key %} aria-current="page"{% endif %}>{{ tab.label }} <span>{{ tab.count }}</span></a>
+    {% endfor %}
+</nav>
+<p class="timezone-note">Часовий пояс: {{ user.profile.timezone }} · Події згруповано за датою початку (для повторюваних — за початком серії).</p>
+<div class="event-timeline">
+{% for group in period_groups %}
+<section class="event-period" id="period-{{ group.key }}" aria-labelledby="period-title-{{ group.key }}">
+    <div class="event-period-heading"><h2 id="period-title-{{ group.key }}">{{ group.label }}</h2><span>{{ group.events|length }} на цій сторінці</span></div>
+    <ul class="item-list event-grid">
+    {% for event in group.events %}
+        <li class="record-card event-record">
+            <div class="record-heading">
+                <h3><a class="record-title-link" href="{% url 'planner:event_detail' event.pk %}?from=events">{{ event.title }}</a></h3>
+                {% url 'planner:event_edit' event.pk as edit_url %}{% url 'planner:event_delete' event.pk as delete_url %}
+                {% include 'planner/partials/item_actions.html' with label=event.title source='events' %}
+            </div>
+            <div class="record-pills">
+                <span class="record-chip">{% if event.all_day %}Весь день{% else %}За розкладом{% endif %}</span>
+                {% if event.recurrence != 'none' %}<span class="record-chip">{{ event.get_recurrence_display }}</span>{% endif %}
+            </div>
+            <dl class="record-fields">
+                <div><dt>Початок</dt><dd>{{ event.start|date:datetime_fmt }}</dd></div>
+                <div><dt>Завершення</dt><dd>{{ event.end|date:datetime_fmt }}</dd></div>
+                <div><dt>Категорія</dt><dd>{% if event.category %}<span class="color-swatch" style="background-color:{{ event.category.color }}"></span>{% endif %}{{ event.category|default:'Без категорії' }}</dd></div>
+                {% if event.recurrence_until %}<div><dt>Повторювати до</dt><dd>{{ event.recurrence_until|date:date_fmt }}</dd></div>{% endif %}
+            </dl>
+            {% if event.description %}<p class="record-description">{{ event.description|truncatechars:130 }}</p>{% endif %}
+            <span class="record-open">Переглянути деталі {% include 'partials/icon.html' with name='arrow' %}</span>
+        </li>
+    {% endfor %}
+    </ul>
+</section>
 {% empty %}
-    <li class="empty-state"><strong>Подій не знайдено</strong>Спробуйте інший пошук або додайте нову подію.<br><a class="button" href="{% url 'planner:event_create' %}">+ Створити подію</a></li>
+<div class="empty-state"><strong>Подій не знайдено</strong><p>Спробуйте інший пошук або виберіть інший період.</p><a class="button" href="{% url 'planner:event_create' %}?from=events">+ Створити подію</a></div>
 {% endfor %}
-</ul>
+</div>
 {% if page_obj.has_other_pages %}
-<nav aria-label="Сторінки подій">
-    {% if page_obj.has_previous %}<a href="?q={{ query|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Попередня</a>{% endif %}
+<nav class="record-pagination" aria-label="Сторінки подій">
+    {% if page_obj.has_previous %}<a href="?q={{ query|urlencode }}&amp;period={{ period }}&amp;page={{ page_obj.previous_page_number }}">← Попередня</a>{% endif %}
     <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
-    {% if page_obj.has_next %}<a href="?q={{ query|urlencode }}&amp;page={{ page_obj.next_page_number }}">Наступна</a>{% endif %}
+    {% if page_obj.has_next %}<a href="?q={{ query|urlencode }}&amp;period={{ period }}&amp;page={{ page_obj.next_page_number }}">Наступна →</a>{% endif %}
 </nav>
 {% endif %}
 {% endblock %}

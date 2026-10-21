@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}{{ title }} — Особистий розклад{% endblock %}
+{% block title %}{{ title }} — Dayflow{% endblock %}
 {% block scripts %}{{ form.media }}{% endblock %}
 {% block content %}
 <div class="editor-content">
 <p class="dashboard-eyebrow">Ваші плани починаються тут</p>
 <h1>{{ title }}</h1>
-<a class="back-link" href="{% url cancel_url %}">← Назад до списку</a>
+<a class="back-link" href="{% if back_url %}{{ back_url }}{% else %}{% url cancel_url %}{% endif %}">← {{ back_label|default:"Назад до списку" }}</a>
 <form method="post" class="form-panel" data-edit-form>
     {% csrf_token %}
     <p class="form-guidance">Поля з позначкою <span aria-hidden="true">*</span> обов'язкові. Решту можна заповнити пізніше.{% if form.start or form.deadline %} Часовий пояс: {{ user.profile.timezone }}.{% endif %}</p>
@@ -35,7 +35,7 @@
         <button type="submit" name="force" value="true">Зберегти все одно</button>
     </section>
     {% else %}<button type="submit">Зберегти</button>{% endif %}
-    <a href="{% url cancel_url %}">Скасувати</a>
+    <a href="{% if back_url %}{{ back_url }}{% else %}{% url cancel_url %}{% endif %}">Скасувати</a>
     <span class="save-state" aria-live="polite"></span>
     </div>
 </form>

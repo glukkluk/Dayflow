@@ -67,6 +67,7 @@ def serialize_occurrence(occurrence, tz):
             "description": event.description,
             "occurrence_start": occurrence.start.isoformat(),
             "move_url": reverse("planner:event_move", args=[event.pk]),
+            "detail_url": reverse("planner:event_detail", args=[event.pk]),
             "edit_url": reverse("planner:event_edit", args=[event.pk]),
             "delete_url": reverse("planner:event_delete", args=[event.pk]),
             "category": event.category.name if event.category else None,

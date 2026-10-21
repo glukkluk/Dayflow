@@ -11,7 +11,6 @@ function main() {
     );
     const DateTime = luxon.DateTime;
     const csrf = document.querySelector("#calendar-csrf input").value;
-    const detail = document.getElementById("event-dialog");
     const conflictDialog = document.getElementById("conflict-dialog");
     let pending = false;
 
@@ -142,7 +141,9 @@ function main() {
                 minute: "2-digit",
                 hour12: config.hour12,
             },
-            initialView: window.matchMedia("(max-width: 700px)").matches ? "timeGridDay" : "timeGridWeek",
+            initialView: window.matchMedia("(max-width: 700px)").matches
+                ? "timeGridDay"
+                : "timeGridWeek",
             headerToolbar: {
                 left: "prev,next today",
                 center: "title",
@@ -205,44 +206,26 @@ function main() {
                 url.searchParams.set("start", start.toISO());
                 url.searchParams.set("end", end.toISO());
                 url.searchParams.set("all_day", String(info.allDay));
+                url.searchParams.set("from", "calendar");
                 window.location.assign(url);
             },
             eventClick: (info) => {
-                const event = info.event;
-                document.getElementById("event-dialog-title").textContent =
-                    event.title;
-                document.getElementById("event-dialog-time").textContent =
-                    event.allDay
-                        ? `${event.startStr} — ${event.endStr} (кінець не включено, весь день)`
-                        : `${displayTime(event.startStr)} — ${displayTime(event.endStr)}`;
-                const chip = document.getElementById("event-dialog-category");
-                chip.textContent = event.extendedProps.category || "Без категорії";
-                chip.style.setProperty("--dot", event.backgroundColor || event.borderColor || "var(--c-accent)");
-                document.getElementById(
-                    "event-dialog-description",
-                ).textContent = event.extendedProps.description;
-                document.getElementById("event-dialog-series").textContent =
-                    event.extendedProps.is_recurring
-                        ? "Редагування та видалення стосуються всієї серії."
-                        : "";
-                document.getElementById("event-edit").href =
-                    event.extendedProps.edit_url;
-                document.getElementById("event-delete").href =
-                    event.extendedProps.delete_url;
-                detail.showModal();
+                info.jsEvent.preventDefault();
+                if (pending) return;
+                const url = new URL(
+                    info.event.extendedProps.detail_url,
+                    window.location.origin,
+                );
+                url.searchParams.set("from", "calendar");
+                window.location.assign(url.href);
             },
             eventDrop: moveEvent,
             eventResize: moveEvent,
         },
     );
-    document.getElementById("event-close").onclick = () => detail.close();
-    document.getElementById("event-close-x").onclick = () => detail.close();
-    // Click on the dimmed backdrop closes the dialog.
-    detail.addEventListener("click", (e) => {
-        const r = detail.getBoundingClientRect();
-        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) detail.close();
-    });
-    phone.addEventListener("change", () => calendar.setOption("dayMaxEvents", phone.matches ? 0 : true));
+    phone.addEventListener("change", () =>
+        calendar.setOption("dayMaxEvents", phone.matches ? 0 : true),
+    );
     calendar.render();
 
     // FullCalendar's sticky day header has hashed class names and a transparent
@@ -250,9 +233,12 @@ function main() {
     const root = document.getElementById("calendar");
     let tagTimer = 0;
     const tagSticky = () => {
-        root.querySelectorAll(".wd-sticky").forEach((el) => el.classList.remove("wd-sticky"));
+        root.querySelectorAll(".wd-sticky").forEach((el) =>
+            el.classList.remove("wd-sticky"),
+        );
         root.querySelectorAll("*").forEach((el) => {
-            if (getComputedStyle(el).position === "sticky") el.classList.add("wd-sticky");
+            if (getComputedStyle(el).position === "sticky")
+                el.classList.add("wd-sticky");
         });
     };
     new MutationObserver(() => {

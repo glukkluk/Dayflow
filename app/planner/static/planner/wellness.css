@@ -2693,6 +2693,7 @@ button.brand-mark:hover {
     .form-actions {
         bottom: 88px;
         flex-wrap: wrap;
+        justify-content: space-around;
     }
     .form-actions .save-state {
         order: -2;
@@ -2931,4 +2932,450 @@ dialog::backdrop {
 }
 .profile-head h1 {
     margin: 0;
+}
+
+/* Dayflow: accessible event timeline, legible record data and detail layout. */
+.event-search {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+.event-search-controls {
+    display: flex;
+    gap: 0.75rem;
+}
+.event-search-controls input {
+    flex: 1;
+    min-width: 0;
+}
+.event-period-nav {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.55rem;
+    padding: 0.25rem 0.1rem 0.8rem;
+    margin: 0.8rem 0 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scroll-snap-type: x proximity;
+}
+.event-period-nav a {
+    flex: none;
+    scroll-snap-align: start;
+    display: inline-flex;
+    gap: 0.6rem;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    padding: 0.65rem 0.9rem;
+    background: var(--glass);
+    color: var(--ink);
+    font-size: 0.83rem;
+    font-weight: 700;
+    transition:
+        border-color 0.2s,
+        background 0.2s,
+        color 0.2s;
+}
+.event-period-nav a:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+}
+.event-period-nav a[aria-current="page"] {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.event-period-nav span {
+    display: grid;
+    place-items: center;
+    min-width: 1.65rem;
+    padding: 0.13rem 0.3rem;
+    border-radius: 99px;
+    background: var(--soft);
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+.event-period-nav a[aria-current="page"] span {
+    background: #ffffff33;
+    color: inherit;
+}
+.event-timeline {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 1.1rem;
+}
+.event-period {
+    min-width: 0;
+    scroll-margin-top: 1.5rem;
+}
+.event-period-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    padding: 0 0 0.75rem;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid var(--line);
+}
+.event-period-heading h2 {
+    margin: 0;
+    font-size: 1.12rem;
+    font-weight: 800;
+}
+.event-period-heading > span {
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+.event-grid,
+.task-grid {
+    align-items: stretch;
+}
+.event-grid > .record-card,
+.task-grid > .record-card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1rem, 2vw, 1.45rem);
+    border-radius: 22px;
+}
+.record-card .record-heading {
+    align-items: flex-start;
+    margin-bottom: 0.85rem;
+}
+.record-card .record-heading h2,
+.record-card .record-heading h3 {
+    font-size: 1.04rem;
+    line-height: 1.35;
+    margin: 0.35rem 0 0;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+.record-card .record-heading .record-title-link {
+    color: var(--ink);
+}
+.record-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1rem;
+}
+.record-chip {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    background: var(--soft);
+    color: var(--accent);
+    border-radius: 999px;
+    font-size: 0.73rem;
+    line-height: 1.3;
+    font-weight: 750;
+}
+.record-chip.status-done {
+    color: #137b67;
+    background: #1ec89a1e;
+}
+.record-chip.status-in_progress {
+    color: #3477a7;
+    background: #3899da1e;
+}
+.record-chip.status-todo {
+    color: #a16a10;
+    background: #eda83d1e;
+}
+.record-fields {
+    margin: 0;
+    display: grid;
+    gap: 0;
+}
+.record-fields > div {
+    display: grid;
+    grid-template-columns: minmax(85px, 38%) minmax(0, 1fr);
+    gap: 0.55rem;
+    padding: 0.65rem 0;
+    border-top: 1px solid var(--line);
+    align-items: baseline;
+}
+.record-fields dt {
+    color: var(--muted);
+    font-size: 0.79rem;
+    font-weight: 600;
+}
+.record-fields dd {
+    margin: 0;
+    font-size: 0.83rem;
+    font-weight: 700;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+.record-fields .color-swatch,
+.event-detail-category .color-swatch {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    margin-right: 0.4rem;
+    vertical-align: baseline;
+}
+.record-description {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.65;
+    border-top: 1px solid var(--line);
+    padding-top: 0.75rem;
+    margin: 0.35rem 0 0;
+    overflow-wrap: anywhere;
+}
+.event-record {
+    position: relative;
+    cursor: pointer;
+}
+.event-record .record-title-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 1;
+}
+.event-record:focus-within {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+.event-record .item-actions {
+    position: relative;
+    z-index: 2;
+}
+.record-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 800;
+    margin-top: auto;
+    padding-top: 0.9rem;
+}
+.record-open .icon {
+    width: 16px;
+    height: 16px;
+}
+.task-record .task-record-action {
+    margin-top: auto;
+}
+.record-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem 0;
+    font-size: 0.87rem;
+}
+.record-pagination a {
+    font-weight: 700;
+}
+
+/* The event details are a first-class page, not a leftover unstyled view. */
+.event-detail-page {
+    width: 100%;
+    max-width: 1080px;
+    margin-inline: auto;
+}
+.event-detail-page > .back-link {
+    display: inline-flex;
+    margin: 0.3rem 0 1rem;
+}
+.event-detail-page .page-heading {
+    align-items: center;
+}
+.event-detail-page .page-heading h1 {
+    overflow-wrap: anywhere;
+}
+.event-detail-card {
+    max-width: none;
+    padding: clamp(1.3rem, 3vw, 2.3rem);
+    border-radius: 26px;
+}
+.event-detail-lead {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.event-detail-section {
+    padding: 1.15rem 0;
+    border-top: 1px solid var(--line);
+}
+.event-detail-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 1.07rem;
+    margin: 0 0 1rem;
+}
+.event-detail-section h2 .icon {
+    color: var(--accent);
+    width: 20px;
+    height: 20px;
+}
+.event-detail-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem 1.5rem;
+}
+.event-detail-fields > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    border: 0;
+    padding: 0.2rem 0;
+}
+.event-detail-fields dt {
+    font-size: 0.82rem;
+}
+.event-detail-fields dd {
+    font-size: 0.95rem;
+}
+.event-detail-category {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    font-weight: 700;
+}
+.event-detail-description {
+    color: var(--ink);
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+.event-detail-description p:last-child {
+    margin-bottom: 0;
+}
+.event-detail-hint {
+    margin: 0;
+    padding: 1rem;
+    border-radius: 14px;
+    background: var(--soft);
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+.notification-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+.notification-actions form {
+    margin: 0;
+}
+.notification-actions .danger-soft {
+    box-shadow: none;
+}
+
+/* Sidebar shrink should release the full width immediately, without recenter jumps. */
+@media (min-width: 851px) {
+    .app-layout main {
+        max-width: none;
+        width: auto;
+        min-width: 0;
+        margin-left: calc(var(--sidebar) + 28px);
+        margin-right: 14px;
+        transition: margin-left 0.4s var(--ease);
+    }
+    /* Undo the old >1750px offset, which left a permanent empty strip. */
+    :root[data-sidebar="collapsed"] .app-layout main,
+    .app-layout main {
+        margin-left: calc(var(--sidebar) + 28px);
+    }
+    .app-layout .brand:hover .brand-mark,
+    button.brand-mark:hover {
+        transform: none;
+    }
+    button.brand-mark > svg {
+        transform: none !important;
+        transition: opacity 0.12s ease !important;
+        will-change: opacity;
+    }
+    button.brand-mark > svg:nth-child(n + 2) {
+        opacity: 0;
+    }
+    button.brand-mark:hover > svg:nth-child(1),
+    button.brand-mark:focus-visible > svg:nth-child(1) {
+        opacity: 0;
+    }
+    button.brand-mark:hover > svg:nth-child(2),
+    button.brand-mark:focus-visible > svg:nth-child(2) {
+        opacity: 1;
+    }
+    :root[data-sidebar="collapsed"] button.brand-mark:hover > svg:nth-child(2),
+    :root[data-sidebar="collapsed"]
+        button.brand-mark:focus-visible
+        > svg:nth-child(2) {
+        opacity: 0;
+    }
+    :root[data-sidebar="collapsed"] button.brand-mark:hover > svg:nth-child(3),
+    :root[data-sidebar="collapsed"]
+        button.brand-mark:focus-visible
+        > svg:nth-child(3) {
+        opacity: 1;
+    }
+}
+@media (max-width: 700px) {
+    .event-detail-fields {
+        grid-template-columns: 1fr;
+    }
+    .event-period-nav {
+        margin-inline: -0.35rem;
+        padding-inline: 0.35rem;
+    }
+}
+@media (max-width: 560px) {
+    .event-search-controls {
+        flex-wrap: wrap;
+    }
+    .event-search-controls button {
+        flex: none;
+    }
+    .record-fields > div {
+        grid-template-columns: minmax(75px, 36%) minmax(0, 1fr);
+    }
+    .wd-hero {
+        grid-template-columns: minmax(0, 1fr) 100px;
+        gap: 0 0.55rem;
+    }
+    .wd-hero-ring {
+        width: 100px;
+    }
+    .wd-hero-text h1 {
+        min-width: 0;
+        font-size: clamp(1.15rem, 4.7vw, 1.4rem);
+    }
+    .wd-hero-text .wd-eyebrow {
+        min-width: 0;
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        flex-wrap: wrap;
+        font-size: 0.68rem;
+    }
+    .wd-hero-ring .wd-ring-label strong {
+        font-size: 1.38rem;
+    }
+}
+@media (min-width: 561px) and (max-width: 850px) {
+    .wd-hero {
+        grid-template-columns: minmax(0, 1fr) 112px;
+    }
+    .wd-hero-ring {
+        width: 112px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .app-layout main,
+    .app-layout .app-sidebar,
+    button.brand-mark > svg {
+        transition: none !important;
+    }
 }

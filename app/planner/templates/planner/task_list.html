@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Завдання — Особистий розклад{% endblock %}
+{% block title %}Завдання — Dayflow{% endblock %}
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
         integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
         crossorigin="anonymous" defer></script>
 {% endblock %}
 {% block content %}
-<div class="page-heading"><div><p class="dashboard-eyebrow">Крок за кроком до мети</p><h1>Завдання</h1><p>Зосередьтеся на важливому. Решта — за розкладом.</p></div><div class="page-actions"><a class="button secondary" href="{% url 'planner:task_autoplan' %}">✦ Автопланування</a><a class="button" href="{% url 'planner:task_create' %}">+ Додати завдання</a></div></div>
+<div class="page-heading"><div><p class="dashboard-eyebrow">Крок за кроком до мети</p><h1>Завдання</h1><p>Зосередьтеся на важливому. Решта — за розкладом.</p></div><div class="page-actions"><a class="button secondary" href="{% url 'planner:task_autoplan' %}">✦ Автопланування</a><a class="button" href="{% url 'planner:task_create' %}?from=tasks">+ Додати завдання</a></div></div>
 <nav class="quick-filters" aria-label="Швидкі фільтри завдань">
     <a href="{% url 'planner:task_list' %}">Усі завдання</a>
     <a href="{% querystring status='todo' overdue='' page=None %}">До виконання</a>

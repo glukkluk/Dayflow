@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Дашборд — Особистий розклад{% endblock %}
+{% block title %}Дашборд — Dayflow{% endblock %}
 {% block main_class %}dashboard-page{% endblock %}
 {% block content %}
 {% widthratio task_status.done task_status.total 100 as done_p %}
@@ -11,8 +11,8 @@
         <h1><span data-greeting>Вітаємо</span>, {{ user.username }}!</h1>
         <p class="wd-lead">{% if upcoming_event_count or current_event_count %}Сьогодні ще {{ upcoming_event_count|add:current_event_count }} {% if upcoming_event_count|add:current_event_count == 1 %}подія{% else %}подій{% endif %} у розкладі. Рухаймося крок за кроком.{% else %}На сьогодні вільно — гарний час, щоб запланувати щось нове.{% endif %}</p>
         <div class="wd-actions">
-            <a class="wd-btn wd-btn-primary" href="{% url 'planner:event_create' %}">{% include 'partials/icon.html' with name='plus' %}Подія</a>
-            <a class="wd-btn" href="{% url 'planner:task_create' %}">{% include 'partials/icon.html' with name='plus' %}Завдання</a>
+            <a class="wd-btn wd-btn-primary" href="{% url 'planner:event_create' %}?from=dashboard">{% include 'partials/icon.html' with name='plus' %}Подія</a>
+            <a class="wd-btn" href="{% url 'planner:task_create' %}?from=dashboard">{% include 'partials/icon.html' with name='plus' %}Завдання</a>
             <a class="wd-btn" href="{% url 'planner:task_autoplan' %}">{% include 'partials/icon.html' with name='bolt' %}Автопланування</a>
         </div>
     </div>
@@ -36,7 +36,7 @@
         <strong>Дані про події можуть бути неповними.</strong>
         <p>Не всі повторення вдалося обчислити. Перевірте ці серії:</p>
         <ul>{% for error in recurrence_errors %}
-            <li>{{ error.message }} — <a href="{% url 'planner:event_edit' error.event.pk %}">редагувати</a></li>
+            <li>{{ error.message }} — <a href="{% url 'planner:event_edit' error.event.pk %}?from=dashboard">редагувати</a></li>
         {% endfor %}</ul>
     </div>
     {% endif %}
@@ -82,7 +82,7 @@
                 <li class="{% if item.is_current %}is-current{% endif %}" style="--dot: {{ item.occurrence.event.category.color|default:'var(--c-accent)' }}">
                     <time>{% if item.occurrence.event.all_day %}Весь день{% else %}{{ item.occurrence.start|date:time_fmt }}<small>{{ item.occurrence.end|date:time_fmt }}</small>{% endif %}</time>
                     <div class="wd-timeline-body">
-                        <a href="{% url 'planner:event_detail' item.occurrence.event.pk %}">{{ item.occurrence.event.title }}</a>
+                        <a href="{% url 'planner:event_detail' item.occurrence.event.pk %}?from=dashboard">{{ item.occurrence.event.title }}</a>
                         <span class="wd-chip">{% if item.is_current %}<i class="wd-live"></i>Триває{% else %}{{ item.occurrence.event.category|default:"Без категорії" }}{% endif %}</span>
                     </div>
                 </li>
@@ -165,7 +165,7 @@
                 <li class="{% if item.is_current %}is-current{% endif %}" style="--dot: {{ item.occurrence.event.category.color|default:'var(--c-accent)' }}">
                     <time>{% if item.occurrence.event.all_day %}Весь день{% else %}{{ item.occurrence.start|date:time_fmt }}<small>{{ item.occurrence.end|date:time_fmt }}</small>{% endif %}</time>
                     <div class="wd-timeline-body">
-                        <a href="{% url 'planner:event_detail' item.occurrence.event.pk %}">{{ item.occurrence.event.title }}</a>
+                        <a href="{% url 'planner:event_detail' item.occurrence.event.pk %}?from=dashboard">{{ item.occurrence.event.title }}</a>
                         <span class="wd-chip">{% if item.is_current %}<i class="wd-live"></i>Триває{% else %}{{ item.occurrence.event.category|default:"Без категорії" }}{% endif %}</span>
                     </div>
                 </li>

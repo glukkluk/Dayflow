@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Повідомлення — Особистий розклад{% endblock %}
+{% block title %}Повідомлення — Dayflow{% endblock %}
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
         integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
@@ -8,12 +8,19 @@
 {% block content %}
 <div class="page-heading"><div><p class="dashboard-eyebrow">Усе важливе — поруч</p><h1>Повідомлення</h1><p>Нагадування про події та дедлайни, щоб нічого не пропустити.</p></div></div>
 {% if results %}
+<div class="notification-actions">
 {% if unread %}
 <form method="post" action="{% url 'planner:notifications' %}">
     {% csrf_token %}
     <button type="submit">Позначити всі прочитаними</button>
 </form>
 {% endif %}
+<form method="post" action="{% url 'planner:notifications' %}" data-confirm-clear>
+    {% csrf_token %}
+    <input type="hidden" name="action" value="clear">
+    <button class="button danger-soft" type="submit">Очистити повідомлення</button>
+</form>
+</div>
 <ul class="item-list">
 {% for notification in results %}
     <li{% if not notification.is_read %} class="unread-notification"{% endif %}>

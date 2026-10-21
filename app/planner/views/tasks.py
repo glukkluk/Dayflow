@@ -31,6 +31,11 @@ class TaskFormMixin(SuccessMessageMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)  # ty: ignore[unresolved-attribute]
         context["cancel_url"] = "planner:task_list"
+        context["back_url"], context["back_label"] = (
+            (reverse("planner:dashboard"), "Назад на дашборд")
+            if self.request.GET.get("from") == "dashboard"  # ty: ignore[unresolved-attribute]
+            else (reverse("planner:task_list"), "Назад до списку")
+        )
         context["note"] = (
             f"Дедлайн у часовому поясі {self.request.user.profile.timezone}."  # ty: ignore[unresolved-attribute]
         )
@@ -133,11 +138,11 @@ class TaskToggleView(TaskOwnerMixin, SingleObjectMixin, View):
             Task.Status.TODO if task.status == Task.Status.DONE else Task.Status.DONE
         )
         task.save(update_fields=["status"])
-        
+
         if request.headers.get("HX-Request") == "true":
             return HttpResponse(status=204, headers={"HX-Trigger": "tasksChanged"})
         messages.success(request, "Статус завдання змінено.")
-        
+
         url = reverse("planner:task_list")
         query = request.GET.urlencode()
         return redirect(f"{url}?{query}" if query else url)

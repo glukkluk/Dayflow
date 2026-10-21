@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}
-    Календар — Особистий розклад
+    Календар — Dayflow
 {% endblock %}
 {% block main_class %}
     calendar-page
@@ -29,7 +29,7 @@
     <script src="{% static 'planner/calendar.js' %}" defer></script>
 {% endblock %}
 {% block content %}
-    <div class="page-heading"><div><p class="dashboard-eyebrow">Ваш час, ваш ритм</p><h1>Календар</h1><p>Побачте свій день цілісно та залиште місце для себе.</p></div><div class="page-actions"><a class="button secondary" href="{% url 'planner:task_autoplan' %}">✦ Автопланування</a><a class="button" href="{% url 'planner:event_create' %}">+ Додати подію</a></div></div>
+    <div class="page-heading"><div><p class="dashboard-eyebrow">Ваш час, ваш ритм</p><h1>Календар</h1><p>Побачте свій день цілісно та залиште місце для себе.</p></div><div class="page-actions"><a class="button secondary" href="{% url 'planner:task_autoplan' %}">✦ Автопланування</a><a class="button" href="{% url 'planner:event_create' %}?from=calendar">+ Додати подію</a></div></div>
     <details class="calendar-help"><summary>Як працює календар</summary>
     <p>
         Перетягування повторюваної події змінює всю серію.
@@ -49,25 +49,6 @@
     >
     <div hidden id="calendar-csrf">{% csrf_token %}</div>
     {{ calendar_config|json_script:"calendar-config" }}
-    <dialog id="event-dialog" class="wd-dialog" aria-labelledby="event-dialog-title">
-        <div class="wd-dialog-head">
-            <div>
-                <span id="event-dialog-category" class="wd-chip"></span>
-                <h2 id="event-dialog-title"></h2>
-            </div>
-            <button type="button" class="wd-icon-btn" id="event-close-x" aria-label="Закрити" title="Закрити">{% include 'partials/icon.html' with name='close' %}</button>
-        </div>
-        <div class="wd-dialog-meta">
-            <p class="wd-meta-row">{% include 'partials/icon.html' with name='event' %}<span id="event-dialog-time"></span></p>
-            <p id="event-dialog-description" class="wd-meta-text"></p>
-            <p id="event-dialog-series" class="wd-meta-note"></p>
-        </div>
-        <div class="wd-dialog-actions">
-            <a id="event-edit" class="button">{% include 'partials/icon.html' with name='edit' %}Редагувати</a>
-            <a id="event-delete" class="button danger-soft">{% include 'partials/icon.html' with name='delete' %}Видалити</a>
-            <button type="button" id="event-close" class="secondary">Закрити</button>
-        </div>
-    </dialog>
     <dialog id="conflict-dialog" class="wd-dialog" aria-labelledby="conflict-title">
         <div class="wd-dialog-head">
             <div><h2 id="conflict-title">Знайдено конфлікти</h2><p id="conflict-range" class="wd-muted"></p></div>

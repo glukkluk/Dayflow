@@ -5,34 +5,39 @@
     <p tabindex="-1" id="task-result-count">Знайдено завдань: {{ page_obj.paginator.count }}</p>
     <ul class="item-list task-grid">
     {% for task in page_obj %}
-        <li class="record-card{% if task.status == 'done' %} task-done{% endif %}">
+        <li class="record-card task-record{% if task.status == 'done' %} task-done{% endif %}">
             <div class="record-heading"><h2>{{ task.title }}</h2>
                 {% url 'planner:task_edit' task.pk as edit_url %}{% url 'planner:task_delete' task.pk as delete_url %}
-                {% include 'planner/partials/item_actions.html' with label=task.title %}
+                {% include 'planner/partials/item_actions.html' with label=task.title source='tasks' %}
             </div>
-            <span class="priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
-            <p>{{ task.get_status_display }} · {{ task.estimated_minutes }} хв</p>
-            {% if task.is_overdue %}<strong class="overdue">Прострочено</strong>{% endif %}
-            {% if task.scheduled_events.all %}<p>Розміщено в розкладі</p>{% endif %}
-            <p>Дедлайн: {{ task.deadline|date:datetime_fmt|default:"Без дедлайну" }}</p>
-            <p>Категорія: {{ task.category|default:"Без категорії" }}</p>
-            {{ task.description|linebreaks }}
-            {% if task.completed_at %}<p>Виконано: {{ task.completed_at|date:datetime_fmt }}</p>{% endif %}
-            <form method="post" action="{% url 'planner:task_toggle' task.pk %}?{{ query_string }}"
+            <div class="record-pills">
+                <span class="record-chip status-{{ task.status }}">{{ task.get_status_display }}</span>
+                <span class="priority priority-{{ task.priority }}">Пріоритет: {{ task.get_priority_display }}</span>
+                {% if task.is_overdue %}<strong class="overdue">Прострочено</strong>{% endif %}
+            </div>
+            <dl class="record-fields">
+                <div><dt>Дедлайн</dt><dd>{{ task.deadline|date:datetime_fmt|default:'Не встановлено' }}</dd></div>
+                <div><dt>Оцінка часу</dt><dd>{{ task.estimated_minutes }} хв</dd></div>
+                <div><dt>Категорія</dt><dd>{% if task.category %}<span class="color-swatch" style="background-color:{{ task.category.color }}"></span>{% endif %}{{ task.category|default:'Без категорії' }}</dd></div>
+                <div><dt>У календарі</dt><dd>{% if task.scheduled_events.all %}Заплановано{% else %}Ще не розміщено{% endif %}</dd></div>
+                {% if task.completed_at %}<div><dt>Виконано</dt><dd>{{ task.completed_at|date:datetime_fmt }}</dd></div>{% endif %}
+            </dl>
+            {% if task.description %}<p class="record-description">{{ task.description|truncatechars:220|linebreaksbr }}</p>{% endif %}
+            <form class="task-record-action" method="post" action="{% url 'planner:task_toggle' task.pk %}?{{ query_string }}"
                   hx-post="{% url 'planner:task_toggle' task.pk %}?{{ query_string }}"
                   hx-swap="none" hx-disabled-elt="find button">
                 {% csrf_token %}
                 <button type="submit" data-task-toggle="{{ task.pk }}" aria-label="{% if task.status == 'done' %}Повернути до виконання{% else %}Позначити виконаним{% endif %}: {{ task.title }}">
-                    {% if task.status == "done" %}Повернути до виконання{% else %}Виконано{% endif %}
+                    {% if task.status == "done" %}Повернути до виконання{% else %}Позначити виконаним{% endif %}
                 </button>
             </form>
         </li>
     {% empty %}
-        <li class="empty-state"><strong>Завдань не знайдено</strong>{% if query_string %}Спробуйте інший пошук або скиньте фільтри.<br><a class="button secondary" href="{% url 'planner:task_list' %}">Скинути фільтри</a>{% else %}Почніть із невеликої справи — додайте своє перше завдання.{% endif %}<br><a class="button" href="{% url 'planner:task_create' %}">+ Додати завдання</a></li>
+        <li class="empty-state"><strong>Завдань не знайдено</strong>{% if query_string %}Спробуйте інший пошук або скиньте фільтри.<br><a class="button secondary" href="{% url 'planner:task_list' %}">Скинути фільтри</a>{% else %}Почніть із невеликої справи — додайте своє перше завдання.{% endif %}<br><a class="button" href="{% url 'planner:task_create' %}?from=tasks">+ Додати завдання</a></li>
     {% endfor %}
     </ul>
     {% if page_obj.has_other_pages %}
-    <nav aria-label="Сторінки завдань">
+    <nav class="record-pagination" aria-label="Сторінки завдань">
         {% if page_obj.has_previous %}<a href="{% querystring page=page_obj.previous_page_number %}">Попередня</a>{% endif %}
         <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}<a href="{% querystring page=page_obj.next_page_number %}">Наступна</a>{% endif %}

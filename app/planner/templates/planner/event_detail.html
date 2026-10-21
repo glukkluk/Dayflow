@@ -1,21 +1,24 @@
 {% extends "base.html" %}
-{% block title %}{{ event.title }} — Особистий розклад{% endblock %}
+{% block title %}{{ event.title }} — Dayflow{% endblock %}
 {% block content %}
-<a href="{% url 'planner:event_list' %}">← До всіх подій</a>
-<article class="detail-panel">
-{% if event.recurrence != "none" %}
-<p>{{ event.get_recurrence_display }}{% if event.recurrence_until %} до {{ event.recurrence_until|date:date_fmt }} включно{% endif %}. Редагування змінює всю серію.</p>
-{% endif %}
-<h1>{{ event.title }}</h1>
-<p>{{ event.start|date:datetime_fmt }} — {{ event.end|date:datetime_fmt }}</p>
-<p>Часовий пояс: {{ user.profile.timezone }}</p>
-{% if event.all_day %}<p>Весь день</p>{% endif %}
-<p>Категорія: {{ event.category|default:"Без категорії" }}</p>
-{{ event.description|linebreaks }}
-<div class="actions">
-    <a href="{% url 'planner:event_edit' event.pk %}">Редагувати</a>
-    <a href="{% url 'planner:event_delete' event.pk %}">Видалити</a>
-    <a href="{% url 'planner:event_list' %}">До списку</a>
+<div class="event-detail-page">
+    <a class="back-link" href="{{ back_url }}">← {{ back_label }}</a>
+    <div class="page-heading"><div><p class="dashboard-eyebrow">Ваш розклад · Деталі події</p><h1>{{ event.title }}</h1><p>Уся інформація про подію в одному місці.</p></div>
+        <div class="page-actions"><a class="button secondary" href="{% url 'planner:event_edit' event.pk %}?from={{ event_origin }}">{% include 'partials/icon.html' with name='edit' %}Редагувати</a><a class="button danger-soft" href="{% url 'planner:event_delete' event.pk %}">{% include 'partials/icon.html' with name='delete' %}Видалити</a></div>
+    </div>
+    <article class="detail-panel event-detail-card">
+        <div class="event-detail-lead"><span class="record-chip">{% if event.all_day %}Весь день{% else %}Подія за розкладом{% endif %}</span>{% if event.recurrence != 'none' %}<span class="record-chip">{{ event.get_recurrence_display }}</span>{% endif %}</div>
+        <div class="event-detail-section"><h2>{% include 'partials/icon.html' with name='calendar' %} Коли відбудеться</h2>
+            <dl class="record-fields event-detail-fields">
+                <div><dt>Початок</dt><dd>{{ event.start|date:datetime_fmt }}</dd></div>
+                <div><dt>Завершення</dt><dd>{{ event.end|date:datetime_fmt }}</dd></div>
+                <div><dt>Часовий пояс</dt><dd>{{ user.profile.timezone }}</dd></div>
+                {% if event.recurrence_until %}<div><dt>Повторення до</dt><dd>{{ event.recurrence_until|date:date_fmt }} включно</dd></div>{% endif %}
+            </dl>
+        </div>
+        <div class="event-detail-section"><h2>{% include 'partials/icon.html' with name='category' %} Категорія</h2><p class="event-detail-category">{% if event.category %}<span class="color-swatch" style="background-color:{{ event.category.color }}"></span>{% endif %}{{ event.category|default:'Без категорії' }}</p></div>
+        <div class="event-detail-section"><h2>{% include 'partials/icon.html' with name='event' %} Опис</h2>{% if event.description %}<div class="event-detail-description">{{ event.description|linebreaks }}</div>{% else %}<p class="wd-muted">Опису немає.</p>{% endif %}</div>
+        {% if event.recurrence != 'none' %}<p class="event-detail-hint">Редагування повторюваної події змінює всю серію.</p>{% endif %}
+    </article>
 </div>
-</article>
 {% endblock %}
