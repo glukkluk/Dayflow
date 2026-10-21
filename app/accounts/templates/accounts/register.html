@@ -8,7 +8,7 @@
     {% csrf_token %}
     {{ form.non_field_errors }}
     {% for field in form %}
-        {% if field.name == 'password1' or field.name == 'password2' %}
+        {% if field.name == 'username' or field.name == 'password1' or field.name == 'password2' %}
             {% include 'accounts/partials/field.html' with tooltip=True %}
         {% else %}
             {% include 'accounts/partials/field.html' %}

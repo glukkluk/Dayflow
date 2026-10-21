@@ -59,7 +59,7 @@ button {
     cursor: pointer;
 }
 .helptext {
-    margin-top: 0.4rem;
+    margin: 0.4rem 0;
     color: #465269;
     font-size: 0.9rem;
 }

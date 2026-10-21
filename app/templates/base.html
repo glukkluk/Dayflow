@@ -19,8 +19,9 @@
         <link rel="stylesheet" href="{% static 'planner/wellness.css' %}" />
         <script src="{% static 'planner/experience.js' %}" defer></script>
         <script src="{% static 'planner/wellness.js' %}" defer></script>
+        {% block extra_styles %}{% endblock %}
     </head>
-    <body class="{% if user.is_authenticated %}app-layout{% else %}auth-layout{% endif %}">
+    <body class="{% if user.is_authenticated %}app-layout{% else %}auth-layout{% endif %} {% block body_class %}{% endblock %}">
         <a class="skip-link" href="#main-content">Перейти до вмісту</a>
         <div id="toast-container" aria-live="polite"></div>
         <header class="app-sidebar">
@@ -29,6 +30,7 @@
                 {% else %}<a class="brand-mark" href="{% url 'planner:dashboard' %}" aria-hidden="true" tabindex="-1">{% include 'partials/icon.html' with name='calendar' %}</a>{% endif %}
                 <a class="brand-name" href="{% url 'planner:dashboard' %}"><span>Dayflow<small>Простір для ваших планів</small></span></a>
             </div>
+            {% block guest_navigation %}{% endblock %}
             {% if user.is_authenticated %}
             <nav id="main-navigation" class="app-nav" aria-label="Основна навігація">
                 <span class="nav-label">Особистий простір</span>

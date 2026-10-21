@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dayflow — простір для ваших планів{% endblock %}
+{% block body_class %}landing-layout{% endblock %}
+{% block main_class %}landing-page{% endblock %}
+{% block extra_styles %}<link rel="stylesheet" href="{% static 'planner/landing.css' %}" />{% endblock %}
+{% block guest_navigation %}
+<nav class="landing-nav" aria-label="Для гостей">
+    <a class="landing-nav-login" href="{% url 'accounts:login' %}">Увійти</a>
+    <a class="landing-nav-signup" href="{% url 'accounts:register' %}">Почати {% include 'partials/icon.html' with name='arrow' %}</a>
+</nav>
+{% endblock %}
+{% block content %}
+<section class="landing-hero" aria-labelledby="landing-title">
+    <div class="landing-copy" data-reveal>
+        <span class="landing-tag">{% include 'partials/icon.html' with name='sparkle' %} Менше метушні. Більше ясності.</span>
+        <h1 id="landing-title">Знайди свій <span>ритм кожного дня.</span></h1>
+        <p class="landing-lead">Плани, справи та важливі моменти — в одному затишному просторі. Dayflow допомагає бачити головне й рухатися у власному темпі.</p>
+        <div class="landing-actions">
+            <a class="landing-button landing-button-primary" href="{% url 'accounts:register' %}">Створити акаунт {% include 'partials/icon.html' with name='arrow' %}</a>
+            <a class="landing-button landing-button-secondary" href="{% url 'accounts:login' %}">У мене вже є акаунт</a>
+        </div>
+        <div class="landing-points" aria-label="Можливості Dayflow">
+            <span>{% include 'partials/icon.html' with name='check' %} Просте планування</span>
+            <span>{% include 'partials/icon.html' with name='check' %} Усе під рукою</span>
+        </div>
+    </div>
+
+    <div class="landing-preview" role="img" aria-label="Демонстраційний вигляд особистого простору Dayflow" data-reveal>
+        <div class="landing-preview-glow" aria-hidden="true"></div>
+        <div class="landing-mini-card" aria-hidden="true">
+            <div class="landing-mini-head">
+                <span class="landing-mini-logo">{% include 'partials/icon.html' with name='dashboard' %}</span>
+                <div><span class="landing-mini-overline">Мій простір</span><strong>Привіт, новий день! <span>✦</span></strong></div>
+                <span class="landing-mini-dots"><i></i><i></i><i></i></span>
+            </div>
+            <div class="landing-mini-week">
+                <span><small>Пн</small><b>12</b></span><span><small>Вт</small><b>13</b></span><span class="is-selected"><small>Ср</small><b>14</b></span><span><small>Чт</small><b>15</b></span><span><small>Пт</small><b>16</b></span><span><small>Сб</small><b>17</b></span><span><small>Нд</small><b>18</b></span>
+            </div>
+            <div class="landing-mini-content">
+                <div class="landing-mini-schedule">
+                    <div class="landing-mini-section-title"><strong>Сьогодні у планах</strong><span>3 події</span></div>
+                    <div class="landing-mini-item"><span class="landing-mini-time">09:00</span><div class="landing-mini-event is-violet"><strong>Ранкове планування</strong><small>Особисте · 30 хв</small></div></div>
+                    <div class="landing-mini-item"><span class="landing-mini-time">11:30</span><div class="landing-mini-event is-mint"><strong>Робота над проєктом</strong><small>Робота · 90 хв</small></div></div>
+                    <div class="landing-mini-item"><span class="landing-mini-time">17:00</span><div class="landing-mini-event is-peach"><strong>Час для себе</strong><small>Відпочинок · 60 хв</small></div></div>
+                </div>
+                <div class="landing-mini-side">
+                    <div class="landing-mini-progress"><div class="landing-mini-ring"><span>75<small>%</small></span></div><strong>Чудовий темп!</strong><small>Завдання тижня</small></div>
+                    <div class="landing-mini-next"><span class="landing-mini-next-icon">{% include 'partials/icon.html' with name='check' %}</span><strong>Крок за кроком</strong><small>Кожна справа має свій час</small></div>
+                </div>
+            </div>
+            <div class="landing-mini-footer">{% include 'partials/icon.html' with name='sparkle' %} Маленькі кроки ведуть до великих результатів</div>
+        </div>
+        <div class="landing-float-note" aria-hidden="true"><span>{% include 'partials/icon.html' with name='check' %}</span><div><strong>Важливе зроблено!</strong><small>Ще один крок уперед</small></div></div>
+        <span class="landing-preview-caption">Ілюстрація інтерфейсу · приклад даних</span>
+    </div>
+</section>
+
+<section class="landing-features" aria-labelledby="landing-features-title">
+    <div class="landing-section-head" data-reveal>
+        <span class="landing-kicker">Усе в одному місці</span>
+        <h2 id="landing-features-title">Менше перемикань. <span>Більше простору для життя.</span></h2>
+    </div>
+    <div class="landing-feature-grid">
+        <article class="landing-feature" data-reveal>
+            <span class="landing-feature-icon is-violet">{% include 'partials/icon.html' with name='calendar' %}</span>
+            <h3>День перед очима</h3>
+            <p>Календар, події та повторення — бачиш свій розклад без зайвих пошуків.</p>
+        </article>
+        <article class="landing-feature" data-reveal>
+            <span class="landing-feature-icon is-mint">{% include 'partials/icon.html' with name='task' %}</span>
+            <h3>Справи без хаосу</h3>
+            <p>Завдання, пріоритети й дедлайни допомагають зосередитися на важливому.</p>
+        </article>
+        <article class="landing-feature" data-reveal>
+            <span class="landing-feature-icon is-amber">{% include 'partials/icon.html' with name='bolt' %}</span>
+            <h3>Розумний розклад</h3>
+            <p>Автопланування шукає вільний час для справ з урахуванням твоїх подій.</p>
+        </article>
+    </div>
+    <div class="landing-bottom" data-reveal>
+        <div><strong>Почни з одного хорошого плану.</strong><span>А решта поступово складеться у твій Dayflow.</span></div>
+        <a class="landing-button landing-button-primary" href="{% url 'accounts:register' %}">Почати зараз {% include 'partials/icon.html' with name='arrow' %}</a>
+    </div>
+</section>
+<footer class="landing-footer"><span>Dayflow · простір для твоїх планів</span><a href="#landing-title">На початок ↑</a></footer>
+{% endblock %}

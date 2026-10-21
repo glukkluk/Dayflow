@@ -2547,6 +2547,11 @@ input[type="color"]:focus {
 .brand-name:hover {
     text-decoration: none;
 }
+:root .app-layout button.brand-mark {
+    background: var(--soft);
+    color: var(--accent);
+    box-shadow: none;
+}
 button.brand-mark {
     position: relative;
     padding: 0;
@@ -2600,7 +2605,7 @@ button.brand-mark:focus-visible > svg:nth-child(2) {
 button.brand-mark:hover {
     transform: scale(1.06);
     filter: none;
-    box-shadow: 0 12px 24px -6px rgba(124, 108, 240, 0.75);
+    box-shadow: none;
 }
 
 /* ----- Collapsible sidebar (desktop) ----- */
