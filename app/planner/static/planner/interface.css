@@ -1284,7 +1284,7 @@ dialog::backdrop {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 1.4rem 3rem;
+    padding: 1.4rem clamp(3rem, 4vw, 4rem);
     background: transparent;
     border: 0;
 }

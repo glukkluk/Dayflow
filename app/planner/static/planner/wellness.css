@@ -2,6 +2,7 @@
     --c-accent: #27845b;
     --c-accent-2: #72bd91;
     --c-mint: #34d1a4;
+    --c-violet: #8067d8;
     --c-amber: #ffb04a;
     --c-rose: #ff7a93;
     --c-sky: #5aa9ff;
@@ -957,8 +958,11 @@ label {
 .wd-stat:hover::after {
     transform: scale(1.5);
 }
-.tone-green {
-    --tone: var(--c-accent);
+.tone-blue {
+    --tone: var(--c-sky);
+}
+.tone-violet {
+    --tone: var(--c-violet);
 }
 .tone-mint {
     --tone: var(--c-mint);

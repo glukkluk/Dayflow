@@ -56,13 +56,13 @@
     {% endif %}
 
     <section class="wd-stats" aria-label="Ключові показники">
-        <a class="wd-stat tone-green" href="{% url 'planner:event_list' %}" data-reveal>
+        <a class="wd-stat tone-blue" href="{% url 'planner:event_list' %}" data-reveal>
             <span class="wd-stat-icon">{% include 'partials/icon.html' with name='event' %}</span>
             <span class="wd-stat-label">Подій сьогодні</span>
             <strong data-count="{{ today_event_count }}">{{ today_event_count }}</strong>
             <small>{% if current_event_count %}Зараз триває: {{ current_event_count }}{% else %}Зараз без подій{% endif %}</small>
         </a>
-        <a class="wd-stat tone-mint" href="{% url 'planner:calendar' %}" data-reveal>
+        <a class="wd-stat tone-violet" href="{% url 'planner:calendar' %}" data-reveal>
             <span class="wd-stat-icon">{% include 'partials/icon.html' with name='calendar' %}</span>
             <span class="wd-stat-label">Подій на тижні</span>
             <strong data-count="{{ weekly_event_count }}">{{ weekly_event_count }}</strong>
