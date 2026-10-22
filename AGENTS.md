@@ -2,7 +2,7 @@
 
 - Small Django schedule app ("Особистий розклад"). Python `3.14` (see `.python-version`); deps in root `pyproject.toml`, locked in `uv.lock`. Always run via `uv run` from the repo root after `uv sync`.
 - Layout: project package `app/config`; apps `app/accounts` (registration, profile) and `app/planner` (categories, events, tasks, calendar, dashboard, notifications); shared templates in `app/templates`.
-- `planner` keeps views thin and split per feature in `app/planner/views/*.py`; business logic lives in `app/planner/services/` (`recurrence`, `conflicts`, `autoplan`, `dashboard`, `notifications`, `event_moves`). Put new logic there, not in views.
+- `planner` keeps views thin and split per feature in `app/planner/views/*.py`; business logic lives in `app/planner/services/` (`recurrence`, `conflicts`, `autoplan`, `dashboard`, `notifications`, `event_moves`, `free_tasks`). Put new logic there, not in views.
 - `app/manage.py` sets `DJANGO_SETTINGS_MODULE=config.settings` (no `app.` prefix). It only resolves when `app/` is on `sys.path`, so run as `uv run python app/manage.py <command>` from the repo root — not as a module path.
 - DB is SQLite at `app/db.sqlite3` (git-ignored, local-only). Repo name mentions MySQL but no MySQL config/service exists; do not add one unasked.
 - `README.md` is the stage-by-stage feature spec (Ukrainian) and records rules agreed with the user (e.g. the 365-day conflict-check horizon). Treat it as the requirements source.
@@ -13,12 +13,12 @@
 - `uv run python app/manage.py migrate`
 - `uv run python app/manage.py runserver`
 - `uv run python app/manage.py check`
-- `uv run python app/manage.py test accounts planner` — the only test entrypoint (plain Django `TestCase`; tests live in `app/<app>/tests.py` or an `app/<app>/tests/` package — `planner` has some, `accounts` has none). Focus with a label: `... test planner.tests.WorkspaceFlowTests.test_read_requires_csrf_and_get_does_not_change_state` (`.Class` / `.Class.method` suffixes work). A label matching nothing prints `NO TESTS RAN` yet exits 0 — exit 0 alone does not prove tests ran.
+- `uv run python app/manage.py test accounts planner` — the only test entrypoint (plain Django `TestCase`; tests live in `app/<app>/tests.py` or an `app/<app>/tests/` package — `planner` has some, `accounts` has none). Focus with a label, e.g. `... test planner.tests.DayflowNavigationTests.test_event_periods_and_quick_navigation`; `.Class` / `.Class.method` suffixes work. A label matching nothing prints `NO TESTS RAN` yet exits 0 — exit 0 alone does not prove tests ran.
 - `uv run python app/manage.py createsuperuser` for `/admin/` access
 
 ## Gotchas that bite
 
-- Post-login landing is `/` = dashboard (`LOGIN_REDIRECT_URL = 'planner:dashboard'`), not the profile page.
+- Post-login landing is `/` (`LOGIN_REDIRECT_URL = 'planner:dashboard'`): guests see the public landing page, authenticated users the private dashboard.
 - Change task status via `Task.save()`; `QuerySet.update()` bypasses the model logic maintaining `completed_at`, and DB checks enforce status/`completed_at` consistency.
 - Notifications are generated lazily: `collect_due()` runs inside `GET /api/notifications/pending/`, polled every 30 s by `toasts.js`. There is no cron/management command (a stale `generate_notifications` `.pyc` may exist locally with no source — ignore it). Preserve the delivery contract: the page's first poll sends `?silent=true`, marking reminders that came due while signed out as `delivered_at` (badge only, no toast), and showing a toast must never mark a notification read.
 - Email is not configured: `MAILERS = {...}` in `settings.py` is a nonstandard key Django ignores (it reads `EMAIL_BACKEND`). Reminders are in-app only — don't add email unasked.

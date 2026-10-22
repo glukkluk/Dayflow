@@ -309,17 +309,11 @@
     gap: 0.65rem;
 }
 .landing-mini-logo {
-    display: grid;
-    place-items: center;
+    display: block;
     flex: 0 0 37px;
     height: 37px;
-    color: white;
     border-radius: 12px;
-    background: linear-gradient(130deg, #28784e, #72bd91);
-}
-.landing-mini-logo svg {
-    width: 19px;
-    height: 19px;
+    object-fit: contain;
 }
 .landing-mini-head > div {
     display: flex;
