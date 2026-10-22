@@ -1,0 +1,22 @@
+{% if free_time_form.errors %}
+    <div class="conflict-warning" role="alert">{{ free_time_form.errors }}</div>
+{% else %}
+    <p class="wd-muted">Маєте {{ free_minutes }} хв. Оберіть одну справу — вона перейде у статус «У роботі» та з’явиться в розкладі від поточного часу. Якщо є конфлікти, спочатку покажемо попередження.</p>
+    <ul class="item-list free-task-list">
+        {% for task in free_tasks %}
+        <li class="record-card">
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.estimated_minutes }} хв · Пріоритет: {{ task.get_priority_display }} · {{ task.category|default:"Без категорії" }}</p>
+            {% if task.description %}<p class="record-description">{{ task.description|truncatechars:300|linebreaksbr }}</p>{% endif %}
+            <form method="post" action="{% url 'planner:task_take' task.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="amount" value="{{ free_time_form.cleaned_data.amount }}">
+                <input type="hidden" name="unit" value="{{ free_time_form.cleaned_data.unit }}">
+                <button type="submit" aria-label="Взяти в роботу: {{ task.title }}">Взяти в роботу</button>
+            </form>
+        </li>
+        {% empty %}
+        <li class="empty-state"><strong>На цей час вільних завдань немає</strong>Збільште час або створіть завдання без дедлайну. Завдання у роботі, виконані та розміщені в календарі тут не показуються.<br><a href="{% url 'planner:task_create' %}?from=dashboard">+ Додати завдання</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}

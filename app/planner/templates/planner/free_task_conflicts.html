@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Конфлікти в розкладі — Dayflow{% endblock %}
+{% block content %}
+<div class="editor-content">
+    <h1>Завдання перетинається з іншими подіями</h1>
+    <section class="conflict-warning" role="alert">
+        <h2>{{ task.title }}</h2>
+        <p>Для завдання потрібно {{ task.estimated_minutes }} хв від поточного часу.</p>
+        <p>Перевірено: {{ conflict_check.start|date:datetime_fmt }} — {{ conflict_check.end|date:datetime_fmt }} ({{ user.profile.timezone }}).</p>
+        <ul>{% for item in conflict_check.conflicts %}
+            <li><a href="{% url 'planner:event_detail' item.event.pk %}">{{ item.event.title }}</a>: {{ item.start|date:datetime_fmt }} — {{ item.end|date:datetime_fmt }}</li>
+        {% endfor %}</ul>
+        <p>Завдання ще не взято в роботу. Можна скасувати або дозволити накладання. При підтвердженні час початку й конфлікти буде перевірено заново.</p>
+    </section>
+    <form method="post" action="{% url 'planner:task_take' task.pk %}" class="form-panel">
+        {% csrf_token %}
+        <input type="hidden" name="amount" value="{{ free_time_form.cleaned_data.amount }}">
+        <input type="hidden" name="unit" value="{{ free_time_form.cleaned_data.unit }}">
+        <div class="form-actions">
+            <button type="submit" name="force" value="true">Взяти й розмістити все одно</button>
+            <a href="{% url 'planner:dashboard' %}">Скасувати</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

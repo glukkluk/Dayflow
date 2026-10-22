@@ -12,6 +12,7 @@
             </div>
             <div class="record-pills">
                 <span class="record-chip status-{{ task.status }}">{{ task.get_status_display }}</span>
+                {% if not task.deadline %}<span class="record-chip">Вільне завдання</span>{% endif %}
                 <span class="priority priority-{{ task.priority }}">Пріоритет: {{ task.get_priority_display }}</span>
                 {% if task.is_overdue %}<strong class="overdue">Прострочено</strong>{% endif %}
             </div>

@@ -1,0 +1,17 @@
+<form method="get" class="free-time-form" action="{% url 'planner:free_tasks' %}" data-free-time-form>
+    <div class="free-time-controls">
+        <div class="free-time-field">
+            <label for="{{ free_time_form.amount.id_for_label }}">{{ free_time_form.amount.label }}</label>
+            {{ free_time_form.amount }}
+        </div>
+        <div class="free-time-field">
+            <label for="{{ free_time_form.unit.id_for_label }}">{{ free_time_form.unit.label }}</label>
+            {{ free_time_form.unit }}
+        </div>
+        <div class="free-time-actions">
+            <button type="submit" class="wd-btn wd-btn-primary"{% if use_dialog %} aria-haspopup="dialog"{% endif %}>Взяти вільне завдання</button>
+            <a class="wd-link" href="{% url 'planner:task_list' %}?free=on">Усі вільні завдання {% include 'partials/icon.html' with name='arrow' %}</a>
+        </div>
+    </div>
+    <p class="helptext">Від 1 до 59 хвилин або від 1 до 24 годин.</p>
+</form>

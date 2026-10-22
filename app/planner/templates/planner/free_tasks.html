@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Вільні завдання — Dayflow{% endblock %}
+{% block scripts %}<script src="{% static 'planner/free_tasks.js' %}" defer></script>{% endblock %}
+{% block extra_styles %}<link rel="stylesheet" href="{% static 'planner/free_tasks.css' %}">{% endblock %}
+{% block content %}
+<h1>Вільні завдання</h1>
+<a class="back-link" href="{% url 'planner:dashboard' %}">← Назад на дашборд</a>
+<section class="wd-card free-time-card" aria-label="Підбір за вільним часом">
+    {% include 'planner/partials/free_time_form.html' %}
+</section>
+{% include 'planner/partials/free_task_results.html' %}
+{% endblock %}

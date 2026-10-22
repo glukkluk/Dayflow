@@ -52,18 +52,22 @@ class TaskListView(TaskOwnerMixin, ListView):
         if not self.filter_form.is_valid():
             return tasks.none()
         filters = self.filter_form.cleaned_data
+        if filters["status"] == "active":
+            tasks = tasks.exclude(status=Task.Status.DONE)
         if filters["q"]:
             tasks = tasks.filter(
                 Q(title__icontains=filters["q"])
                 | Q(description__icontains=filters["q"])
             )
         for field in ("status", "priority", "category"):
-            if filters[field]:
+            if filters[field] and not (field == "status" and filters[field] == "active"):
                 tasks = tasks.filter(**{field: filters[field]})
         if filters["overdue"]:
             tasks = tasks.filter(deadline__lt=timezone.now()).exclude(
                 status=Task.Status.DONE
             )
+        if filters["free"]:
+            tasks = tasks.filter(deadline__isnull=True)
         ordering = {
             "deadline": (F("deadline").asc(nulls_last=True), "pk"),
             "priority": ("-priority", F("deadline").asc(nulls_last=True), "pk"),

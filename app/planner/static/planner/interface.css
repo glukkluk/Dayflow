@@ -177,13 +177,16 @@
 }
 .task-filter-footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.8rem;
     border-top: 1px solid var(--line);
     padding-top: 1rem;
     font-size: 0.82rem;
+}
+.task-filter-footer > a {
+    margin-left: auto;
 }
 .checkbox-label {
     display: flex;

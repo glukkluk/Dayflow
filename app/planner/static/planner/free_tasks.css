@@ -1,0 +1,76 @@
+.free-time-card {
+    margin-block: 1.5rem;
+}
+.free-time-form .free-time-controls {
+    display: grid;
+    grid-template-columns: minmax(8rem, 12rem) minmax(8rem, 10rem) minmax(
+            0,
+            1fr
+        );
+    align-items: end;
+    gap: 1rem;
+    margin: 0;
+}
+.free-time-field {
+    min-width: 0;
+}
+.free-time-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+    gap: 1rem;
+    width: 100%;
+    min-width: 0;
+}
+.free-time-actions .wd-btn,
+.free-time-actions .wd-link {
+    align-self: end;
+    height: 100%;
+}
+.free-time-actions .wd-btn-primary {
+    background: linear-gradient(135deg, #7665ed, #5b49d6);
+    border-color: #5b49d6;
+    color: #fff;
+    box-shadow: 0 6px 16px -8px rgba(73, 57, 190, 0.8);
+}
+.free-time-actions .wd-btn-primary:hover {
+    background: linear-gradient(135deg, #6654df, #4d3bc5);
+    color: #fff;
+}
+.free-time-form input,
+.free-time-form select,
+.free-time-form .wd-btn {
+    box-sizing: border-box;
+    width: 100%;
+    height: 3rem;
+    margin: 0;
+}
+.free-time-form label {
+    margin: 0 0 0.5rem;
+}
+.free-time-form .helptext {
+    margin: 0.75rem 0 0;
+}
+.free-task-list {
+    margin-top: 1rem;
+}
+.free-task-list h3 {
+    overflow-wrap: anywhere;
+}
+@media (max-width: 1100px) {
+    .free-time-form .free-time-controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .free-time-form .wd-btn {
+        height: auto;
+        min-height: 3rem;
+    }
+    .free-time-actions {
+        grid-column: 1 / -1;
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .free-time-actions .wd-link {
+        justify-self: center;
+        text-align: center;
+    }
+}

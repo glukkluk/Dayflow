@@ -240,6 +240,26 @@ class EventForm(forms.ModelForm):
 
 
 class TaskForm(forms.ModelForm):
+    no_deadline = forms.BooleanField(
+        label="Без дедлайну — вільне завдання",
+        required=False,
+        help_text="Можна взяти у вільний час. Укажіть орієнтовну тривалість нижче.",
+    )
+
+    field_order = (
+        "title",
+        "description",
+        "no_deadline",
+        "deadline",
+        "estimated_minutes",
+        "priority",
+        "status",
+        "category",
+    )
+
+    class Media:
+        js = ("planner/task_form.js",)
+
     class Meta:
         model = Task
         fields = (
@@ -265,16 +285,89 @@ class TaskForm(forms.ModelForm):
         self.fields["category"].queryset = Category.objects.filter(  # ty: ignore[unresolved-attribute]
             user_id=self.instance.user_id,
         )
+        self.initial["no_deadline"] = not self.initial.get("deadline")
+        self._already_started_free = bool(
+            self.instance.pk
+            and self.instance.deadline is None
+            and self.instance.status == Task.Status.IN_PROGRESS
+        )
+        self.fields["status"].widget.attrs["data-started-free"] = (
+            "true" if self._already_started_free else "false"
+        )
+        self.fields["status"].help_text = (
+            "Вільне завдання береться в роботу через кнопку «Взяти вільне завдання» "
+            "на дашборді — з перевіркою конфліктів і розміщенням у розкладі."
+        )
+        self.fields[
+            "deadline"
+        ].help_text = "Залиште порожнім для вільного завдання без дедлайну."
+        self.fields["estimated_minutes"].label = "Орієнтовна тривалість (хв)"
+        self.fields["estimated_minutes"].help_text = "Від 5 до 480 хвилин."
+        if self.is_bound and self["no_deadline"].value():
+            self.fields["deadline"].disabled = True
+            self.initial["deadline"] = None
+
+    def clean(self):
+        cleaned = super().clean()
+        if (
+            "deadline" in cleaned
+            and cleaned["deadline"] is None
+            and cleaned.get("status") == Task.Status.IN_PROGRESS
+            and not self._already_started_free
+        ):
+            self.add_error(
+                "status",
+                "Вільне завдання не можна вручну перевести у статус «У роботі». "
+                "Збережіть його зі статусом «До виконання» та візьміть через дашборд.",
+            )
+        return cleaned
+
+
+class FreeTimeForm(forms.Form):
+    amount = forms.IntegerField(
+        label="Скільки маєте часу?",
+        min_value=1,
+        initial=30,
+        widget=forms.NumberInput(attrs={"step": 1, "max": 59}),
+    )
+    unit = forms.ChoiceField(
+        label="Одиниця часу",
+        choices=(("minutes", "Хвилини"), ("hours", "Години")),
+        initial="minutes",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["amount"].widget.attrs["max"] = (
+            24 if self["unit"].value() == "hours" else 59
+        )
+
+    def clean(self):
+        cleaned = super().clean()
+        amount, unit = cleaned.get("amount"), cleaned.get("unit")
+        if amount is not None and unit:
+            maximum = 24 if unit == "hours" else 59
+            if amount > maximum:
+                self.add_error(
+                    "amount",
+                    f"Укажіть не більше {maximum} {'годин' if unit == 'hours' else 'хвилин'}.",
+                )
+            else:
+                cleaned["minutes"] = amount * (60 if unit == "hours" else 1)
+        return cleaned
 
 
 class TaskFilterForm(forms.Form):
     q = forms.CharField(
-        label="Пошук за назвою або описом", required=False,
-        widget=forms.TextInput(attrs={"type": "search", "placeholder": "Назва або опис завдання…"}),
+        label="Пошук за назвою або описом",
+        required=False,
+        widget=forms.TextInput(
+            attrs={"type": "search", "placeholder": "Назва або опис завдання…"}
+        ),
     )
     status = forms.ChoiceField(
         label="Статус",
-        choices=[("", "Усі статуси"), *Task.Status.choices],
+        choices=[("", "Усі статуси"), *Task.Status.choices, ("active", "Невиконані")],
         required=False,
     )
     priority = forms.ChoiceField(
@@ -289,6 +382,7 @@ class TaskFilterForm(forms.Form):
         required=False,
     )
     overdue = forms.BooleanField(label="Лише прострочені", required=False)
+    free = forms.BooleanField(label="Вільні завдання", required=False)
     sort = forms.ChoiceField(
         label="Сортування",
         required=False,

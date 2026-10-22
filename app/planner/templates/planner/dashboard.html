@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Дашборд — Dayflow{% endblock %}
+{% block scripts %}<script src="{% static 'planner/free_tasks.js' %}" defer></script>{% endblock %}
+{% block extra_styles %}<link rel="stylesheet" href="{% static 'planner/free_tasks.css' %}">{% endblock %}
 {% block main_class %}dashboard-page{% endblock %}
 {% block content %}
 {% widthratio task_status.done task_status.total 100 as done_p %}
@@ -25,6 +28,17 @@
         <div class="wd-ring-label"><strong><span data-count="{{ weekly_percent }}">{{ weekly_percent }}</span>%</strong><span>тижня виконано</span></div>
     </div>
 </header>
+<section class="wd-card free-time-card" aria-labelledby="free-time-heading">
+    <div class="wd-card-head"><div><h2 id="free-time-heading">Вільний час <span class="hint" tabindex="0" role="button" aria-label="Підказка: Вільні завдання" aria-describedby="free-time-hint"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9.4 9.4a2.7 2.7 0 1 1 3.9 2.4c-.9.5-1.3 1-1.3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg><span class="hint-bubble" role="tooltip" id="free-time-hint">Вільні завдання — це короткі справи без дедлайну, які можна виконати у вільний час.</span></span></h2><p class="wd-muted">Невелика пауза для справ без дедлайну.</p></div></div>
+    {% include 'planner/partials/free_time_form.html' with use_dialog=True %}
+</section>
+<dialog id="free-task-dialog" class="wd-dialog" aria-labelledby="free-task-dialog-title">
+    <div class="wd-dialog-head">
+        <h2 id="free-task-dialog-title">Вільні завдання</h2>
+        <button type="button" class="wd-icon-btn" data-close-dialog aria-label="Закрити">{% include 'partials/icon.html' with name='close' %}</button>
+    </div>
+    <div data-free-task-results aria-live="polite"></div>
+</dialog>
 {% if dashboard_error %}
     <div class="conflict-warning" role="alert">
         <p>{{ dashboard_error }}</p>
@@ -54,9 +68,9 @@
             <strong data-count="{{ weekly_event_count }}">{{ weekly_event_count }}</strong>
             <small>{{ week_start_date|date:short_date_fmt }} — {{ week_end_date|date:short_date_fmt }}</small>
         </a>
-        <a class="wd-stat tone-amber" href="{% url 'planner:task_list' %}?status=todo" data-reveal>
+        <a class="wd-stat tone-amber" href="{% url 'planner:task_list' %}?status=active" data-reveal>
             <span class="wd-stat-icon">{% include 'partials/icon.html' with name='target' %}</span>
-            <span class="wd-stat-label">Завдань у роботі</span>
+            <span class="wd-stat-label">Невиконані завдання</span>
             <strong data-count="{{ task_status.todo|add:task_status.in_progress }}">{{ task_status.todo|add:task_status.in_progress }}</strong>
             <small>З {{ task_status.total }} усього</small>
         </a>

@@ -7,6 +7,7 @@ from .views import (
     categories,
     dashboard,
     events,
+    free_tasks,
     notifications,
     tasks,
 )
@@ -46,6 +47,8 @@ urlpatterns = [
         "api/events/", calendar_api.CalendarEventsView.as_view(), name="calendar_events"
     ),
     path("tasks/", tasks.TaskListView.as_view(), name="task_list"),
+    path("tasks/free/", free_tasks.FreeTaskSuggestionsView.as_view(), name="free_tasks"),
+    path("tasks/<int:pk>/take/", free_tasks.FreeTaskTakeView.as_view(), name="task_take"),
     path("tasks/new/", tasks.TaskCreateView.as_view(), name="task_create"),
     path("tasks/<int:pk>/edit/", tasks.TaskEditView.as_view(), name="task_edit"),
     path("tasks/<int:pk>/delete/", tasks.TaskDeleteView.as_view(), name="task_delete"),

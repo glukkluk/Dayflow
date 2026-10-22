@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.views.generic import TemplateView
 
+from ..forms import FreeTimeForm
 from ..services.dashboard import summarize
 
 
@@ -16,6 +17,7 @@ class DashboardView(TemplateView):
         context = super().get_context_data(**kwargs)
         if not self.request.user.is_authenticated:
             return context
+        context["free_time_form"] = FreeTimeForm()
         try:
             context.update(summarize(self.request.user))
         except ValidationError as error:

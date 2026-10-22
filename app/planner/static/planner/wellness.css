@@ -1060,6 +1060,9 @@ label {
     font-size: 1.15rem;
     font-weight: 800;
 }
+.wd-card-head h2 .hint {
+    vertical-align: middle;
+}
 .wd-link {
     display: inline-flex;
     align-items: center;
