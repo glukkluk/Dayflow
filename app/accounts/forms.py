@@ -110,6 +110,7 @@ class UsernameForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["username"].label = "Ім'я користувача"
+        self.fields["username"].widget.attrs["autofocus"] = True
         self.fields["username"].help_text = (
             "Логін для входу, до 150 символів: літери, цифри та @/./+/-/_. "
             "Приклад: olena_k. Має бути унікальним."

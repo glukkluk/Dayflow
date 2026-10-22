@@ -1,23 +1,18 @@
-/* ==========================================================================
-   Wellness UI layer — loaded last. Soft gradients, glass cards, rings, motion.
-   Overrides the older green theme through shared tokens + component rules.
-   ========================================================================== */
-
 :root {
-    --c-accent: #7c6cf0;
-    --c-accent-2: #a78bfa;
+    --c-accent: #27845b;
+    --c-accent-2: #72bd91;
     --c-mint: #34d1a4;
     --c-amber: #ffb04a;
     --c-rose: #ff7a93;
     --c-sky: #5aa9ff;
 
-    --ink: #221e45;
-    --muted: #6d6a8c;
-    --accent: #6a5ae0;
-    --accent-dark: #4f41c4;
-    --soft: #ece9ff;
-    --line: rgba(110, 100, 180, 0.16);
-    --page: #f3f1ff;
+    --ink: #1c3024;
+    --muted: #66786b;
+    --accent: #28784e;
+    --accent-dark: #1d603d;
+    --soft: #e6f3e9;
+    --line: rgba(70, 120, 82, 0.18);
+    --page: #f1f7f1;
     --panel: rgba(255, 255, 255, 0.7);
     --raised: rgba(255, 255, 255, 0.9);
 
@@ -25,11 +20,11 @@
     --glass-strong: rgba(255, 255, 255, 0.82);
     --glass-border: rgba(255, 255, 255, 0.85);
     --shadow:
-        0 10px 40px -12px rgba(88, 70, 200, 0.22),
-        0 2px 6px rgba(88, 70, 200, 0.05);
+        0 10px 40px -12px rgba(45, 115, 70, 0.18),
+        0 2px 6px rgba(45, 115, 70, 0.05);
     --shadow-hover:
-        0 18px 50px -12px rgba(88, 70, 200, 0.32),
-        0 2px 8px rgba(88, 70, 200, 0.07);
+        0 18px 50px -12px rgba(45, 115, 70, 0.27),
+        0 2px 8px rgba(45, 115, 70, 0.07);
     --radius: 26px;
     --radius-sm: 16px;
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -43,57 +38,57 @@
     --fc-monarch-selected-down: var(--accent-dark);
     --fc-monarch-secondary: var(--soft);
     --fc-monarch-secondary-foreground: var(--accent-dark);
-    --fc-monarch-secondary-over: #ddd8ff;
-    --fc-monarch-secondary-down: #cfc8ff;
+    --fc-monarch-secondary-over: #d2e9d7;
+    --fc-monarch-secondary-down: #c1dfc9;
     --fc-monarch-tertiary: var(--c-accent);
     --fc-monarch-tertiary-over: var(--accent);
     --fc-monarch-tertiary-down: var(--accent-dark);
-    --fc-monarch-highlight: #7c6cf01f;
+    --fc-monarch-highlight: #27845b1f;
     --fc-monarch-outline: var(--c-accent-2);
-    --fc-monarch-faint: #6a5ae00a;
-    --fc-monarch-muted: #6a5ae01a;
-    --fc-monarch-strong: #6a5ae030;
-    --fc-monarch-stronger: #6a5ae040;
-    --fc-monarch-strongest: #6a5ae050;
+    --fc-monarch-faint: #28784e0a;
+    --fc-monarch-muted: #28784e1a;
+    --fc-monarch-strong: #28784e30;
+    --fc-monarch-stronger: #28784e40;
+    --fc-monarch-strongest: #28784e50;
     --fc-monarch-now: var(--c-rose);
     font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
 }
 
 :root[data-color-scheme="dark"] {
-    --ink: #f0eeff;
-    --muted: #a4a0c8;
-    --accent: #a99bff;
-    --accent-dark: #c9c0ff;
-    --soft: rgba(139, 124, 255, 0.18);
-    --line: rgba(190, 180, 255, 0.14);
-    --page: #0e0c1f;
-    --panel: rgba(30, 27, 58, 0.7);
-    --raised: rgba(44, 40, 84, 0.9);
-    --glass: rgba(34, 30, 66, 0.6);
-    --glass-strong: rgba(42, 37, 80, 0.85);
-    --glass-border: rgba(190, 180, 255, 0.14);
+    --ink: #e8f0e9;
+    --muted: #a2b5a6;
+    --accent: #83c5a3;
+    --accent-dark: #afe0c6;
+    --soft: rgba(100, 180, 125, 0.18);
+    --line: rgba(170, 210, 180, 0.14);
+    --page: #101a14;
+    --panel: rgba(28, 43, 32, 0.78);
+    --raised: rgba(40, 58, 44, 0.92);
+    --glass: rgba(25, 40, 30, 0.7);
+    --glass-strong: rgba(32, 50, 37, 0.88);
+    --glass-border: rgba(170, 210, 180, 0.14);
     --shadow: 0 14px 44px -14px rgba(0, 0, 0, 0.6);
     --shadow-hover: 0 20px 56px -14px rgba(0, 0, 0, 0.75);
     --fc-monarch-primary: var(--accent);
-    --fc-monarch-primary-foreground: #1a1540;
-    --fc-monarch-primary-over: #c0b5ff;
-    --fc-monarch-primary-down: #8f80f0;
-    --fc-monarch-secondary: #2d2860;
-    --fc-monarch-secondary-foreground: #e6e1ff;
-    --fc-monarch-secondary-over: #373170;
-    --fc-monarch-secondary-down: #272253;
+    --fc-monarch-primary-foreground: #10291b;
+    --fc-monarch-primary-over: #a0dcba;
+    --fc-monarch-primary-down: #71ba96;
+    --fc-monarch-secondary: #294a38;
+    --fc-monarch-secondary-foreground: #d8efdf;
+    --fc-monarch-secondary-over: #355d47;
+    --fc-monarch-secondary-down: #203d2d;
     --fc-monarch-selected: var(--accent);
-    --fc-monarch-selected-foreground: #1a1540;
-    --fc-monarch-selected-over: #c0b5ff;
-    --fc-monarch-selected-down: #8f80f0;
-    --fc-monarch-tertiary: #7566e6;
-    --fc-monarch-highlight: #a99bff25;
-    --fc-monarch-outline: #a99bff;
-    --fc-monarch-faint: #b6aeff0b;
-    --fc-monarch-muted: #b6aeff1a;
-    --fc-monarch-strong: #b6aeff30;
-    --fc-monarch-stronger: #b6aeff40;
-    --fc-monarch-strongest: #b6aeff55;
+    --fc-monarch-selected-foreground: #10291b;
+    --fc-monarch-selected-over: #a0dcba;
+    --fc-monarch-selected-down: #71ba96;
+    --fc-monarch-tertiary: #46765d;
+    --fc-monarch-highlight: #83ceaa25;
+    --fc-monarch-outline: #83ceaa;
+    --fc-monarch-faint: #b6dfc60b;
+    --fc-monarch-muted: #b6dfc61a;
+    --fc-monarch-strong: #b6dfc630;
+    --fc-monarch-stronger: #b6dfc640;
+    --fc-monarch-strongest: #b6dfc655;
     --fc-monarch-background: transparent;
 }
 
@@ -126,7 +121,7 @@ body::before {
     height: 46vw;
     top: -14vw;
     left: 18vw;
-    background: radial-gradient(circle, #c4b8ff, transparent 70%);
+    background: radial-gradient(circle, #b8e2c6, transparent 70%);
     animation: drift 22s ease-in-out infinite alternate;
 }
 body::after {
@@ -138,7 +133,7 @@ body::after {
     animation: drift 26s ease-in-out infinite alternate-reverse;
 }
 :root[data-color-scheme="dark"] body::before {
-    background: radial-gradient(circle, #5a45d6, transparent 70%);
+    background: radial-gradient(circle, #28784e, transparent 70%);
     opacity: 0.4;
 }
 :root[data-color-scheme="dark"] body::after {
@@ -201,7 +196,7 @@ a {
         var(--c-accent-2) 55%,
         var(--c-mint)
     );
-    box-shadow: 0 10px 22px -6px rgba(124, 108, 240, 0.65);
+    box-shadow: 0 10px 22px -6px rgba(39, 132, 91, 0.45);
     border-radius: 16px;
 }
 .nav-label {
@@ -232,12 +227,12 @@ a {
 .app-nav > a[aria-current] {
     color: #fff;
     background: linear-gradient(135deg, var(--c-accent), var(--c-accent-2));
-    box-shadow: 0 10px 22px -8px rgba(124, 108, 240, 0.7);
+    box-shadow: 0 10px 22px -8px rgba(39, 132, 91, 0.5);
     transform: none;
 }
 :root[data-color-scheme="dark"] .app-nav > a[aria-current] {
-    color: #1a1540;
-    background: linear-gradient(135deg, #b8acff, #d5ccff);
+    color: #10291b;
+    background: linear-gradient(135deg, #b8dfc4, #d5edda);
 }
 .notification-badge {
     margin-left: auto;
@@ -423,7 +418,7 @@ button,
     background: linear-gradient(135deg, var(--c-accent), var(--c-accent-2));
     color: #fff;
     border: 0;
-    box-shadow: 0 10px 22px -10px rgba(124, 108, 240, 0.8);
+    box-shadow: 0 10px 22px -10px rgba(39, 132, 91, 0.55);
     transition:
         transform 0.25s var(--ease),
         box-shadow 0.25s var(--ease),
@@ -432,7 +427,7 @@ button,
 button:hover,
 .button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 16px 28px -10px rgba(124, 108, 240, 0.85);
+    box-shadow: 0 16px 28px -10px rgba(39, 132, 91, 0.6);
     filter: brightness(1.05);
     text-decoration: none;
 }
@@ -442,8 +437,8 @@ button:active,
 }
 :root[data-color-scheme="dark"]
     :is(button, .button):not(.secondary):not(.theme-toggle):not(.icon-action) {
-    color: #1a1540;
-    background: linear-gradient(135deg, #b8acff, #d9d1ff);
+    color: #10291b;
+    background: linear-gradient(135deg, #b8dfc4, #d9efdf);
 }
 button.secondary,
 .button.secondary,
@@ -475,13 +470,13 @@ select:focus,
 textarea:focus {
     outline: none;
     border-color: var(--c-accent);
-    box-shadow: 0 0 0 4px rgba(124, 108, 240, 0.18);
+    box-shadow: 0 0 0 4px rgba(39, 132, 91, 0.18);
 }
 input[type="checkbox"] {
     accent-color: var(--c-accent);
 }
 :focus-visible {
-    outline: 3px solid rgba(124, 108, 240, 0.55);
+    outline: 3px solid rgba(39, 132, 91, 0.55);
     outline-offset: 2px;
     border-radius: 10px;
 }
@@ -723,8 +718,8 @@ label {
             rgba(255, 255, 255, 0.28),
             transparent 45%
         ),
-        linear-gradient(125deg, #6d5df0 0%, #8f7bff 45%, #43d1b0 115%);
-    box-shadow: 0 30px 60px -24px rgba(109, 93, 240, 0.7);
+        linear-gradient(125deg, #28784e 0%, #55a875 45%, #43d1b0 115%);
+    box-shadow: 0 30px 60px -24px rgba(39, 112, 68, 0.5);
     overflow: hidden;
     isolation: isolate;
 }
@@ -821,12 +816,12 @@ label {
 }
 .wd-btn-primary {
     background: #fff;
-    color: #5a49d6;
+    color: #28784e;
     border-color: #fff;
 }
 .wd-btn-primary:hover {
     background: #fff;
-    color: #4333b8;
+    color: #1d603d;
 }
 
 /* Rings */
@@ -962,7 +957,7 @@ label {
 .wd-stat:hover::after {
     transform: scale(1.5);
 }
-.tone-violet {
+.tone-green {
     --tone: var(--c-accent);
 }
 .tone-mint {
@@ -1526,7 +1521,7 @@ label {
         backdrop-filter: blur(24px) saturate(1.5);
         border: 1px solid var(--glass-border);
         border-radius: 26px;
-        box-shadow: 0 18px 50px -10px rgba(60, 40, 160, 0.4);
+        box-shadow: 0 18px 50px -10px rgba(45, 115, 70, 0.3);
     }
     /* Icons only; the active item expands with its label, so nothing can overlap. */
     .app-layout .app-nav > a {
@@ -1809,7 +1804,7 @@ label {
 #calendar {
     padding: clamp(0.6rem, 1.6vw, 1.4rem);
     --fc-monarch-border: var(--line);
-    --fc-monarch-strong-border: rgba(110, 100, 180, 0.28);
+    --fc-monarch-strong-border: rgba(70, 120, 82, 0.28);
     --fc-monarch-foreground: var(--ink);
     --fc-monarch-muted-foreground: var(--muted);
     --fc-monarch-faint-foreground: var(--muted);
@@ -1820,9 +1815,9 @@ label {
     --fc-monarch-selected-foreground: #fff;
 }
 :root[data-color-scheme="dark"] #calendar {
-    --fc-monarch-strong-border: rgba(190, 180, 255, 0.3);
-    --fc-monarch-primary-foreground: #1a1540;
-    --fc-monarch-selected-foreground: #1a1540;
+    --fc-monarch-strong-border: rgba(170, 210, 180, 0.3);
+    --fc-monarch-primary-foreground: #10291b;
+    --fc-monarch-selected-foreground: #10291b;
 }
 /* Drop the theme's own frame — the glass card is the frame. */
 #calendar > :first-child {
@@ -1898,11 +1893,11 @@ label {
     );
     background-color: var(--c-accent);
     color: #fff;
-    box-shadow: 0 6px 14px -6px rgba(124, 108, 240, 0.8);
+    box-shadow: 0 6px 14px -6px rgba(39, 132, 91, 0.55);
 }
 :root[data-color-scheme="dark"] #calendar [role="tab"][aria-selected="true"] {
-    color: #1a1540;
-    background-image: linear-gradient(135deg, #b8acff, #d9d1ff);
+    color: #10291b;
+    background-image: linear-gradient(135deg, #b8dfc4, #d9efdf);
 }
 /* Events: soft rounded chips */
 #calendar [class*="fc-event"],
@@ -2005,17 +2000,17 @@ label {
 /* Sticky day header: opaque, and below the app header on phones */
 :root {
     --header-h: 0px;
-    --sticky-bg: #fbfaff;
+    --sticky-bg: #f7fbf7;
 }
 :root[data-color-scheme="dark"] {
-    --sticky-bg: #1b1838;
+    --sticky-bg: #1b2b20;
 }
 #calendar .wd-sticky {
     top: var(--header-h) !important;
     background-color: var(--sticky-bg) !important;
     box-shadow:
         0 1px 0 var(--line),
-        0 10px 18px -14px rgba(60, 40, 160, 0.35);
+        0 10px 18px -14px rgba(45, 115, 70, 0.3);
 }
 
 /* User menu (phones only) */
@@ -2136,7 +2131,7 @@ input[type="checkbox"] {
     width: 22px;
     height: 22px;
     margin: 0;
-    border: 1.5px solid rgba(110, 100, 180, 0.4);
+    border: 1.5px solid rgba(70, 120, 82, 0.4);
     border-radius: 7px;
     background: var(--glass-strong) center / 14px no-repeat;
     display: inline-grid;
@@ -2248,7 +2243,7 @@ input[type="checkbox"]:active {
 }
 .color-field:focus-within {
     border-color: var(--c-accent);
-    box-shadow: 0 0 0 4px rgba(124, 108, 240, 0.18);
+    box-shadow: 0 0 0 4px rgba(39, 132, 91, 0.18);
 }
 .color-field output {
     color: var(--ink);
@@ -2526,7 +2521,7 @@ input[type="color"]:focus {
     color: #fff;
     font-size: 0.72rem;
     font-weight: 800;
-    box-shadow: 0 6px 12px -6px rgba(124, 108, 240, 0.9);
+    box-shadow: 0 6px 12px -6px rgba(39, 132, 91, 0.65);
 }
 #calendar :has(> .wd-more-count) {
     border: 0 !important;
@@ -2767,7 +2762,7 @@ dialog,
     border-radius: 28px;
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
     backdrop-filter: blur(24px) saturate(1.4);
-    box-shadow: 0 40px 90px -20px rgba(40, 20, 120, 0.5);
+    box-shadow: 0 40px 90px -20px rgba(20, 60, 32, 0.35);
     overflow: auto;
     margin: auto;
 }
@@ -2789,12 +2784,12 @@ dialog[open]::backdrop {
     }
 }
 dialog::backdrop {
-    background: rgba(30, 20, 80, 0.38);
+    background: rgba(18, 45, 27, 0.38);
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
 }
 :root[data-color-scheme="dark"] dialog::backdrop {
-    background: rgba(5, 3, 20, 0.6);
+    background: rgba(3, 12, 6, 0.6);
 }
 .wd-dialog-head {
     display: flex;

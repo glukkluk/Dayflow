@@ -28,13 +28,13 @@
     height: 100%;
 }
 .free-time-actions .wd-btn-primary {
-    background: linear-gradient(135deg, #7665ed, #5b49d6);
-    border-color: #5b49d6;
+    background: linear-gradient(135deg, #28784e, #1d603d);
+    border-color: #1d603d;
     color: #fff;
-    box-shadow: 0 6px 16px -8px rgba(73, 57, 190, 0.8);
+    box-shadow: 0 6px 16px -8px rgba(39, 112, 68, 0.65);
 }
 .free-time-actions .wd-btn-primary:hover {
-    background: linear-gradient(135deg, #6654df, #4d3bc5);
+    background: linear-gradient(135deg, #226b43, #174f32);
     color: #fff;
 }
 .free-time-form input,
