@@ -66,6 +66,8 @@ class TaskListView(TaskOwnerMixin, ListView):
             tasks = tasks.filter(deadline__lt=timezone.now()).exclude(
                 status=Task.Status.DONE
             )
+        elif filters["not_overdue"]:
+            tasks = tasks.filter(Q(deadline__isnull=True) | Q(deadline__gte=timezone.now()))
         if filters["free"]:
             tasks = tasks.filter(deadline__isnull=True)
         ordering = {

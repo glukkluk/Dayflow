@@ -381,6 +381,7 @@ class TaskFilterForm(forms.Form):
         empty_label="Усі категорії",
         required=False,
     )
+    not_overdue = forms.BooleanField(label="Не прострочені", required=False)
     overdue = forms.BooleanField(label="Лише прострочені", required=False)
     free = forms.BooleanField(label="Вільні завдання", required=False)
     sort = forms.ChoiceField(
