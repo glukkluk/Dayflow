@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load planner_extras %}
 {% block title %}Усі події — Dayflow{% endblock %}
 {% block content %}
 <div class="page-heading"><div><p class="dashboard-eyebrow">Лише для менеджерів</p><h1>Усі події</h1><p>Події всіх користувачів системи (лише перегляд).</p></div></div>
@@ -33,10 +34,6 @@
 <div class="empty-state"><strong>Подій не знайдено</strong><p>Спробуйте інший пошук.</p></div>
 {% endif %}
 {% if page_obj.has_other_pages %}
-<nav class="record-pagination" aria-label="Сторінки подій">
-    {% if page_obj.has_previous %}<a href="?q={{ query|urlencode }}&amp;owner={{ owner_filter|urlencode }}&amp;page={{ page_obj.previous_page_number }}">← Попередня</a>{% endif %}
-    <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
-    {% if page_obj.has_next %}<a href="?q={{ query|urlencode }}&amp;owner={{ owner_filter|urlencode }}&amp;page={{ page_obj.next_page_number }}">Наступна →</a>{% endif %}
-</nav>
+{% pagination page_obj "Сторінки подій" %}
 {% endif %}
 {% endblock %}

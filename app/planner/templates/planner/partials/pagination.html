@@ -1,0 +1,17 @@
+{% if page_obj.has_other_pages %}
+<nav class="record-pagination" aria-label="{{ label }}">
+    <ul class="pagination pagination-sm mb-0">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="{% querystring page=page_obj.previous_page_number %}">← Попередня</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">← Попередня</span></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="{% querystring page=page_obj.next_page_number %}">Наступна →</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Наступна →</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

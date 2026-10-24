@@ -1,3 +1,4 @@
+{% load planner_extras %}
 <section id="task-results" aria-live="polite"
          hx-get="{% url 'planner:task_list' %}?{{ query_string }}"
          hx-trigger="tasksChanged from:body" hx-swap="outerHTML">
@@ -37,10 +38,6 @@
     {% endfor %}
     </ul>
     {% if page_obj.has_other_pages %}
-    <nav class="record-pagination" aria-label="Сторінки завдань">
-        {% if page_obj.has_previous %}<a href="{% querystring page=page_obj.previous_page_number %}">Попередня</a>{% endif %}
-        <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
-        {% if page_obj.has_next %}<a href="{% querystring page=page_obj.next_page_number %}">Наступна</a>{% endif %}
-    </nav>
+    {% pagination page_obj "Сторінки завдань" %}
     {% endif %}
 </section>

@@ -1,15 +1,15 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import F, Q
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.cache import patch_vary_headers
-from django.views import View
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
-from django.views.generic.detail import SingleObjectMixin
 
 from ..forms import TaskFilterForm, TaskForm
 from ..models import Task
@@ -27,6 +27,10 @@ class TaskFormMixin(SuccessMessageMixin):
     template_name = "planner/form.html"
     success_url = reverse_lazy("planner:task_list")
     success_message = "Завдання збережено."
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user  # ty: ignore[unresolved-attribute]
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)  # ty: ignore[unresolved-attribute]
@@ -60,14 +64,18 @@ class TaskListView(TaskOwnerMixin, ListView):
                 | Q(description__icontains=filters["q"])
             )
         for field in ("status", "priority", "category"):
-            if filters[field] and not (field == "status" and filters[field] == "active"):
+            if filters[field] and not (
+                field == "status" and filters[field] == "active"
+            ):
                 tasks = tasks.filter(**{field: filters[field]})
         if filters["overdue"]:
             tasks = tasks.filter(deadline__lt=timezone.now()).exclude(
                 status=Task.Status.DONE
             )
         elif filters["not_overdue"]:
-            tasks = tasks.filter(Q(deadline__isnull=True) | Q(deadline__gte=timezone.now()))
+            tasks = tasks.filter(
+                Q(deadline__isnull=True) | Q(deadline__gte=timezone.now())
+            )
         if filters["free"]:
             tasks = tasks.filter(deadline__isnull=True)
         ordering = {
@@ -135,20 +143,20 @@ class TaskDeleteView(TaskOwnerMixin, DeleteView):
         return response
 
 
-class TaskToggleView(TaskOwnerMixin, SingleObjectMixin, View):
-    http_method_names = ["post", "options"]
+@login_required
+@require_POST
+def task_toggle(request, pk):
+    """Перемикає статус завдання між «Виконано» і «До виконання» (лише POST)."""
+    task = get_object_or_404(Task, pk=pk, user=request.user)
+    task.status = (
+        Task.Status.TODO if task.status == Task.Status.DONE else Task.Status.DONE
+    )
+    task.save(update_fields=["status"])
 
-    def post(self, request, *args, **kwargs):
-        task = self.get_object()
-        task.status = (
-            Task.Status.TODO if task.status == Task.Status.DONE else Task.Status.DONE
-        )
-        task.save(update_fields=["status"])
+    if request.headers.get("HX-Request") == "true":
+        return HttpResponse(status=204, headers={"HX-Trigger": "tasksChanged"})
+    messages.success(request, "Статус завдання змінено.")
 
-        if request.headers.get("HX-Request") == "true":
-            return HttpResponse(status=204, headers={"HX-Trigger": "tasksChanged"})
-        messages.success(request, "Статус завдання змінено.")
-
-        url = reverse("planner:task_list")
-        query = request.GET.urlencode()
-        return redirect(f"{url}?{query}" if query else url)
+    url = reverse("planner:task_list")
+    query = request.GET.urlencode()
+    return redirect(f"{url}?{query}" if query else url)

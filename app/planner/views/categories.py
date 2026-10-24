@@ -21,6 +21,10 @@ class CategoryFormMixin(SuccessMessageMixin):
     success_url = reverse_lazy("planner:category_list")
     success_message = "Категорію збережено."
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user  # ty: ignore[unresolved-attribute]
+        return super().form_valid(form)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)  # ty: ignore[unresolved-attribute]
         context["cancel_url"] = "planner:category_list"

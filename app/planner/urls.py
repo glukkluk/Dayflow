@@ -53,7 +53,7 @@ urlpatterns = [
     path("tasks/new/", tasks.TaskCreateView.as_view(), name="task_create"),
     path("tasks/<int:pk>/edit/", tasks.TaskEditView.as_view(), name="task_edit"),
     path("tasks/<int:pk>/delete/", tasks.TaskDeleteView.as_view(), name="task_delete"),
-    path("tasks/<int:pk>/toggle/", tasks.TaskToggleView.as_view(), name="task_toggle"),
+    path("tasks/<int:pk>/toggle/", tasks.task_toggle, name="task_toggle"),
     path("categories/", categories.CategoryListView.as_view(), name="category_list"),
     path(
         "categories/new/",

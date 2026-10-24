@@ -3,10 +3,11 @@
     const POLL_INTERVAL_MS = 30000;
     const TOAST_DURATION_MS = 10000;
 
+    const PENDING_URL = document.currentScript?.dataset.pendingUrl;
+
     async function poll(silent) {
-        const url = silent
-            ? "/api/notifications/pending/?silent=true"
-            : "/api/notifications/pending/";
+        const url = new URL(PENDING_URL, window.location.origin);
+        if (silent) url.searchParams.set("silent", "true");
         const response = await fetch(url, { credentials: "same-origin" });
         if (!response.ok) {
             throw new Error("Не вдалося отримати повідомлення.");
@@ -44,8 +45,6 @@
     async function refresh(silent) {
         try {
             const data = await poll(silent);
-            // Show toasts for reminders that arrived while the user was here.
-            // Notifications that came due earlier only move the badge.
             data.notifications.forEach(showToast);
             updateBadge(data.unread);
         } catch (error) {
@@ -55,8 +54,6 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         if (!document.getElementById("toast-container")) return;
-        // The first call of the page only syncs the badge: anything that came
-        // due before the user arrived must not replay as a toast.
         refresh(true);
         setInterval(() => refresh(false), POLL_INTERVAL_MS);
     });

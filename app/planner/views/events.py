@@ -22,7 +22,6 @@ from ..forms import EventForm
 from ..models import Event
 from ..services.conflicts import check_event
 
-
 EVENT_PERIODS = (
     ("past", "Раніше"),
     ("yesterday", "Вчора"),
@@ -65,12 +64,13 @@ class EventFormMixin(SuccessMessageMixin):
     success_message = "Подію збережено."
 
     def form_valid(self, form):
+        form.instance.user = self.request.user  # ty: ignore[unresolved-attribute]
         try:
             result = check_event(form.instance)
         except ValidationError as error:
             form.add_error(None, error)
             return self.form_invalid(form)  # ty: ignore[unresolved-attribute]
-        except (ValueError, OverflowError):
+        except ValueError, OverflowError:
             form.add_error(None, "Неможливо перевірити повторення для цього діапазону дат.")
             return self.form_invalid(form)  # ty: ignore[unresolved-attribute]
         if result.conflicts and self.request.POST.get("force") != "true":  # ty: ignore[unresolved-attribute]
@@ -81,7 +81,7 @@ class EventFormMixin(SuccessMessageMixin):
 
     def get_success_url(self):
         url = reverse("planner:event_detail", kwargs={"pk": self.object.pk})  # ty: ignore[unresolved-attribute]
-        source = self.request.GET.get("from")
+        source = self.request.GET.get("from")  # ty: ignore[unresolved-attribute]
         if source in ("dashboard", "events", "calendar"):
             return f"{url}?{urlencode({'from': source})}"
         return url
@@ -90,7 +90,7 @@ class EventFormMixin(SuccessMessageMixin):
         context = super().get_context_data(**kwargs)  # ty: ignore[unresolved-attribute]
         context["cancel_url"] = "planner:event_list"
         context["back_url"], context["back_label"] = return_destination(
-            self.request,
+            self.request,  # ty: ignore[unresolved-attribute]
             {
                 "dashboard": ("planner:dashboard", "Назад на дашборд"),
                 "events": ("planner:event_list", "Назад до списку"),
@@ -124,7 +124,9 @@ class EventListView(EventOwnerMixin, ListView):
         start_yesterday = timezone.make_aware(
             datetime.combine(self.today - timedelta(days=1), time.min), self.tz
         )
-        start_today = timezone.make_aware(datetime.combine(self.today, time.min), self.tz)
+        start_today = timezone.make_aware(
+            datetime.combine(self.today, time.min), self.tz
+        )
         start_tomorrow = timezone.make_aware(
             datetime.combine(self.today + timedelta(days=1), time.min), self.tz
         )
@@ -139,7 +141,8 @@ class EventListView(EventOwnerMixin, ListView):
             "future": Q(start__gte=start_after_tomorrow),
         }
         self.period_counts = {
-            key: events.filter(rule).count() for key, rule in self.period_filters.items()
+            key: events.filter(rule).count()
+            for key, rule in self.period_filters.items()
         }
         requested = self.request.GET.get("period", "all")
         self.period = requested if requested in self.period_filters else "all"
