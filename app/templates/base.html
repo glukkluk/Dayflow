@@ -35,12 +35,12 @@
             {% if user.is_authenticated %}
             <nav id="main-navigation" class="app-nav" aria-label="Основна навігація">
                 <span class="nav-label">Особистий простір</span>
-                <a href="{% url 'planner:dashboard' %}" title="Дашборд" {% if request.path == '/' %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='dashboard' %}<span class="nav-text">Дашборд</span></a>
-                <a href="{% url 'planner:calendar' %}" title="Календар" {% if '/calendar/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='calendar' %}<span class="nav-text">Календар</span></a>
-                <a href="{% url 'planner:event_list' %}" title="Події" {% if '/events/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='event' %}<span class="nav-text">Події</span></a>
-                <a href="{% url 'planner:task_list' %}" title="Завдання" {% if '/tasks/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='task' %}<span class="nav-text">Завдання</span></a>
-                <a href="{% url 'planner:category_list' %}" title="Категорії" {% if '/categories/' in request.path %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='category' %}<span class="nav-text">Категорії</span></a>
-                <a href="{% url 'planner:notifications' %}" title="Повідомлення" {% if '/notifications/' in request.path %}aria-current="page"{% endif %}>
+                {% url 'planner:dashboard' as dashboard_url %}<a href="{% url 'planner:dashboard' %}" title="Дашборд" {% if request.path == dashboard_url %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='dashboard' %}<span class="nav-text">Дашборд</span></a>
+                {% url 'planner:calendar' as calendar_url %}<a href="{% url 'planner:calendar' %}" title="Календар" {% if request.path == calendar_url %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='calendar' %}<span class="nav-text">Календар</span></a>
+                {% url 'planner:event_list' as event_list_url %}<a href="{% url 'planner:event_list' %}" title="Події" {% if request.path == event_list_url %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='event' %}<span class="nav-text">Події</span></a>
+                {% url 'planner:task_list' as task_list_url %}<a href="{% url 'planner:task_list' %}" title="Завдання" {% if request.path == task_list_url %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='task' %}<span class="nav-text">Завдання</span></a>
+                {% url 'planner:category_list' as category_list_url %}<a href="{% url 'planner:category_list' %}" title="Категорії" {% if request.path == category_list_url %}aria-current="page"{% endif %}>{% include 'partials/icon.html' with name='category' %}<span class="nav-text">Категорії</span></a>
+                {% url 'planner:notifications' as notifications_url %}<a href="{% url 'planner:notifications' %}" title="Повідомлення" {% if request.path == notifications_url %}aria-current="page"{% endif %}>
                     {% include 'partials/icon.html' with name='bell' %}
                     <span class="nav-text">Повідомлення</span>
                     <span id="notification-badge" class="notification-badge" hidden></span>

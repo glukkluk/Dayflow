@@ -36,7 +36,6 @@
                 <div><dt>Категорія</dt><dd>{% if event.category %}<span class="color-swatch" style="background-color:{{ event.category.color }}"></span>{% endif %}{{ event.category|default:'Без категорії' }}</dd></div>
                 {% if event.recurrence_until %}<div><dt>Повторювати до</dt><dd>{{ event.recurrence_until|date:date_fmt }}</dd></div>{% endif %}
             </dl>
-            {% if event.description %}<p class="record-description">{{ event.description|truncatechars:130 }}</p>{% endif %}
             <span class="record-open">Переглянути деталі {% include 'partials/icon.html' with name='arrow' %}</span>
         </li>
     {% endfor %}

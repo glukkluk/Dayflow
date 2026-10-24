@@ -23,7 +23,6 @@
                 <div><dt>У календарі</dt><dd>{% if task.scheduled_events.all %}Заплановано{% else %}Ще не розміщено{% endif %}</dd></div>
                 {% if task.completed_at %}<div><dt>Виконано</dt><dd>{{ task.completed_at|date:datetime_fmt }}</dd></div>{% endif %}
             </dl>
-            {% if task.description %}<p class="record-description">{{ task.description|truncatechars:220|linebreaksbr }}</p>{% endif %}
             <form class="task-record-action" method="post" action="{% url 'planner:task_toggle' task.pk %}?{{ query_string }}"
                   hx-post="{% url 'planner:task_toggle' task.pk %}?{{ query_string }}"
                   hx-swap="none" hx-disabled-elt="find button">

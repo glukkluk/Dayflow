@@ -1,14 +1,40 @@
 # Особистий розклад
 
-Python 3.14+, Django, SQLite. Залежності керуються через `uv` і зафіксовані в `uv.lock`.
+Python 3.14+, Django 6.1, **PostgreSQL 16+** (розроблено й перевірено на PostgreSQL 16). Залежності керуються через `uv` (`uv.lock`); зафіксований список у `requirements.txt`.
 
 ## Запуск
 
-```sh
-uv sync
-uv run python app/manage.py migrate
-uv run python app/manage.py runserver
+1. Створіть базу PostgreSQL і користувача:
+
+```sql
+CREATE USER dayflow WITH PASSWORD 'your-password';
+CREATE DATABASE dayflow OWNER dayflow;
 ```
+
+2. Скопіюйте `.env.example` у `.env` і заповніть значення (`.env` ігнорується git):
+
+| Змінна | Призначення |
+|---|---|
+| `SECRET_KEY` | секретний ключ Django (`python -c "from django.core.management.utils import get_random_secret_key as g; print(g())"`) |
+| `DEBUG` | `True` для розробки |
+| `ALLOWED_HOSTS` | хости через кому (типово `localhost,127.0.0.1`) |
+| `DB_NAME`, `DB_USER`, `DB_PASSWORD` | доступ до БД |
+| `DB_HOST`, `DB_PORT` | типово `localhost`, `5432` |
+
+3. Встановіть залежності та запустіть:
+
+```sh
+# варіант з uv
+uv sync
+# або через venv + pip
+python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+
+python app/manage.py migrate
+python app/manage.py seed_demo      # демо-дані: demo_user, demo_manager (пароль demo-pass-2026)
+python app/manage.py runserver
+```
+
+`seed_demo` ідемпотентна; `--reset` перестворює демо-користувачів, `--password` задає пароль.
 
 ## Реалізований етап: облікові записи
 
