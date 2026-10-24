@@ -69,6 +69,15 @@
     --fc-monarch-popover-foreground: var(--ink);
     --fc-monarch-now: #f09489;
 }
+:root[data-color-scheme="dark"] .error-card {
+    background: var(--panel);
+    border-color: var(--line);
+    box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 28%);
+}
+:root[data-color-scheme="dark"] .error-code { color: var(--accent); }
+:root[data-color-scheme="dark"] .error-card .dashboard-eyebrow { color: var(--accent); }
+:root[data-color-scheme="dark"] .error-card > p:not(.dashboard-eyebrow) { color: var(--muted); }
+:root[data-color-scheme="dark"] .error-home { background: #28784e; color: #fff; }
 [data-color-scheme="dark"] body {
     background: var(--page);
     color: var(--ink);

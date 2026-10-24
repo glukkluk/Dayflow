@@ -100,6 +100,9 @@ class Event(models.Model):
         ordering = ("start", "pk")
         verbose_name = "Подія"
         verbose_name_plural = "Події"
+        permissions = [
+            ("view_all_events", "Може переглядати події всіх користувачів"),
+        ]
         constraints = [
             models.CheckConstraint(
                 condition=models.Q(end__gt=models.F("start")),

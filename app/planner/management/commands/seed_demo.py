@@ -3,11 +3,13 @@ from datetime import datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
 from planner.models import Category, Event, Task
+from planner.roles import MANAGER_GROUP
 
 DEMO_USERS = ("demo_user", "demo_manager")
 
@@ -78,6 +80,8 @@ class Command(BaseCommand):
                 continue
             user.set_password(options["password"])
             user.save()
+            if username == "demo_manager":
+                user.groups.add(Group.objects.get(name=MANAGER_GROUP))
             self.fill(user, rng)
             self.stdout.write(self.style.SUCCESS(f"{username}: дані створено"))
         self.stdout.write(f"Пароль демо-користувачів: {options['password']}")

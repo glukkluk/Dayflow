@@ -7,7 +7,7 @@ Python 3.14+, Django 6.1, **PostgreSQL 16+** (розроблено й перев
 1. Створіть базу PostgreSQL і користувача:
 
 ```sql
-CREATE USER dayflow WITH PASSWORD 'your-password';
+CREATE USER dayflow WITH PASSWORD 'your-password' CREATEDB;  -- CREATEDB потрібен для тестів
 CREATE DATABASE dayflow OWNER dayflow;
 ```
 
@@ -175,3 +175,14 @@ uv run python app/manage.py createsuperuser
 - Формат дати (`ДД.ММ.РРРР`, `ДД/ММ/РРРР`, `ММ/ДД/РРРР`, `РРРР-ММ-ДД`) і часу (24-/12-годинний) зберігаються в профілі та застосовуються до списків, дашборда, сповіщень і календаря (context processor `display_formats`, `accounts/formats.py`). Поля введення часу у формі події лишаються 24-годинними.
 - Часовий пояс вибирається зі списку, згрупованого за регіонами, із поточним зміщенням UTC.
 - Біля кожного налаштування є значок «?» з підказкою (опис і приклад), що показується при наведенні або фокусі.
+
+## Ролі й доступ
+
+- Дві ролі: звичайний користувач і **Менеджер** (група `Менеджер`, створюється data-міграцією `planner/0010_create_manager_group`).
+- Група має право `planner.view_all_events` (`Event.Meta.permissions`). Воно відкриває сторінку `/manager/events/` — перегляд подій усіх користувачів із пошуком за назвою або автором.
+- Право перевіряється на сервері (`PermissionRequiredMixin`): без нього користувач отримує 403, гість — перенаправлення на вхід. Пункт меню «Усі події» лише відображає цей стан.
+- Додати користувача до ролі: адмінка → Користувачі → Групи, або `seed_demo` (`demo_manager`).
+
+## Адмін-панель
+
+Усі моделі планувальника зареєстровані з `ModelAdmin` (`planner/admin.py`): `list_display`, `list_filter`, `search_fields`. Створити адміністратора: `python app/manage.py createsuperuser`.

@@ -19,6 +19,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from . import views
+
+handler403 = views.permission_denied
+handler404 = views.page_not_found
+
 urlpatterns = [
     path('', include('accounts.urls')),
     path('', include('planner.urls')),

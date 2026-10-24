@@ -2971,6 +2971,82 @@ dialog::backdrop {
     flex: 1;
     min-width: 0;
 }
+.error-page {
+    display: grid;
+    min-height: min(68vh, 42rem);
+    place-items: center;
+    padding: 2rem 1rem;
+}
+.auth-layout main.error-main {
+    width: 100%;
+    max-width: none;
+    flex: 1 0 auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    animation: none;
+}
+.auth-layout:has(main.error-main) > main.error-main {
+    width: 100%;
+    max-width: none;
+    align-self: stretch;
+}
+.auth-layout main.error-main .error-page {
+    width: 100%;
+    min-height: min(68vh, 42rem);
+    margin: 0 auto;
+}
+.error-card {
+    width: min(100%, 38rem);
+    padding: clamp(2rem, 6vw, 4rem);
+    border: 1px solid var(--line, #dce8df);
+    border-radius: 1.5rem;
+    background: var(--panel, #fff);
+    box-shadow: 0 1.5rem 4rem rgb(27 74 48 / 10%);
+    text-align: center;
+}
+.error-code {
+    display: block;
+    color: #28784e;
+    font-size: clamp(4rem, 14vw, 7rem);
+    font-weight: 800;
+    letter-spacing: -0.08em;
+    line-height: 1;
+}
+.error-card h1 { margin: 0.5rem 0; }
+.error-card > p:not(.dashboard-eyebrow) { color: var(--muted, #65756b); }
+.error-home {
+    display: inline-flex;
+    margin-top: 1rem;
+    padding: 0.75rem 1.2rem;
+    border-radius: 999px;
+    background: #28784e;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+}
+.event-owner-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+.event-owner-filters button,
+.event-owner-filters a {
+    border: 1px solid var(--line, #d7e3dc);
+    border-radius: 999px;
+    padding: 0.45rem 0.8rem;
+    color: inherit;
+    background: transparent;
+    text-decoration: none;
+    cursor: pointer;
+}
+.event-owner-filters .is-active { background: #e5f3eb; border-color: #258451; }
+.record-chip-other { color: #7041a6; background: #f0e8fa; }
 .event-period-nav {
     position: relative;
     display: flex;

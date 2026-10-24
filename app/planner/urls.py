@@ -8,6 +8,7 @@ from .views import (
     dashboard,
     events,
     free_tasks,
+    manager,
     notifications,
     tasks,
 )
@@ -70,6 +71,7 @@ urlpatterns = [
         name="category_delete",
     ),
     path("events/", events.EventListView.as_view(), name="event_list"),
+    path("manager/events/", manager.AllEventsView.as_view(), name="all_events"),
     path("events/new/", events.EventCreateView.as_view(), name="event_create"),
     path(
         "events/<int:pk>/details/",

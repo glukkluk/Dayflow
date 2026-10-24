@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Усі події — Dayflow{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="dashboard-eyebrow">Лише для менеджерів</p><h1>Усі події</h1><p>Події всіх користувачів системи (лише перегляд).</p></div></div>
+<form method="get" class="search-panel event-search">
+    <label for="search">Пошук за назвою або автором</label>
+    <div class="event-search-controls"><input id="search" name="q" value="{{ query }}" type="search" placeholder="Наприклад, demo_user"><button type="submit">Знайти</button></div>
+    <div class="event-owner-filters" aria-label="Фільтр за автором">
+        <button type="submit" name="owner" value="mine" class="{% if owner_filter == 'mine' %}is-active{% endif %}" aria-pressed="{% if owner_filter == 'mine' %}true{% else %}false{% endif %}">Мої події</button>
+        <button type="submit" name="owner" value="others" class="{% if owner_filter == 'others' %}is-active{% endif %}" aria-pressed="{% if owner_filter == 'others' %}true{% else %}false{% endif %}">Події інших користувачів</button>
+        {% if owner_filter %}<a href="?q={{ query|urlencode }}">Усі події</a>{% endif %}
+    </div>
+</form>
+<p class="timezone-note">Час показано в поясі вашого профілю: {{ user.profile.timezone }}.</p>
+{% if events %}
+<ul class="item-list event-grid">
+    {% for event in events %}
+    <li class="record-card event-record">
+        <div class="record-heading"><h3>{{ event.title }}</h3></div>
+        <div class="record-pills">
+            <span class="record-chip {% if event.user_id != user.id %}record-chip-other{% endif %}">Автор: {{ event.user.username }}</span>
+            {% if event.recurrence != 'none' %}<span class="record-chip">{{ event.get_recurrence_display }}</span>{% endif %}
+        </div>
+        <dl class="record-fields">
+            <div><dt>Початок</dt><dd>{{ event.start|date:datetime_fmt }}</dd></div>
+            <div><dt>Завершення</dt><dd>{{ event.end|date:datetime_fmt }}</dd></div>
+            <div><dt>Категорія</dt><dd>{{ event.category|default:'Без категорії' }}</dd></div>
+        </dl>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<div class="empty-state"><strong>Подій не знайдено</strong><p>Спробуйте інший пошук.</p></div>
+{% endif %}
+{% if page_obj.has_other_pages %}
+<nav class="record-pagination" aria-label="Сторінки подій">
+    {% if page_obj.has_previous %}<a href="?q={{ query|urlencode }}&amp;owner={{ owner_filter|urlencode }}&amp;page={{ page_obj.previous_page_number }}">← Попередня</a>{% endif %}
+    <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?q={{ query|urlencode }}&amp;owner={{ owner_filter|urlencode }}&amp;page={{ page_obj.next_page_number }}">Наступна →</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}
