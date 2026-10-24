@@ -2111,6 +2111,37 @@ label {
     width: 7rem;
     order: 2;
 }
+.editor-field .deadline-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 18rem) 7rem max-content;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
+    order: 2;
+}
+.editor-field .deadline-controls > * {
+    order: 0;
+    margin: 0;
+}
+.editor-field .deadline-controls input[type="date"] {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    order: 0;
+}
+.editor-field .deadline-controls input[name$="_1"] {
+    order: 0;
+}
+@media (max-width: 560px) {
+    .editor-field .deadline-controls {
+        grid-template-columns: minmax(0, 1fr) 7rem;
+    }
+    .editor-field .deadline-controls button {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+}
 input[type="date"],
 input[type="time"],
 input[type="datetime-local"] {

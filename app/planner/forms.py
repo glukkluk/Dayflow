@@ -15,7 +15,7 @@ def parse_time_text(text):
     """Parse a loosely typed time: ``13`` -> 13:00, ``930`` -> 09:30, ``13:5`` -> 13:05.
 
     Returns ``None`` for empty input and raises ``ValueError`` for invalid input.
-    Mirrors the autocompletion in ``static/planner/event_form.js``.
+    Mirrors the autocompletion in ``static/planner/time_input.js``.
     """
     text = (text or "").strip()
     if not text:
@@ -38,6 +38,9 @@ def parse_time_text(text):
 
 class DateAndTimeWidget(forms.MultiWidget):
     """A date picker plus a free-text time input (hidden for all-day events)."""
+
+    class Media:
+        js = ("planner/time_input.js",)
 
     def __init__(self, attrs=None):
         widgets = (
@@ -163,7 +166,7 @@ class EventForm(forms.ModelForm):
     )
 
     class Media:
-        js = ("planner/event_form.js",)
+        js = ("planner/time_input.js", "planner/event_form.js")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -245,6 +248,8 @@ class EventForm(forms.ModelForm):
 
 
 class TaskForm(forms.ModelForm):
+    deadline = DateAndTimeField(label="Дедлайн", required=False)
+
     no_deadline = forms.BooleanField(
         label="Вільне завдання",
         required=False,
@@ -263,7 +268,7 @@ class TaskForm(forms.ModelForm):
     )
 
     class Media:
-        js = ("planner/task_form.js",)
+        js = ("planner/time_input.js", "planner/task_form.js")
 
     class Meta:
         model = Task
@@ -278,10 +283,6 @@ class TaskForm(forms.ModelForm):
         )
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
-            "deadline": forms.DateTimeInput(
-                format="%Y-%m-%dT%H:%M",
-                attrs={"type": "datetime-local"},
-            ),
             "estimated_minutes": forms.NumberInput(attrs={"min": 5, "max": 480}),
         }
 
@@ -315,6 +316,15 @@ class TaskForm(forms.ModelForm):
         if self.is_bound and self["no_deadline"].value():
             self.fields["deadline"].disabled = True
             self.initial["deadline"] = None
+
+    def clean_deadline(self):
+        deadline = self.cleaned_data["deadline"]
+        if deadline is None:
+            return None
+        day, clock = deadline
+        if clock is None:
+            raise forms.ValidationError("Вкажіть час у форматі ГГ:ХХ.")
+        return _combine(day, clock)
 
     def clean(self):
         cleaned = super().clean()
