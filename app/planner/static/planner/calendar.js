@@ -130,6 +130,9 @@ function main() {
         document.getElementById("calendar"),
         {
             locale: "uk",
+            eventClass: "wd-calendar-event",
+            popoverClass: "wd-calendar-popover",
+            popoverCloseClass: "wd-calendar-popover-close",
             timeZone: config.timezone,
             eventTimeFormat: {
                 hour: "numeric",
@@ -188,7 +191,17 @@ function main() {
                     url.searchParams.set("start", range.startStr);
                     url.searchParams.set("end", range.endStr);
                     const { data } = await jsonRequest(url);
-                    return data;
+                    return data.map((event) => {
+                        // FullCalendar 7 uses contrastColor (not textColor).
+                        const rgb = event.color.match(/[a-f\d]{2}/gi).map((hex) => {
+                            const value = parseInt(hex, 16) / 255;
+                            return value <= 0.04045
+                                ? value / 12.92
+                                : ((value + 0.055) / 1.055) ** 2.4;
+                        });
+                        const luminance = rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
+                        return { ...event, contrastColor: luminance > 0.179 ? "#000000" : "#ffffff" };
+                    });
                 } catch (error) {
                     status.textContent = error.message;
                     throw error;
@@ -237,7 +250,12 @@ function main() {
             el.classList.remove("wd-sticky"),
         );
         root.querySelectorAll("*").forEach((el) => {
-            if (getComputedStyle(el).position === "sticky")
+            // All-day event titles are horizontally sticky too. They must
+            // retain the event colors, not receive the day-header background.
+            if (
+                !el.closest(".wd-calendar-event") &&
+                getComputedStyle(el).position === "sticky"
+            )
                 el.classList.add("wd-sticky");
         });
     };

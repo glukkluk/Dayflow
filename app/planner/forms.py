@@ -170,6 +170,11 @@ class EventForm(forms.ModelForm):
         self.fields["category"].queryset = Category.objects.filter(  # ty: ignore[unresolved-attribute]
             user_id=self.instance.user_id
         )
+        self.fields["category"].empty_label = "Без категорії"
+        self.fields["reminder_minutes"].choices = [
+            ("", "Без нагадування"),
+            *self.fields["reminder_minutes"].choices[1:],
+        ]
         all_day_field = self.fields["all_day"]
         all_day_field.widget.attrs.update(
             {
@@ -241,7 +246,7 @@ class EventForm(forms.ModelForm):
 
 class TaskForm(forms.ModelForm):
     no_deadline = forms.BooleanField(
-        label="Без дедлайну — вільне завдання",
+        label="Вільне завдання",
         required=False,
         help_text="Можна взяти у вільний час. Укажіть орієнтовну тривалість нижче.",
     )
@@ -285,7 +290,11 @@ class TaskForm(forms.ModelForm):
         self.fields["category"].queryset = Category.objects.filter(  # ty: ignore[unresolved-attribute]
             user_id=self.instance.user_id,
         )
-        self.initial["no_deadline"] = not self.initial.get("deadline")
+        self.fields["category"].empty_label = "Без категорії"
+        if self.instance.pk:
+            self.initial["no_deadline"] = self.instance.deadline is None
+        else:
+            self.initial["no_deadline"] = False
         self._already_started_free = bool(
             self.instance.pk
             and self.instance.deadline is None

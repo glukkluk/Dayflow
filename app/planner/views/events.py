@@ -82,7 +82,7 @@ class EventFormMixin(SuccessMessageMixin):
     def get_success_url(self):
         url = reverse("planner:event_detail", kwargs={"pk": self.object.pk})  # ty: ignore[unresolved-attribute]
         source = self.request.GET.get("from")  # ty: ignore[unresolved-attribute]
-        if source in ("dashboard", "events", "calendar"):
+        if source in ("dashboard", "events", "calendar", "manager"):
             return f"{url}?{urlencode({'from': source})}"
         return url
 
@@ -95,6 +95,7 @@ class EventFormMixin(SuccessMessageMixin):
                 "dashboard": ("planner:dashboard", "Назад на дашборд"),
                 "events": ("planner:event_list", "Назад до списку"),
                 "calendar": ("planner:calendar", "Назад до календаря"),
+                "manager": ("planner:all_events", "Назад до всіх подій"),
             },
             "planner:event_list",
         )
@@ -174,6 +175,11 @@ class EventDetailView(EventOwnerMixin, DetailView):
     template_name = "planner/event_detail.html"
     context_object_name = "event"
 
+    def get_queryset(self):
+        if self.request.user.has_perm("planner.view_all_events"):
+            return Event.objects.select_related("user", "category")  # ty: ignore[unresolved-attribute]
+        return super().get_queryset()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["back_url"], context["back_label"] = return_destination(
@@ -187,8 +193,9 @@ class EventDetailView(EventOwnerMixin, DetailView):
         )
         origin = self.request.GET.get("from")
         context["event_origin"] = (
-            origin if origin in ("dashboard", "events", "calendar") else "events"
+            origin if origin in ("dashboard", "events", "calendar", "manager") else "events"
         )
+        context["can_manage_event"] = self.object.user_id == self.request.user.id
         return context
 
 

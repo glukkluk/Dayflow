@@ -255,7 +255,7 @@
     background: #bc4862;
 }
 [data-color-scheme="dark"] .form-actions {
-    background: #1c2026f2;
+    background: color-mix(in srgb, var(--page) 92%, transparent);
 }
 [data-color-scheme="dark"] .profile-sections {
     background: var(--page);

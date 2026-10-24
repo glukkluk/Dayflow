@@ -1915,6 +1915,31 @@ label {
     color: #10291b;
     background-image: linear-gradient(135deg, #b8dfc4, #d9efdf);
 }
+/* Use an opaque category color with its calculated contrasting foreground.
+   Popovers are portalled outside #calendar, so scope them explicitly. */
+#calendar .wd-calendar-event,
+.wd-calendar-popover .wd-calendar-event {
+    background-color: var(--fc-event-color);
+    color: var(--fc-event-contrast-color);
+}
+.wd-calendar-popover {
+    --fc-monarch-popover: var(--raised);
+    --fc-monarch-popover-foreground: var(--ink);
+    background: var(--raised);
+    color: var(--ink);
+}
+.wd-calendar-popover .wd-calendar-popover-close {
+    background: transparent;
+    color: var(--ink);
+    border: 0;
+    box-shadow: none;
+    filter: none;
+    transform: none;
+}
+.wd-calendar-popover .wd-calendar-popover-close:hover {
+    background: var(--soft);
+    color: var(--accent);
+}
 /* Events: soft rounded chips */
 #calendar [class*="fc-event"],
 #calendar a[class*="event"] {
@@ -3046,7 +3071,8 @@ dialog::backdrop {
     cursor: pointer;
 }
 .event-owner-filters .is-active { background: #e5f3eb; border-color: #258451; }
-.record-chip-other { color: #7041a6; background: #f0e8fa; }
+.record-chip.record-chip-other { color: #7041a6; background: #f0e8fa; }
+.record-chip.record-chip-mine { color: #1769aa; background: #e5f1fb; }
 .event-period-nav {
     position: relative;
     display: flex;

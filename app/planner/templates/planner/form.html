@@ -20,7 +20,18 @@
         {% if field.is_hidden %}{{ field }}{% else %}
         <div class="editor-field{% if field.field.widget.input_type == 'checkbox' %} editor-checkbox{% endif %}">
             <span class="field-requirement">{% if field.field.required %}<span aria-label="обов'язкове поле">*</span>{% else %}Необов'язково{% endif %}</span>
-            {{ field.as_field_group }}
+            {% if field.name == "no_deadline" %}
+                {{ field }}
+                <label for="{{ field.id_for_label }}">{{ field.label }}
+                <span class="hint" tabindex="0" role="button" aria-label="Підказка: {{ field.label }}">
+                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9.4 9.4a2.7 2.7 0 1 1 3.9 2.4c-.9.5-1.3 1-1.3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
+                    <span class="hint-bubble" role="tooltip">{{ field.help_text }}</span>
+                </span>
+                </label>
+                {% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+            {% else %}
+                {{ field.as_field_group }}
+            {% endif %}
         </div>
         {% endif %}
     {% endfor %}

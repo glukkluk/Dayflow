@@ -2,7 +2,7 @@
 {% load planner_extras %}
 {% block title %}Усі події — Dayflow{% endblock %}
 {% block content %}
-<div class="page-heading"><div><p class="dashboard-eyebrow">Лише для менеджерів</p><h1>Усі події</h1><p>Події всіх користувачів системи (лише перегляд).</p></div></div>
+<div class="page-heading"><div><p class="dashboard-eyebrow">Лише для менеджерів</p><h1>Усі події</h1><p>Події всіх користувачів системи (лише перегляд).</p></div><a class="button" href="{% url 'planner:event_create' %}?from=manager">+ Додати подію</a></div>
 <form method="get" class="search-panel event-search">
     <label for="search">Пошук за назвою або автором</label>
     <div class="event-search-controls"><input id="search" name="q" value="{{ query }}" type="search" placeholder="Наприклад, demo_user"><button type="submit">Знайти</button></div>
@@ -17,15 +17,15 @@
 <ul class="item-list event-grid">
     {% for event in events %}
     <li class="record-card event-record">
-        <div class="record-heading"><h3>{{ event.title }}</h3></div>
+        <div class="record-heading"><h3><a class="record-title-link" href="{% url 'planner:event_detail' event.pk %}?from=manager">{{ event.title }}</a></h3></div>
         <div class="record-pills">
-            <span class="record-chip {% if event.user_id != user.id %}record-chip-other{% endif %}">Автор: {{ event.user.username }}</span>
+            <span class="record-chip {% if event.user_id == user.id %}record-chip-mine{% else %}record-chip-other{% endif %}">Автор: {% if event.user_id == user.id %}Я{% else %}{{ event.user.username }}{% endif %}</span>
             {% if event.recurrence != 'none' %}<span class="record-chip">{{ event.get_recurrence_display }}</span>{% endif %}
         </div>
         <dl class="record-fields">
             <div><dt>Початок</dt><dd>{{ event.start|date:datetime_fmt }}</dd></div>
             <div><dt>Завершення</dt><dd>{{ event.end|date:datetime_fmt }}</dd></div>
-            <div><dt>Категорія</dt><dd>{{ event.category|default:'Без категорії' }}</dd></div>
+            {% if event.user_id == user.id %}<div><dt>Категорія</dt><dd>{{ event.category|default:'Без категорії' }}</dd></div>{% endif %}
         </dl>
     </li>
     {% endfor %}
