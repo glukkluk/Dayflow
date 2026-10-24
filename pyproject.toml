@@ -13,5 +13,7 @@ dependencies = [
 
 [dependency-groups]
 prod = [
+    "dj-database-url>=3.1.2",
     "gunicorn>=26.2.0",
+    "whitenoise>=6.12.0",
 ]
