@@ -312,10 +312,24 @@ class TaskForm(forms.ModelForm):
             "deadline"
         ].help_text = "Залиште порожнім для вільного завдання без дедлайну."
         self.fields["estimated_minutes"].label = "Орієнтовна тривалість (хв)"
-        self.fields["estimated_minutes"].help_text = "Від 5 до 480 хвилин."
+        self.fields["estimated_minutes"].help_text = (
+            "Від 5 до 480 хвилин. Обов'язково для вільного завдання; "
+            "для завдання з дедлайном можна не вказувати."
+        )
         if self.is_bound and self["no_deadline"].value():
             self.fields["deadline"].disabled = True
             self.initial["deadline"] = None
+
+        deadline = self["deadline"].value()
+        has_deadline = (
+            bool(deadline[0]) if isinstance(deadline, (list, tuple)) else bool(deadline)
+        )
+        self.fields["estimated_minutes"].required = (
+            bool(self["no_deadline"].value()) or (self.is_bound and not has_deadline)
+        )
+        self.fields["estimated_minutes"].error_messages["required"] = (
+            "Для вільного завдання вкажіть орієнтовну тривалість."
+        )
 
     def clean_deadline(self):
         deadline = self.cleaned_data["deadline"]

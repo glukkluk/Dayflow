@@ -5,6 +5,7 @@
         const deadline = document.getElementById("id_deadline_0");
         const deadlineTime = document.getElementById("id_deadline_1");
         const status = document.getElementById("id_status");
+        const duration = document.getElementById("id_estimated_minutes");
         if (!checkbox || !deadline || !deadlineTime || !status) return;
         window.DayflowTimeInput.attach(deadlineTime);
         const inputs = [deadline, deadlineTime];
@@ -25,6 +26,13 @@
             });
             deadline.closest(".editor-field").hidden = checkbox.checked;
             const free = checkbox.checked || !deadline.value;
+            if (duration) {
+                duration.required = checkbox.checked;
+                const marker = duration.closest(".editor-field").querySelector(".field-requirement");
+                marker.textContent = checkbox.checked ? "*" : "Необов'язково";
+                if (checkbox.checked) marker.setAttribute("aria-label", "обов'язкове поле");
+                else marker.removeAttribute("aria-label");
+            }
             const blocked = free && status.dataset.startedFree !== "true";
             status.querySelector('option[value="in_progress"]').disabled = blocked;
             status.setCustomValidity(blocked && status.value === "in_progress"

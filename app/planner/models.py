@@ -184,6 +184,8 @@ class Task(models.Model):
     )
     estimated_minutes = models.PositiveSmallIntegerField(
         "Оцінка тривалості (хв)",
+        null=True,
+        blank=True,
         validators=[MinValueValidator(5), MaxValueValidator(480)],
     )
     status = models.CharField(
@@ -216,10 +218,16 @@ class Task(models.Model):
         ]
         constraints = [
             models.CheckConstraint(
-                condition=models.Q(
+                condition=models.Q(estimated_minutes__isnull=True) | models.Q(
                     estimated_minutes__gte=5, estimated_minutes__lte=480
                 ),
                 name="task_duration_between_5_and_480",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(deadline__isnull=False)
+                | models.Q(estimated_minutes__isnull=False),
+                name="task_free_requires_duration",
+                violation_error_message="Для вільного завдання вкажіть орієнтовну тривалість.",
             ),
             models.CheckConstraint(
                 condition=models.Q(priority__in=(1, 2, 3)),
