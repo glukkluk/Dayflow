@@ -18,6 +18,12 @@ class RegistrationForm(UserCreationForm):
         model = get_user_model()
         fields = ("username", "email", "password1", "password2")
 
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        if get_user_model().objects.filter(email=email).exists():
+            raise forms.ValidationError("Користувач із такою електронною поштою вже існує.")
+        return email
+
 
 def _timezone_choices():
     """Timezones grouped by region, labelled with their current UTC offset."""

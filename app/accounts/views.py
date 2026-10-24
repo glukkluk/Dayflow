@@ -1,9 +1,14 @@
 from django.contrib import messages
-from django.contrib.auth import get_user_model, logout, update_session_auth_hash
+from django.contrib.auth import (
+    authenticate,
+    get_user_model,
+    login,
+    logout,
+    update_session_auth_hash,
+)
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
@@ -17,18 +22,29 @@ from .forms import (
 )
 
 
-class RegisterView(SuccessMessageMixin, CreateView):
+class RegisterView(CreateView):
     model = User
     form_class = RegistrationForm
     template_name = "accounts/register.html"
-    success_url = reverse_lazy("accounts:login")
-    success_message = "Обліковий запис створено. Увійдіть у систему."
+    success_url = reverse_lazy("planner:dashboard")
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect("accounts:profile")
 
         return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        user = authenticate(
+            self.request,
+            username=form.cleaned_data["username"],
+            password=form.cleaned_data["password1"],
+        )
+        if user is not None:
+            login(self.request, user)
+        messages.success(self.request, "Обліковий запис створено. Вітаємо!")
+        return response
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
@@ -79,7 +95,9 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         if form is None:
             return redirect(self.success_url)
         if not form.is_valid():
-            context = self.get_context_data(active_action=action, **{f"{action}_form": form})
+            context = self.get_context_data(
+                active_action=action, **{f"{action}_form": form}
+            )
             return self.render_to_response(context)
 
         if action == "delete":
