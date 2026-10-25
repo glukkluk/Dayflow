@@ -150,10 +150,40 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Django 5.1+ removed STATICFILES_STORAGE; storages are configured via STORAGES.
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
+
+SUPABASE_S3_ENDPOINT_URL = env('SUPABASE_S3_ENDPOINT_URL', default='')
+if SUPABASE_S3_ENDPOINT_URL:
+    from botocore.config import Config
+
+    SUPABASE_PUBLIC_BASE_URL = env('SUPABASE_PUBLIC_BASE_URL').rstrip('/')
+    STORAGES['default'] = {
+        'BACKEND': 'storages.backends.s3.S3Storage',
+        'OPTIONS': {
+            'endpoint_url': SUPABASE_S3_ENDPOINT_URL,
+            'access_key': env('SUPABASE_S3_ACCESS_KEY_ID'),
+            'secret_key': env('SUPABASE_S3_SECRET_ACCESS_KEY'),
+            'bucket_name': env('SUPABASE_BUCKET', default='media'),
+            'region_name': env('SUPABASE_S3_REGION', default='us-east-1'),
+            'addressing_style': 'path',
+            'signature_version': 's3v4',
+            'file_overwrite': False,
+            'querystring_auth': False,
+            'default_acl': None,
+            'custom_domain': SUPABASE_PUBLIC_BASE_URL.removeprefix('https://').removeprefix('http://'),
+            'client_config': Config(
+                request_checksum_calculation='when_required',
+                response_checksum_validation='when_required',
+            ),
+        },
+    }
 
 
 if DEBUG:

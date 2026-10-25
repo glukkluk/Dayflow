@@ -23,7 +23,7 @@
 - Notifications are generated lazily: `collect_due()` runs inside `GET /api/notifications/pending/`, polled every 30 s by `toasts.js`. There is no cron/management command (a stale `generate_notifications` `.pyc` may exist locally with no source — ignore it). Preserve the delivery contract: the page's first poll sends `?silent=true`, marking reminders that came due while signed out as `delivered_at` (badge only, no toast), and showing a toast must never mark a notification read.
 - Email is not configured: `MAILERS = {...}` in `settings.py` is a nonstandard key Django ignores (it reads `EMAIL_BACKEND`). Reminders are in-app only — don't add email unasked.
 - Third-party JS/CSS is CDN-pinned in `app/planner/templates/planner/`: HTMX 2.0.8 (only it carries SRI `integrity=`), FullCalendar 7.1.2, Luxon 3.7.2. Own JS/CSS: `app/planner/static/planner/` and `app/accounts/static/accounts/`; UI icons are inline SVG branches in `app/templates/partials/icon.html` (`{% include 'partials/icon.html' with name='...' %}`) — extend that partial instead of adding an icon library.
-- Avatars need Pillow (declared in `pyproject.toml` — `uv sync` after pulling). Uploads land in git-ignored `app/media/` and are served only when `DEBUG=True` (urls.py wires `static(MEDIA_URL, ...)`); production must serve `MEDIA_ROOT` itself.
+- Avatars need Pillow (declared in `pyproject.toml` — `uv sync` after pulling). Uploads land in git-ignored `app/media/` and are served only when `DEBUG=True` (urls.py wires `static(MEDIA_URL, ...)`); in production set the `SUPABASE_*` env vars (see `.env.example`) so uploads go to a public Supabase Storage bucket via django-storages (Render's disk is ephemeral).
 
 ## Conventions that differ from defaults
 
