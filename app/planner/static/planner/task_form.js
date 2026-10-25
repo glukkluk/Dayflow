@@ -22,10 +22,15 @@
         const update = () => {
             inputs.forEach((input) => {
                 input.disabled = checkbox.checked;
+                input.required = !checkbox.checked;
                 if (checkbox.checked) input.setCustomValidity("");
             });
             deadline.closest(".editor-field").hidden = checkbox.checked;
-            const free = checkbox.checked || !deadline.value;
+            const deadlineMarker = deadline.closest(".editor-field").querySelector(".field-requirement");
+            deadlineMarker.textContent = checkbox.checked ? "Необов'язково" : "*";
+            if (checkbox.checked) deadlineMarker.removeAttribute("aria-label");
+            else deadlineMarker.setAttribute("aria-label", "обов'язкове поле");
+            const free = checkbox.checked;
             if (duration) {
                 duration.required = checkbox.checked;
                 const marker = duration.closest(".editor-field").querySelector(".field-requirement");
