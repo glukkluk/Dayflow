@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load planner_extras %}
 {% block title %}Автопланування — Dayflow{% endblock %}
 {% block content %}
 <div class="page-heading"><div><p class="dashboard-eyebrow">Розумний розподіл часу</p><h1>Автопланування</h1><p>Знайдемо вільний час для завдань з урахуванням ваших робочих годин і дедлайнів.</p></div></div>
@@ -14,10 +15,10 @@
         <li>
             <h2>{{ task.title }}</h2>
             <p>{{ task.get_priority_display }} · {{ task.estimated_minutes }} хв ·
-               Дедлайн: {{ task.deadline|date:datetime_fmt|default:"без дедлайну" }}</p>
+               Дедлайн: {{ task.deadline|profile_date:datetime_fmt|default:"без дедлайну" }}</p>
             <ul>
             {% for block in blocks %}
-                <li>{{ block.start|date:datetime_fmt }} — {{ block.end|date:datetime_fmt }}</li>
+                <li>{{ block.start|profile_date:datetime_fmt }} — {{ block.end|profile_date:datetime_fmt }}</li>
             {% endfor %}
             </ul>
         </li>

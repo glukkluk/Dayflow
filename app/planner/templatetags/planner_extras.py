@@ -1,8 +1,19 @@
 from django import template
+from django.template.defaultfilters import date as date_filter
+from django.utils.translation import override
 
 from ..models import Notification
 
 register = template.Library()
+
+
+@register.filter
+def profile_date(value, format_string):
+    """Render a date using the requested format, spelling AM/PM in English."""
+    if "A" in format_string:
+        with override("en"):
+            return date_filter(value, format_string)
+    return date_filter(value, format_string)
 
 
 @register.simple_tag(takes_context=True)

@@ -9,6 +9,7 @@ from django.core.files.base import ContentFile
 from PIL import Image, ImageOps
 
 from .models import Profile
+from .time_inputs import ProfileTimeField
 
 
 class RegistrationForm(UserCreationForm):
@@ -53,7 +54,7 @@ class ProfileForm(forms.ModelForm):
         label="Формат дати",
         choices=Profile.DateFormat.choices,
         help_text=(
-            "Як показувати дати в списках, на дашборді й у сповіщеннях. "
+            "Формат дат у полях введення, списках, на дашборді й у сповіщеннях. "
             "Приклад: ДД.ММ.РРРР → 31.12.2026, РРРР-ММ-ДД → 2026-12-31."
         ),
     )
@@ -63,23 +64,21 @@ class ProfileForm(forms.ModelForm):
         help_text=(
             "24-годинний чи 12-годинний (AM/PM) вигляд часу. "
             "Приклад: 14:30 у 24-годинному форматі — це 2:30 PM у 12-годинному. "
-            "Поля введення часу у формі події завжди 24-годинні."
+            "Застосовується до всіх полів часу, робочих годин і календаря."
         ),
     )
-    work_start = forms.TimeField(
+    work_start = ProfileTimeField(
         label="Початок робочого дня",
-        widget=forms.TimeInput(format="%H:%M", attrs={"type": "time"}),
         help_text=(
             "З цього часу автопланування починає ставити завдання, а календар "
-            "підсвічує робочі години. Приклад: 09:00."
+            "підсвічує робочі години. Приклад: 09:00 або 9:00 AM."
         ),
     )
-    work_end = forms.TimeField(
+    work_end = ProfileTimeField(
         label="Кінець робочого дня",
-        widget=forms.TimeInput(format="%H:%M", attrs={"type": "time"}),
         help_text=(
             "Після цього часу автопланування не планує завдання. "
-            "Має бути пізніше за початок. Приклад: 18:00."
+            "Має бути пізніше за початок. Приклад: 18:00 або 6:00 PM."
         ),
     )
     buffer_minutes = forms.IntegerField(
@@ -106,6 +105,8 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["timezone"].choices = _timezone_choices()
+        for name in ("work_start", "work_end"):
+            self.fields[name].set_time_format(self["time_format"].value())
 
 
 class UsernameForm(forms.ModelForm):

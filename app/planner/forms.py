@@ -1,39 +1,12 @@
-import re
 from datetime import date, datetime, time, timedelta
 
+from accounts.time_inputs import parse_time_text, time_error
+from accounts.widgets import ProfileDateInput, TimeTextInput, configure_date_field
 from django import forms
 from django.forms.utils import from_current_timezone
 from django.utils import timezone
 
 from .models import Category, Event, Task
-
-_TIME_WITH_SEPARATOR = re.compile(r"^(\d{1,2})[:.\s](\d{1,2})$")
-_TIME_DIGITS = re.compile(r"^\d{1,4}$")
-
-
-def parse_time_text(text):
-    """Parse a loosely typed time: ``13`` -> 13:00, ``930`` -> 09:30, ``13:5`` -> 13:05.
-
-    Returns ``None`` for empty input and raises ``ValueError`` for invalid input.
-    Mirrors the autocompletion in ``static/planner/time_input.js``.
-    """
-    text = (text or "").strip()
-    if not text:
-        return None
-    if match := _TIME_WITH_SEPARATOR.match(text):
-        hour, minute = int(match[1]), int(match[2])
-    elif _TIME_DIGITS.match(text):
-        if len(text) <= 2:
-            hour, minute = int(text), 0
-        elif len(text) == 3:
-            hour, minute = int(text[0]), int(text[1:])
-        else:
-            hour, minute = int(text[:2]), int(text[2:])
-    else:
-        raise ValueError(text)
-    if hour > 23 or minute > 59:
-        raise ValueError(text)
-    return time(hour, minute)
 
 
 class DateAndTimeWidget(forms.MultiWidget):
@@ -44,15 +17,8 @@ class DateAndTimeWidget(forms.MultiWidget):
 
     def __init__(self, attrs=None):
         widgets = (
-            forms.DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
-            forms.TextInput(
-                attrs={
-                    "placeholder": "ГГ:ХХ",
-                    "maxlength": 5,
-                    "size": 6,
-                    "autocomplete": "off",
-                }
-            ),
+            ProfileDateInput(),
+            TimeTextInput(),
         )
         super().__init__(widgets, attrs)
 
@@ -60,7 +26,7 @@ class DateAndTimeWidget(forms.MultiWidget):
         if isinstance(value, datetime):
             if timezone.is_aware(value):
                 value = timezone.localtime(value)
-            return [value.date(), value.strftime("%H:%M")]
+            return [value.date(), value.time()]
         if isinstance(value, date):
             return [value, None]
         return [None, None]
@@ -80,15 +46,25 @@ class DateAndTimeField(forms.MultiValueField):
         fields = (forms.DateField(), forms.CharField(required=False))
         super().__init__(fields=fields, require_all_fields=False, **kwargs)
 
+    def set_profile(self, profile):
+        day = self.fields[0]
+        day.widget = self.widget.widgets[0]  # ty: ignore[unresolved-attribute]
+        configure_date_field(day, profile)
+        self.widget.widgets[1].set_time_format(getattr(profile, "time_format", "24h"))  # ty: ignore[unresolved-attribute]
+
+    @property
+    def time_error(self):
+        return time_error(self.widget.widgets[1].hour12)  # ty: ignore[unresolved-attribute]
+
     def compress(self, data_list):
         if not data_list:
             return None
         day, text = data_list
         try:
-            return day, parse_time_text(text)
+            return day, parse_time_text(text, self.widget.widgets[1].hour12)  # ty: ignore[unresolved-attribute]
         except ValueError:
             raise forms.ValidationError(
-                "Вкажіть час у форматі ГГ:ХХ, наприклад 13 або 13:30.",
+                self.time_error,
                 code="invalid_time",
             ) from None
 
@@ -141,10 +117,7 @@ class EventForm(forms.ModelForm):
         )
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
-            "recurrence_until": forms.DateInput(
-                format="%Y-%m-%d",
-                attrs={"type": "date"},
-            ),
+            "recurrence_until": ProfileDateInput(),
         }
 
     field_order = (
@@ -170,6 +143,10 @@ class EventForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        profile = self.instance.user.profile if self.instance.user_id else None
+        for name in ("start", "end"):
+            self.fields[name].set_profile(profile)
+        configure_date_field(self.fields["recurrence_until"], profile)
         self.fields["category"].queryset = Category.objects.filter(  # ty: ignore[unresolved-attribute]
             user_id=self.instance.user_id
         )
@@ -240,7 +217,7 @@ class EventForm(forms.ModelForm):
         missing = False
         for name, (_, clock) in (("start", start), ("end", end)):
             if clock is None:
-                self.add_error(name, "Вкажіть час у форматі ГГ:ХХ.")
+                self.add_error(name, self.fields[name].time_error)
                 missing = True
         if missing:
             return None
@@ -288,6 +265,8 @@ class TaskForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        profile = self.instance.user.profile if self.instance.user_id else None
+        self.fields["deadline"].set_profile(profile)
         self.fields["category"].queryset = Category.objects.filter(  # ty: ignore[unresolved-attribute]
             user_id=self.instance.user_id,
         )
@@ -308,7 +287,9 @@ class TaskForm(forms.ModelForm):
             "Вільне завдання береться в роботу через кнопку «Взяти вільне завдання» "
             "на дашборді — з перевіркою конфліктів і розміщенням у розкладі."
         )
-        self.fields["deadline"].help_text = (
+        self.fields[
+            "deadline"
+        ].help_text = (
             "Укажіть дату й час. Для завдання без дедлайну увімкніть «Вільне завдання»."
         )
         self.fields["estimated_minutes"].label = "Орієнтовна тривалість (хв)"
@@ -333,7 +314,7 @@ class TaskForm(forms.ModelForm):
             return None
         day, clock = deadline
         if clock is None:
-            raise forms.ValidationError("Вкажіть час у форматі ГГ:ХХ.")
+            raise forms.ValidationError(self.fields["deadline"].time_error)
         return _combine(day, clock)
 
     def clean(self):

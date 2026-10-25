@@ -1,12 +1,27 @@
-// Shared time dropdown and autocompletion for event and task forms.
+// Shared profile-aware time dropdown and autocompletion.
 (() => {
+    "use strict";
     const pad = (n) => String(n).padStart(2, "0");
-    const formatMinutes = (total) => `${pad(Math.floor(total / 60))}:${pad(total % 60)}`;
+    const formatMinutes = (total, hour12 = false) => {
+        const hour = Math.floor(total / 60);
+        return hour12
+            ? `${hour % 12 || 12}:${pad(total % 60)} ${hour < 12 ? "AM" : "PM"}`
+            : `${pad(hour)}:${pad(total % 60)}`;
+    };
+    const uses12Hours = (input) => input.dataset.timeFormat === "12h";
+    const attached = new WeakSet();
 
-    // Mirrors parse_time_text() in planner/forms.py: 13 -> 13:00, 930 -> 09:30.
-    function parseTime(text) {
+    // Mirrors parse_time_text() in accounts/time_inputs.py.
+    function parseTime(text, hour12 = false) {
         text = (text || "").trim();
         if (!text) return null;
+        let meridiem;
+        if (hour12) {
+            const suffix = text.match(/\s*(AM|PM)$/i);
+            if (!suffix) return undefined;
+            meridiem = suffix[1].toUpperCase();
+            text = text.slice(0, suffix.index).trim();
+        }
         let hour, minute;
         const match = text.match(/^(\d{1,2})[:.\s](\d{1,2})$/);
         if (match) {
@@ -23,25 +38,31 @@
         } else {
             return undefined;
         }
-        if (hour > 23 || minute > 59) return undefined;
+        if (minute > 59 || (hour12 ? hour < 1 || hour > 12 : hour > 23)) return undefined;
+        if (hour12) hour = hour % 12 + (meridiem === "PM" ? 12 : 0);
         return hour * 60 + minute;
     }
 
     function normalizeTime(input) {
         input.setCustomValidity("");
         if (input.disabled || input.hidden) return;
-        const minutes = parseTime(input.value);
+        const hour12 = uses12Hours(input);
+        const minutes = parseTime(input.value, hour12);
         if (minutes === null) return;
         if (minutes === undefined) {
-            input.setCustomValidity("Вкажіть час у форматі ГГ:ХХ, наприклад 13 або 13:30.");
+            input.setCustomValidity(hour12
+                ? "Укажіть час із AM або PM, наприклад 2:30 PM."
+                : "Вкажіть час у форматі ГГ:ХХ, наприклад 13 або 13:30.");
             return;
         }
-        input.value = formatMinutes(minutes);
+        input.value = formatMinutes(minutes, hour12);
     }
 
-    const TIME_OPTIONS = Array.from({ length: 96 }, (_, i) => formatMinutes(i * 15));
+    const TIME_OPTIONS = Array.from({ length: 96 }, (_, i) => i * 15);
 
     function attach(input) {
+        if (attached.has(input)) return;
+        attached.add(input);
         let list = null;
         let active = -1;
         const items = () => (list ? Array.from(list.children) : []);
@@ -56,14 +77,14 @@
         }
 
         function nearestIndex() {
-            const minutes = parseTime(input.value);
+            const minutes = parseTime(input.value, uses12Hours(input));
             if (typeof minutes !== "number") return -1;
-            const index = TIME_OPTIONS.findIndex((option) => parseTime(option) >= minutes);
+            const index = TIME_OPTIONS.findIndex((option) => option >= minutes);
             return index === -1 ? TIME_OPTIONS.length - 1 : index;
         }
 
         function choose(value) {
-            input.value = value;
+            input.value = formatMinutes(value, uses12Hours(input));
             input.setCustomValidity("");
             input.dispatchEvent(new Event("change", { bubbles: true }));
             close();
@@ -76,7 +97,7 @@
             list.setAttribute("role", "listbox");
             TIME_OPTIONS.forEach((option) => {
                 const item = document.createElement("li");
-                item.textContent = option;
+                item.textContent = formatMinutes(option, uses12Hours(input));
                 item.setAttribute("role", "option");
                 // Keep focus in the input so blur does not close the list early.
                 item.addEventListener("mousedown", (event) => {
@@ -102,6 +123,7 @@
         }
 
         input.addEventListener("focus", open);
+        input.addEventListener("timeformatchange", close);
         input.addEventListener("click", open);
         input.addEventListener("blur", () => {
             close();
@@ -127,8 +149,29 @@
                 choose(TIME_OPTIONS[active]);
             }
         });
-        input.form.addEventListener("submit", () => normalizeTime(input), true);
+        if (input.form) input.form.addEventListener("submit", () => normalizeTime(input), true);
     }
 
-    window.DayflowTimeInput = { parseTime, formatMinutes, attach };
+    function setFormat(input, format) {
+        const minutes = parseTime(input.value, uses12Hours(input));
+        const hour12 = format === "12h";
+        input.dataset.timeFormat = hour12 ? "12h" : "24h";
+        input.placeholder = hour12 ? "Г:ХХ AM/PM" : "ГГ:ХХ";
+        input.maxLength = hour12 ? 8 : 5;
+        input.size = hour12 ? 10 : 6;
+        if (typeof minutes === "number") input.value = formatMinutes(minutes, hour12);
+        input.dispatchEvent(new Event("timeformatchange"));
+        normalizeTime(input);
+    }
+
+    window.DayflowTimeInput = { parseTime, formatMinutes, uses12Hours, attach, setFormat };
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("[data-time-input]").forEach(attach);
+        const selector = document.querySelector('select[name="time_format"]');
+        if (selector?.form) selector.addEventListener("change", () => {
+            selector.form.querySelectorAll("[data-time-input]").forEach((input) => {
+                setFormat(input, selector.value);
+            });
+        });
+    });
 })();

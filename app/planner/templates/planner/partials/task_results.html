@@ -18,11 +18,11 @@
                 {% if task.is_overdue %}<strong class="overdue">Прострочено</strong>{% endif %}
             </div>
             <dl class="record-fields">
-                <div><dt>Дедлайн</dt><dd>{{ task.deadline|date:datetime_fmt|default:'Не встановлено' }}</dd></div>
+                <div><dt>Дедлайн</dt><dd>{{ task.deadline|profile_date:datetime_fmt|default:'Не встановлено' }}</dd></div>
                 <div><dt>Оцінка часу</dt><dd>{% if task.estimated_minutes %}{{ task.estimated_minutes }} хв{% else %}Не вказано{% endif %}</dd></div>
                 <div><dt>Категорія</dt><dd>{% if task.category %}<span class="color-swatch" style="background-color:{{ task.category.color }}"></span>{% endif %}{{ task.category|default:'Без категорії' }}</dd></div>
                 <div><dt>У календарі</dt><dd>{% if task.scheduled_events.all %}Заплановано{% else %}Ще не розміщено{% endif %}</dd></div>
-                {% if task.completed_at %}<div><dt>Виконано</dt><dd>{{ task.completed_at|date:datetime_fmt }}</dd></div>{% endif %}
+                {% if task.completed_at %}<div><dt>Виконано</dt><dd>{{ task.completed_at|profile_date:datetime_fmt }}</dd></div>{% endif %}
             </dl>
             <form class="task-record-action" method="post" action="{% url 'planner:task_toggle' task.pk %}?{{ query_string }}"
                   hx-post="{% url 'planner:task_toggle' task.pk %}?{{ query_string }}"
@@ -41,3 +41,4 @@
     {% pagination page_obj "Сторінки завдань" %}
     {% endif %}
 </section>
+{% load planner_extras %}

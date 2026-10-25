@@ -14,9 +14,16 @@ function main() {
     const conflictDialog = document.getElementById("conflict-dialog");
     let pending = false;
 
+    function clockFormat({ start, end }) {
+        const clock = (value) => window.DayflowTimeInput.formatMinutes(
+            value.hour * 60 + value.minute, config.hour12,
+        );
+        return end ? `${clock(start)} — ${clock(end)}` : clock(start);
+    }
+
     function displayTime(value) {
         return DateTime.fromISO(value, { zone: config.timezone })
-            .setLocale("uk")
+            .setLocale(config.hour12 ? "en-US" : "uk")
             .toFormat(config.dateTimeFormat);
     }
 
@@ -134,16 +141,8 @@ function main() {
             popoverClass: "wd-calendar-popover",
             popoverCloseClass: "wd-calendar-popover-close",
             timeZone: config.timezone,
-            eventTimeFormat: {
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: config.hour12,
-            },
-            slotLabelFormat: {
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: config.hour12,
-            },
+            eventTimeFormat: clockFormat,
+            slotHeaderFormat: clockFormat,
             initialView: window.matchMedia("(max-width: 700px)").matches
                 ? "timeGridDay"
                 : "timeGridWeek",

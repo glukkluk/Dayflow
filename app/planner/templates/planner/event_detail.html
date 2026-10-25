@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load planner_extras %}
 {% block title %}{{ event.title }} — Dayflow{% endblock %}
 {% block content %}
 <div class="event-detail-page">
@@ -11,8 +12,8 @@
         <div class="event-detail-section"><h2>{% include 'partials/icon.html' with name='calendar' %} Коли відбудеться</h2>
             <dl class="record-fields event-detail-fields">
                 {% if perms.planner.view_all_events %}<div><dt>Автор події</dt><dd>{% if event.user_id == user.id %}Я{% else %}{{ event.user.username }}{% endif %}</dd></div>{% endif %}
-                <div><dt>Початок</dt><dd>{{ event.start|date:datetime_fmt }}</dd></div>
-                <div><dt>Завершення</dt><dd>{{ event.end|date:datetime_fmt }}</dd></div>
+                <div><dt>Початок</dt><dd>{{ event.start|profile_date:datetime_fmt }}</dd></div>
+                <div><dt>Завершення</dt><dd>{{ event.end|profile_date:datetime_fmt }}</dd></div>
                 <div><dt>Часовий пояс</dt><dd>{{ user.profile.timezone }}</dd></div>
                 {% if event.recurrence_until %}<div><dt>Повторення до</dt><dd>{{ event.recurrence_until|date:date_fmt }} включно</dd></div>{% endif %}
             </dl>

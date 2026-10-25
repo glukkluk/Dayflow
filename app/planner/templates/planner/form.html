@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load planner_extras %}
 {% block title %}{{ title }} — Dayflow{% endblock %}
 {% block scripts %}{{ form.media }}{% endblock %}
 {% block content %}
@@ -52,9 +53,9 @@
     {% if conflict_check %}
     <section class="conflict-warning" role="alert">
         <h2>Подія перетинається з іншими</h2>
-        <p>Перевірено: {{ conflict_check.start|date:datetime_fmt }} — {{ conflict_check.end|date:datetime_fmt }}.</p>
+        <p>Перевірено: {{ conflict_check.start|profile_date:datetime_fmt }} — {{ conflict_check.end|profile_date:datetime_fmt }}.</p>
         <ul>{% for item in conflict_check.conflicts %}
-            <li>{{ item.event.title }}: {{ item.start|date:datetime_fmt }} — {{ item.end|date:datetime_fmt }}</li>
+            <li>{{ item.event.title }}: {{ item.start|profile_date:datetime_fmt }} — {{ item.end|profile_date:datetime_fmt }}</li>
         {% endfor %}</ul>
         <button type="submit" name="force" value="true">Зберегти все одно</button>
     </section>

@@ -29,7 +29,7 @@
 
 - UI language is Ukrainian (`LANGUAGE_CODE = 'uk'`); keep user-facing strings in Ukrainian.
 - Time handling: `USE_TZ=True`, `TIME_ZONE='UTC'`. Datetimes are entered/displayed in the user's profile timezone (`accounts.middleware.ProfileTimezoneMiddleware`) and stored in UTC. Ambiguous/nonexistent local (DST) times must be rejected, not silently shifted — recurrence expansion answers 400 with `code=invalid_occurrence_time`.
-- Date/time rendering is a per-user profile setting: templates must use the `display_formats` context-processor variables (`date_fmt`, `short_date_fmt`, `time_fmt`, `datetime_fmt`, `short_datetime_fmt`) with `|date:`, never hardcoded patterns. Time input fields stay 24-hour regardless.
+- Date/time rendering is a per-user profile setting: templates must use the `display_formats` context-processor variables (`date_fmt`, `short_date_fmt`, `time_fmt`, `datetime_fmt`, `short_datetime_fmt`) with `|date:`, never hardcoded patterns. All time inputs, dropdowns, work hours and calendar labels follow the profile's 12/24-hour setting; 12-hour input requires AM/PM.
 - Validation is duplicated at form and DB level — preserve both when touching constraints: profile work hours, category `#RRGGBB` + per-user name uniqueness, event `end > start`, task status/`completed_at`/duration/priority.
 - Ownership: other users' records return 404 (never 403); choice fields must be queryset-scoped to `request.user`; destructive actions only via POST + CSRF.
 - No lint/typecheck/CI configured; `manage.py check` + `manage.py test` are the only verification entrypoints.

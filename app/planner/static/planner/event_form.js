@@ -3,7 +3,7 @@
     const STEP = 15;
     const DAY = 1440;
 
-    const { parseTime, formatMinutes, attach } = window.DayflowTimeInput;
+    const { parseTime, formatMinutes, uses12Hours, attach } = window.DayflowTimeInput;
 
     // 13:07 -> 13:15, 13:51 -> 14:00, 13:15 -> 13:15 (may reach 1440 = next day 00:00).
     const roundUp = (total) => Math.ceil(total / STEP) * STEP;
@@ -26,6 +26,7 @@
     const dayToIso = (index) => new Date(index * 86400000).toISOString().slice(0, 10);
 
     function init() {
+        const { getISO, setISO } = window.DayflowDateInput;
         document.querySelectorAll("[data-clear-date]").forEach((button) => {
             button.addEventListener("click", () => {
                 const input = document.getElementById(button.dataset.clearDate);
@@ -84,9 +85,10 @@
 
         // Switching to "all day": only dates, and both fields get the same date.
         function enterAllDay() {
-            if (!startDate.value && endDate.value) startDate.value = endDate.value;
-            if (startDate.value && (!endDate.value || endDate.value < startDate.value)) {
-                endDate.value = startDate.value;
+            if (!startDate.value && getISO(endDate)) setISO(startDate, getISO(endDate));
+            const start = getISO(startDate), end = getISO(endDate);
+            if (start && (!endDate.value || (end && end < start))) {
+                setISO(endDate, start);
             }
         }
 
@@ -94,25 +96,26 @@
         function leaveAllDay() {
             const fallback = nowMinutes(allDay.dataset.timezone || undefined);
             const valid = (input) => {
-                const minutes = parseTime(input.value);
+                const minutes = parseTime(input.value, uses12Hours(input));
                 return typeof minutes === "number" ? minutes : null;
             };
-            if (!startDate.value) return;
-            let start = dayIndex(startDate.value) * DAY + roundUp(valid(startTime) ?? fallback);
+            if (!getISO(startDate)) return;
+            let start = dayIndex(getISO(startDate)) * DAY + roundUp(valid(startTime) ?? fallback);
             if (!endDate.value) endDate.value = startDate.value;
+            if (!getISO(endDate)) return;
             const endClock = valid(endTime);
             let end =
-                dayIndex(endDate.value) * DAY +
+                dayIndex(getISO(endDate)) * DAY +
                 (endClock !== null
                     ? roundUp(endClock)
-                    : endDate.value === startDate.value
+                    : getISO(endDate) === getISO(startDate)
                       ? start % DAY + 60
                       : roundUp(fallback));
             if (end <= start) end = start + 60;
-            startDate.value = dayToIso(Math.floor(start / DAY));
-            startTime.value = formatMinutes(start % DAY);
-            endDate.value = dayToIso(Math.floor(end / DAY));
-            endTime.value = formatMinutes(end % DAY);
+            setISO(startDate, dayToIso(Math.floor(start / DAY)));
+            startTime.value = formatMinutes(start % DAY, uses12Hours(startTime));
+            setISO(endDate, dayToIso(Math.floor(end / DAY)));
+            endTime.value = formatMinutes(end % DAY, uses12Hours(endTime));
             timeInputs.forEach((input) => input.setCustomValidity(""));
         }
 
@@ -124,12 +127,13 @@
 
         // In "all day" mode picking a date in one field fills the other one.
         startDate.addEventListener("change", () => {
-            if (allDay.checked && startDate.value) endDate.value = startDate.value;
+            if (allDay.checked && getISO(startDate)) setISO(endDate, getISO(startDate));
         });
         endDate.addEventListener("change", () => {
-            if (!allDay.checked || !endDate.value) return;
-            if (!startDate.value || startDate.value > endDate.value) {
-                startDate.value = endDate.value;
+            const start = getISO(startDate), end = getISO(endDate);
+            if (!allDay.checked || !end) return;
+            if (!startDate.value || (start && start > end)) {
+                setISO(startDate, end);
             }
         });
 

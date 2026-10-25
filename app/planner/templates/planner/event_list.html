@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load planner_extras %}
+{% load planner_extras %}
 {% block title %}Події — Dayflow{% endblock %}
 {% block content %}
 <div class="page-heading"><div><p class="dashboard-eyebrow">Час для важливого</p><h1>Події</h1><p>Зустрічі, плани та особливі моменти в одному місці.</p></div><a class="button" href="{% url 'planner:event_create' %}?from=events">+ Додати подію</a></div>
@@ -32,8 +33,8 @@
                 {% if event.recurrence != 'none' %}<span class="record-chip">{{ event.get_recurrence_display }}</span>{% endif %}
             </div>
             <dl class="record-fields">
-                <div><dt>Початок</dt><dd>{{ event.start|date:datetime_fmt }}</dd></div>
-                <div><dt>Завершення</dt><dd>{{ event.end|date:datetime_fmt }}</dd></div>
+                <div><dt>Початок</dt><dd>{{ event.start|profile_date:datetime_fmt }}</dd></div>
+                <div><dt>Завершення</dt><dd>{{ event.end|profile_date:datetime_fmt }}</dd></div>
                 <div><dt>Категорія</dt><dd>{% if event.category %}<span class="color-swatch" style="background-color:{{ event.category.color }}"></span>{% endif %}{{ event.category|default:'Без категорії' }}</dd></div>
                 {% if event.recurrence_until %}<div><dt>Повторювати до</dt><dd>{{ event.recurrence_until|date:date_fmt }}</dd></div>{% endif %}
             </dl>

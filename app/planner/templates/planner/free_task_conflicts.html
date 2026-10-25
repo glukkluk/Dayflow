@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load planner_extras %}
 {% block title %}Конфлікти в розкладі — Dayflow{% endblock %}
 {% block content %}
 <div class="editor-content">
@@ -6,9 +7,9 @@
     <section class="conflict-warning" role="alert">
         <h2>{{ task.title }}</h2>
         <p>Для завдання потрібно {{ task.estimated_minutes }} хв від поточного часу.</p>
-        <p>Перевірено: {{ conflict_check.start|date:datetime_fmt }} — {{ conflict_check.end|date:datetime_fmt }} ({{ user.profile.timezone }}).</p>
+        <p>Перевірено: {{ conflict_check.start|profile_date:datetime_fmt }} — {{ conflict_check.end|profile_date:datetime_fmt }} ({{ user.profile.timezone }}).</p>
         <ul>{% for item in conflict_check.conflicts %}
-            <li><a href="{% url 'planner:event_detail' item.event.pk %}">{{ item.event.title }}</a>: {{ item.start|date:datetime_fmt }} — {{ item.end|date:datetime_fmt }}</li>
+            <li><a href="{% url 'planner:event_detail' item.event.pk %}">{{ item.event.title }}</a>: {{ item.start|profile_date:datetime_fmt }} — {{ item.end|profile_date:datetime_fmt }}</li>
         {% endfor %}</ul>
         <p>Завдання ще не взято в роботу. Можна скасувати або дозволити накладання. При підтвердженні час початку й конфлікти буде перевірено заново.</p>
     </section>

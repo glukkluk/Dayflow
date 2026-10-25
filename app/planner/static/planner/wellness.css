@@ -2133,9 +2133,28 @@ label {
 .editor-field .deadline-controls input[name$="_1"] {
     order: 0;
 }
+.editor-field fieldset input[data-time-format="12h"] {
+    flex-basis: 9rem;
+    width: 9rem;
+}
+.editor-field .deadline-controls:has(input[data-time-format="12h"]) {
+    grid-template-columns: minmax(0, 18rem) 9rem max-content;
+}
 @media (max-width: 560px) {
     .editor-field .deadline-controls {
-        grid-template-columns: minmax(0, 1fr) 7rem;
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .editor-field .deadline-controls:has(input[data-time-format="12h"]) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .editor-field .deadline-controls > .date-input {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+    .editor-field .deadline-controls input[name$="_1"] {
+        grid-column: 1 / -1;
+        width: 100%;
+        max-width: none;
     }
     .editor-field .deadline-controls button {
         grid-column: 1 / -1;

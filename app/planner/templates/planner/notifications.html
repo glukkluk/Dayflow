@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load planner_extras %}
 {% block title %}Повідомлення — Dayflow{% endblock %}
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
@@ -26,7 +27,7 @@
     <li{% if not notification.is_read %} class="unread-notification"{% endif %}>
         <h2>{{ notification.get_kind_display }}</h2>
         <p>{{ notification.message }}</p>
-        <p>{{ notification.created_at|date:datetime_fmt }}</p>
+        <p>{{ notification.created_at|profile_date:datetime_fmt }}</p>
         {% if not notification.is_read %}
         <form method="post" action="{% url 'planner:notifications' %}">
             {% csrf_token %}

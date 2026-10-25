@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load planner_extras %}
 {% load static %}
 {% block title %}Дашборд — Dayflow{% endblock %}
 {% block scripts %}<script src="{% static 'planner/free_tasks.js' %}" defer></script>{% endblock %}
@@ -94,7 +95,7 @@
             <ol class="wd-timeline">
                 {% for item in today_events|slice:":5" %}
                 <li class="{% if item.is_current %}is-current{% endif %}" style="--dot: {{ item.occurrence.event.category.color|default:'var(--c-accent)' }}">
-                    <time>{% if item.occurrence.event.all_day %}Весь день{% else %}{{ item.occurrence.start|date:time_fmt }}<small>{{ item.occurrence.end|date:time_fmt }}</small>{% endif %}</time>
+                    <time>{% if item.occurrence.event.all_day %}Весь день{% else %}{{ item.occurrence.start|profile_date:time_fmt }}<small>{{ item.occurrence.end|profile_date:time_fmt }}</small>{% endif %}</time>
                     <div class="wd-timeline-body">
                         <a href="{% url 'planner:event_detail' item.occurrence.event.pk %}?from=dashboard">{{ item.occurrence.event.title }}</a>
                         <span class="wd-chip">{% if item.is_current %}<i class="wd-live"></i>Триває{% else %}{{ item.occurrence.event.category|default:"Без категорії" }}{% endif %}</span>
@@ -144,7 +145,7 @@
                 {% for task in nearest_deadlines %}
                 <li>
                     <span class="wd-check" aria-hidden="true">{% include 'partials/icon.html' with name='task' %}</span>
-                    <div><a href="{% url 'planner:task_edit' task.pk %}">{{ task.title }}</a><span>{{ task.deadline|date:datetime_fmt }} · {{ task.get_status_display }}</span></div>
+                    <div><a href="{% url 'planner:task_edit' task.pk %}">{{ task.title }}</a><span>{{ task.deadline|profile_date:datetime_fmt }} · {{ task.get_status_display }}</span></div>
                 </li>
                 {% empty %}<li class="wd-empty">{% include 'partials/icon.html' with name='check' %}<span>Майбутніх дедлайнів немає.</span></li>{% endfor %}
             </ul>
@@ -177,7 +178,7 @@
         <ol class="wd-timeline">
             {% for item in today_events %}
                 <li class="{% if item.is_current %}is-current{% endif %}" style="--dot: {{ item.occurrence.event.category.color|default:'var(--c-accent)' }}">
-                    <time>{% if item.occurrence.event.all_day %}Весь день{% else %}{{ item.occurrence.start|date:time_fmt }}<small>{{ item.occurrence.end|date:time_fmt }}</small>{% endif %}</time>
+                    <time>{% if item.occurrence.event.all_day %}Весь день{% else %}{{ item.occurrence.start|profile_date:time_fmt }}<small>{{ item.occurrence.end|profile_date:time_fmt }}</small>{% endif %}</time>
                     <div class="wd-timeline-body">
                         <a href="{% url 'planner:event_detail' item.occurrence.event.pk %}?from=dashboard">{{ item.occurrence.event.title }}</a>
                         <span class="wd-chip">{% if item.is_current %}<i class="wd-live"></i>Триває{% else %}{{ item.occurrence.event.category|default:"Без категорії" }}{% endif %}</span>
