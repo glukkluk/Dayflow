@@ -60,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'accounts.middleware.ProfileTimezoneMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'accounts.middleware.GoogleAuthCancellationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
