@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Реєстрація — OnTime{% endblock %}
+{% block scripts %}<script src="{% static 'accounts/auth.js' %}" defer></script>{% endblock %}
 {% block content %}
 <p class="dashboard-eyebrow">Більше часу на важливе</p>
 <h1>Створіть свій простір</h1>
