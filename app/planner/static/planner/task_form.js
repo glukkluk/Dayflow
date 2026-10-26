@@ -7,7 +7,7 @@
         const status = document.getElementById("id_status");
         const duration = document.getElementById("id_estimated_minutes");
         if (!checkbox || !deadline || !deadlineTime || !status) return;
-        window.DayflowTimeInput.attach(deadlineTime);
+        window.OnTimeTimeInput.attach(deadlineTime);
         const inputs = [deadline, deadlineTime];
         document.querySelectorAll("[data-clear-deadline]").forEach((button) => {
             button.addEventListener("click", () => {

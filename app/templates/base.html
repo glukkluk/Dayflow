@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>{% block title %}Dayflow{% endblock %}</title>
+        <title>{% block title %}OnTime{% endblock %}</title>
         <meta name="theme-color" content="#28784e" />
         <link rel="icon" type="image/svg+xml" href="{% static 'planner/favicon.svg' %}" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -30,7 +30,7 @@
             <div class="brand">
                 {% if user.is_authenticated %}<button type="button" class="brand-mark sidebar-toggle" data-home="{% url 'planner:dashboard' %}" aria-label="Згорнути бічну панель" aria-expanded="true" aria-controls="main-navigation" title="Згорнути бічну панель"><img class="brand-mark-logo" src="{% static 'planner/favicon.svg' %}" alt="" />{% include 'partials/icon.html' with name='panel-close' %}{% include 'partials/icon.html' with name='panel-open' %}</button>
                 {% else %}<a class="brand-mark" href="{% url 'planner:dashboard' %}" aria-hidden="true" tabindex="-1"><img class="brand-mark-logo" src="{% static 'planner/favicon.svg' %}" alt="" /></a>{% endif %}
-                <a class="brand-name" href="{% url 'planner:dashboard' %}"><span>Dayflow<small>Простір для ваших планів</small></span></a>
+                <a class="brand-name" href="{% url 'planner:dashboard' %}"><span>OnTime<small>Простір для ваших планів</small></span></a>
             </div>
             {% block guest_navigation %}{% endblock %}
             {% if user.is_authenticated %}
@@ -94,7 +94,7 @@
         </header>
         <main id="main-content" class="{% block main_class %}{% endblock %}">
             <div id="interaction-status" class="interaction-status" role="status" aria-live="polite" hidden></div>
-            {% if user.is_authenticated %}<div class="workspace-bar"><span>Dayflow <span class="workspace-divider">/</span> Ваш робочий простір</span><a href="{% url 'accounts:profile' %}" aria-label="Профіль: {{ user.username }}">{% include 'accounts/partials/avatar.html' with size='small' %}<span>{{ user.username }}</span></a></div>{% endif %}
+            {% if user.is_authenticated %}<div class="workspace-bar"><span>OnTime <span class="workspace-divider">/</span> Ваш робочий простір</span><a href="{% url 'accounts:profile' %}" aria-label="Профіль: {{ user.username }}">{% include 'accounts/partials/avatar.html' with size='small' %}<span>{{ user.username }}</span></a></div>{% endif %}
             {% for message in messages %}
             <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}{{ message.level_tag|default:'info' }}{% endif %} message" role="status">{{ message }}</div>
             {% endfor %} {% block content %}{% endblock %}

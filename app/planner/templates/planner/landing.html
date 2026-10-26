@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Dayflow — простір для ваших планів{% endblock %}
+{% block title %}OnTime — простір для ваших планів{% endblock %}
 {% block body_class %}landing-layout{% endblock %}
 {% block main_class %}landing-page{% endblock %}
 {% block extra_styles %}<link rel="stylesheet" href="{% static 'planner/landing.css' %}" />{% endblock %}
@@ -15,18 +15,18 @@
     <div class="landing-copy" data-reveal>
         <span class="landing-tag">{% include 'partials/icon.html' with name='sparkle' %} Менше метушні. Більше ясності.</span>
         <h1 id="landing-title">Знайди свій <span>ритм кожного дня.</span></h1>
-        <p class="landing-lead">Плани, справи та важливі моменти — в одному затишному просторі. Dayflow допомагає бачити головне й рухатися у власному темпі.</p>
+        <p class="landing-lead">Плани, справи та важливі моменти — в одному затишному просторі. OnTime допомагає бачити головне й рухатися у власному темпі.</p>
         <div class="landing-actions">
             <a class="landing-button landing-button-primary" href="{% url 'accounts:register' %}">Створити акаунт {% include 'partials/icon.html' with name='arrow' %}</a>
             <a class="landing-button landing-button-secondary" href="{% url 'accounts:login' %}">У мене вже є акаунт</a>
         </div>
-        <div class="landing-points" aria-label="Можливості Dayflow">
+        <div class="landing-points" aria-label="Можливості OnTime">
             <span>{% include 'partials/icon.html' with name='check' %} Просте планування</span>
             <span>{% include 'partials/icon.html' with name='check' %} Усе під рукою</span>
         </div>
     </div>
 
-    <div class="landing-preview" role="img" aria-label="Демонстраційний вигляд особистого простору Dayflow" data-reveal>
+    <div class="landing-preview" role="img" aria-label="Демонстраційний вигляд особистого простору OnTime" data-reveal>
         <div class="landing-preview-glow" aria-hidden="true"></div>
         <div class="landing-mini-card" aria-hidden="true">
             <div class="landing-mini-head">
@@ -79,9 +79,9 @@
         </article>
     </div>
     <div class="landing-bottom" data-reveal>
-        <div><strong>Почни з одного хорошого плану.</strong><span>А решта поступово складеться у твій Dayflow.</span></div>
+        <div><strong>Почни з одного хорошого плану.</strong><span>А решта поступово складеться у твій OnTime.</span></div>
         <a class="landing-button landing-button-primary" href="{% url 'accounts:register' %}">Почати зараз {% include 'partials/icon.html' with name='arrow' %}</a>
     </div>
 </section>
-<footer class="landing-footer"><span>Dayflow · простір для твоїх планів</span><a href="#landing-title">На початок ↑</a></footer>
+<footer class="landing-footer"><span>OnTime · простір для твоїх планів</span><a href="#landing-title">На початок ↑</a></footer>
 {% endblock %}

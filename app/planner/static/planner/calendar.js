@@ -15,7 +15,7 @@ function main() {
     let pending = false;
 
     function clockFormat({ start, end }) {
-        const clock = (value) => window.DayflowTimeInput.formatMinutes(
+        const clock = (value) => window.OnTimeTimeInput.formatMinutes(
             value.hour * 60 + value.minute, config.hour12,
         );
         return end ? `${clock(start)} — ${clock(end)}` : clock(start);

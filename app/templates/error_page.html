@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block main_class %}error-main{% endblock %}
-{% block title %}{{ code }} — Dayflow{% endblock %}
+{% block title %}{{ code }} — OnTime{% endblock %}
 {% block content %}
 <section class="error-page" aria-labelledby="error-title">
     <div class="error-card">
         <span class="error-code">{{ code }}</span>
-        <p class="dashboard-eyebrow">Dayflow</p>
+        <p class="dashboard-eyebrow">OnTime</p>
         <h1 id="error-title">{{ heading }}</h1>
         <p>{{ message }}</p>
         <a class="error-home" href="{% url 'planner:dashboard' %}">На головну</a>

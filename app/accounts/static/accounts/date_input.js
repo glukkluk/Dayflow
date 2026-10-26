@@ -77,7 +77,7 @@
         });
     }
 
-    window.DayflowDateInput = { parseDate, formatDate, getISO, setISO };
+    window.OnTimeDateInput = { parseDate, formatDate, getISO, setISO };
     document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll("[data-date-format]").forEach(attach);
     });

@@ -3032,7 +3032,7 @@ dialog::backdrop {
     margin: 0;
 }
 
-/* Dayflow: accessible event timeline, legible record data and detail layout. */
+/* OnTime: accessible event timeline, legible record data and detail layout. */
 .event-search {
     display: flex;
     flex-direction: column;

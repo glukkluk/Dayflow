@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load planner_extras %}
 {% load planner_extras %}
-{% block title %}Усі події — Dayflow{% endblock %}
+{% block title %}Усі події — OnTime{% endblock %}
 {% block content %}
 <div class="page-heading"><div><p class="dashboard-eyebrow">Лише для менеджерів</p><h1>Усі події</h1><p>Події всіх користувачів системи (лише перегляд).</p></div><a class="button" href="{% url 'planner:event_create' %}?from=manager">+ Додати подію</a></div>
 <form method="get" class="search-panel event-search">

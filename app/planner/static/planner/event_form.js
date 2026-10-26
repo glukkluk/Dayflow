@@ -3,7 +3,7 @@
     const STEP = 15;
     const DAY = 1440;
 
-    const { parseTime, formatMinutes, uses12Hours, attach } = window.DayflowTimeInput;
+    const { parseTime, formatMinutes, uses12Hours, attach } = window.OnTimeTimeInput;
 
     // 13:07 -> 13:15, 13:51 -> 14:00, 13:15 -> 13:15 (may reach 1440 = next day 00:00).
     const roundUp = (total) => Math.ceil(total / STEP) * STEP;
@@ -26,7 +26,7 @@
     const dayToIso = (index) => new Date(index * 86400000).toISOString().slice(0, 10);
 
     function init() {
-        const { getISO, setISO } = window.DayflowDateInput;
+        const { getISO, setISO } = window.OnTimeDateInput;
         document.querySelectorAll("[data-clear-date]").forEach((button) => {
             button.addEventListener("click", () => {
                 const input = document.getElementById(button.dataset.clearDate);

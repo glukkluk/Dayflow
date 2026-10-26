@@ -1,4 +1,4 @@
-# Особистий розклад
+# OnTime
 
 Python 3.14+, Django 6.1, **PostgreSQL 16+** (розроблено й перевірено на PostgreSQL 16). Залежності керуються через `uv` (`uv.lock`); зафіксований список у `requirements.txt`.
 
@@ -7,8 +7,8 @@ Python 3.14+, Django 6.1, **PostgreSQL 16+** (розроблено й перев
 1. Створіть базу PostgreSQL і користувача:
 
 ```sql
-CREATE USER dayflow WITH PASSWORD 'your-password' CREATEDB;  -- CREATEDB потрібен для тестів
-CREATE DATABASE dayflow OWNER dayflow;
+CREATE USER ontime WITH PASSWORD 'your-password' CREATEDB;  -- CREATEDB потрібен для тестів
+CREATE DATABASE ontime OWNER ontime;
 ```
 
 2. Скопіюйте `.env.example` у `.env` і заповніть значення (`.env` ігнорується git):

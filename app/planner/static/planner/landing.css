@@ -1,4 +1,4 @@
-/* Dayflow guest welcome — intentionally scoped to the public homepage. */
+/* OnTime guest welcome — intentionally scoped to the public homepage. */
 .landing-layout .app-sidebar {
     width: min(1240px, calc(100% - 56px));
     margin: 0 auto;

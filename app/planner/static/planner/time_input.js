@@ -164,7 +164,7 @@
         normalizeTime(input);
     }
 
-    window.DayflowTimeInput = { parseTime, formatMinutes, uses12Hours, attach, setFormat };
+    window.OnTimeTimeInput = { parseTime, formatMinutes, uses12Hours, attach, setFormat };
     document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll("[data-time-input]").forEach(attach);
         const selector = document.querySelector('select[name="time_format"]');
