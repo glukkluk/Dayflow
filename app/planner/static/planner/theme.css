@@ -183,6 +183,9 @@
     background: linear-gradient(110deg, #22332d, #1e2529 65%, #20272d);
     border-color: #33423d;
 }
+[data-color-scheme="dark"] .event-period-nav a[aria-current="page"] {
+    color: #10291b;
+}
 [data-color-scheme="dark"] .dashboard-hero-actions a:first-child {
     background: #286947;
     color: #fff;
