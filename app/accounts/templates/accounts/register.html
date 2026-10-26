@@ -4,6 +4,14 @@
 <p class="dashboard-eyebrow">Більше часу на важливе</p>
 <h1>Створіть свій простір</h1>
 <p class="auth-intro">Ваші події, завдання та цілі — в одному розкладі.</p>
+<form method="post" action="{% url 'social:begin' 'google-oauth2' %}">
+    {% csrf_token %}
+    <button type="submit" class="secondary auth-google-button">
+        {% include 'partials/icon.html' with name='google' %}
+        Зареєструватися через Google
+    </button>
+</form>
+<div class="auth-divider">або</div>
 <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}

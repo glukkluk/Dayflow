@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -25,9 +26,10 @@ handler403 = views.permission_denied
 handler404 = views.page_not_found
 
 urlpatterns = [
-    path('', include('accounts.urls')),
-    path('', include('planner.urls')),
-    path('admin/', admin.site.urls),
+    path("", include("accounts.urls")),
+    path("", include("planner.urls")),
+    path("admin/", admin.site.urls),
+    path("social-auth/", include("social_django.urls", namespace="social")),
 ]
 
 if settings.DEBUG:

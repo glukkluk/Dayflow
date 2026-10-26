@@ -73,6 +73,26 @@ button {
     border-left: 0.25rem solid #287644;
 }
 
+/* Authentication pages */
+.auth-google-button {
+    width: 100%;
+}
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.25rem 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+}
+
 /* Profile page */
 .profile-page {
     max-width: 46rem;
