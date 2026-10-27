@@ -20,7 +20,7 @@ REASON_LABELS = {
 
 class AutoplanView(LoginRequiredMixin, View):
     template_name = "planner/autoplan.html"
-    http_method_names = ["get", "post", "head", "options"]
+    http_method_names = ["get", "post", "head", "options"]  # noqa: RUF012
 
     def _preview(self, request):
         """Tasks in planning order, each with its proposed blocks."""
