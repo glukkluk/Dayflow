@@ -15,6 +15,8 @@
                 <div><dt>Початок</dt><dd>{{ event.start|profile_date:datetime_fmt }}</dd></div>
                 <div><dt>Завершення</dt><dd>{{ event.end|profile_date:datetime_fmt }}</dd></div>
                 <div><dt>Часовий пояс</dt><dd>{{ user.profile.timezone }}</dd></div>
+                <div><dt>Нагадування:</dt><dd>{% if event.reminder_minutes %}За {{ event.get_reminder_minutes_display }}{% else %}немає{% endif %}</dd></div>
+                <div><dt>Повторення:</dt><dd>{% if event.recurrence != 'none' %}{{ event.get_recurrence_display }}{% else %}немає{% endif %}</dd></div>
                 {% if event.recurrence_until %}<div><dt>Повторення до</dt><dd>{{ event.recurrence_until|date:date_fmt }} включно</dd></div>{% endif %}
             </dl>
         </div>

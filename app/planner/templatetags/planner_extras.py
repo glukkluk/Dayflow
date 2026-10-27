@@ -7,9 +7,11 @@ from ..models import Notification
 register = template.Library()
 
 
-@register.filter
+@register.filter(expects_localtime=True)
 def profile_date(value, format_string):
-    """Render a date using the requested format, spelling AM/PM in English."""
+    """Render in the active profile timezone, spelling AM/PM in English."""
+    # Calling date_filter directly doesn't apply its expects_localtime flag;
+    # our filter must request timezone conversion from the template engine too.
     if "A" in format_string:
         with override("en"):
             return date_filter(value, format_string)
