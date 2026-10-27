@@ -166,7 +166,7 @@ STORAGES = {
 
 SUPABASE_S3_ENDPOINT_URL = env('SUPABASE_S3_ENDPOINT_URL', default='')
 if SUPABASE_S3_ENDPOINT_URL:
-    from botocore.config import Config
+    from botocore.configks import Config  # ty: ignore[unresolved-import]
 
     SUPABASE_PUBLIC_BASE_URL = env('SUPABASE_PUBLIC_BASE_URL').rstrip('/')
     STORAGES['default'] = {

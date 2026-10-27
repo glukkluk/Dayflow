@@ -13,7 +13,7 @@
 - `uv run python app/manage.py migrate`
 - `uv run python app/manage.py runserver`
 - `uv run python app/manage.py check`
-- `uv run python app/manage.py test accounts planner` — the only test entrypoint (plain Django `TestCase`; tests live in `app/<app>/tests.py` or an `app/<app>/tests/` package — `planner` has some, `accounts` has none). Focus with a label, e.g. `... test planner.tests.DayflowNavigationTests.test_event_periods_and_quick_navigation`; `.Class` / `.Class.method` suffixes work. A label matching nothing prints `NO TESTS RAN` yet exits 0 — exit 0 alone does not prove tests ran.
+- `uv run python app/manage.py test accounts planner` — the only test entrypoint (plain Django `TestCase`; tests live in `app/<app>/tests.py` or an `app/<app>/tests/` package — `planner` has some, `accounts` has none). Focus with a label, e.g. `... test planner.tests.OnTimeNavigationTests.test_event_periods_and_quick_navigation`; `.Class` / `.Class.method` suffixes work. A label matching nothing prints `NO TESTS RAN` yet exits 0 — exit 0 alone does not prove tests ran.
 - `uv run python app/manage.py createsuperuser` for `/admin/` access
 
 ## Gotchas that bite
