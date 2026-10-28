@@ -10,18 +10,22 @@ cryptography==50.0.2
 defusedxml==0.7.1
 dj-database-url==3.1.2
 django==6.1.2
+django-debug-toolbar==8.0.0
 django-environ==0.14.0
+django-extensions==4.1
 django-storages==1.14.6
 environ==1.0
 gunicorn==26.2.0
 idna==3.20
 jmespath==1.1.0
+markupsafe==3.0.4
 oauthlib==4.0.0
 pillow==13.0.0
 psycopg==3.3.6
-psycopg-binary==3.3.6 ; implementation_name != 'pypy'
-pycparser==3.12 ; implementation_name != 'PyPy'
+psycopg-binary==3.3.6
+pycparser==3.12
 pyjwt==2.15.1
+pyopenssl==26.4.0
 python-dateutil==2.9.0.post0
 python3-openid==3.2.0
 requests==2.34.2
@@ -31,6 +35,6 @@ six==1.17.0
 social-auth-app-django==7.2.0
 social-auth-core==6.2.0
 sqlparse==0.6.0
-tzdata==2026.5 ; sys_platform == 'win32'
 urllib3==2.8.0
+werkzeug==3.1.9
 whitenoise==6.12.0
