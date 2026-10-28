@@ -643,6 +643,7 @@ label {
 
 /* ---------- Auth ---------- */
 .auth-layout .app-sidebar {
+    padding-inline: clamp(1.5rem, 5vw, 5rem);
     background: transparent;
     box-shadow: none;
     border: 0;
@@ -1471,7 +1472,7 @@ label {
     }
     .auth-layout .app-sidebar {
         flex-wrap: nowrap;
-        padding: 0.8rem 1rem;
+        padding-block: 0.8rem;
         background: transparent;
     }
     .auth-layout .app-nav {
